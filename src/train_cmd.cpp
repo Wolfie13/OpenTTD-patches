@@ -259,9 +259,17 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 		if (!u->IsArticulatedPart()) {
 			/* Do not count powered wagons for the compatible railtypes, as wagons always
-			   have railtype normal */
-			if (rvi_u->power > 0) {
-				this->compatible_railtypes |= GetRailTypeInfo(u->railtype)->powered_railtypes;
+			have railtype normal */
+
+			//To detect DVTs and other quasi-joke leading vehicles, like snowplows.
+			int16 PowerToWeight = rvi_u->power / rvi_u->weight;
+
+			//For weedy EMUs.
+			bool IsElectrified = (GetRailTypeInfo( u->railtype )->powered_railtypes & RAILTYPES_ELECTRIC) != 0;
+
+
+			if ( rvi_u->power > 0 && (PowerToWeight > 3 || rvi_u->power < 50 || IsElectrified) ) {
+				this->compatible_railtypes |= GetRailTypeInfo( u->railtype )->powered_railtypes;
 			}
 
 			/* Some electric engines can be allowed to run on normal rail. It happens to all
