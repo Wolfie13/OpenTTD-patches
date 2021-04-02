@@ -657,6 +657,23 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 	return nullptr;
 }
 
+bool ValidateLookAhead(const Train *v)
+{
+	TileIndex tile = v->lookahead->reservation_end_tile;
+	Trackdir trackdir = v->lookahead->reservation_end_trackdir;
+
+	if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
+		if (!likely(IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && TrackdirEntersTunnelBridge(tile, trackdir))) {
+			return false;
+		}
+	}
+	if (HasBit(v->lookahead->flags, TRLF_DEPOT_END) && !IsRailDepotTile(tile)) return false;
+
+	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0));
+	if (!HasTrackdir(trackdirbits, trackdir)) return false;
+
+	return true;
+}
 
 /**
  * Follow a train reservation to the last tile.
@@ -678,7 +695,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 		if (HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return PBSTileInfo(tile, trackdir, false);
 		if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
 			TileIndex exit_tile = GetOtherTunnelBridgeEnd(tile);
-			if (GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
+			if (IsTunnelBridgeSignalSimulationExit(exit_tile) && GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
 				tile = exit_tile;
 				DiagDirection exit_dir = ReverseDiagDir(GetTunnelBridgeDirection(exit_tile));
 				trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(exit_tile)), exit_dir);
@@ -693,7 +710,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 
 	FindTrainOnTrackInfo ftoti;
 	ftoti.res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, tile, trackdir, FRF_NONE, v, nullptr);
-	ftoti.res.okay = IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
+	ftoti.res.okay = (flags & FTRF_OKAY_UNUSED) ? false : IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
 	if (train_on_res != nullptr) {
 		FindVehicleOnPos(ftoti.res.tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
 		if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();
@@ -816,6 +833,7 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 {
+	if (IsTunnelBridgeSignalSimulationExitOnly(t->tile)) return;
 	DiagDirection tb_dir = GetTunnelBridgeDirection(t->tile);
 	if (DirToDiagDirAlongAxis(t->direction, DiagDirToAxis(tb_dir)) == tb_dir) {
 		/* going in the right direction, allocate a new lookahead */

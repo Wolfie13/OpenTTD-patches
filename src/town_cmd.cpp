@@ -1978,7 +1978,14 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 36}, // 88
 	};
 
-	if (t->cache.num_houses < 92) {
+	if (_settings_game.economy.town_zone_calc_mode) {
+		int mass = t->cache.num_houses / 8;
+		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult;
+		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult;
+		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
+		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult;
+		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult;
+	} else if (t->cache.num_houses < 92) {
 		memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
 	} else {
 		int mass = t->cache.num_houses / 8;
@@ -3058,6 +3065,23 @@ CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		UpdateAllStationVirtCoords();
 	}
 	return CommandCost();
+}
+
+
+/**
+ * Rename a town (non-admin use).
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 town ID to rename
+ * @param p2 unused
+ * @param text the new name or an empty string when resetting to the default
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdRenameTownNonAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_networking && !_settings_game.difficulty.rename_towns_in_multiplayer) return CMD_ERROR;
+
+	return CmdRenameTown(tile, flags, p1, p2, text);
 }
 
 /**

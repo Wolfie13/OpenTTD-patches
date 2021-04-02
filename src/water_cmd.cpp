@@ -479,7 +479,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	TileIterator *iter = HasBit(p2, 2) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
+	std::unique_ptr<TileIterator> iter(HasBit(p2, 2) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1));
 	for (; *iter != INVALID_TILE; ++(*iter)) {
 		TileIndex tile = *iter;
 		CommandCost ret;
@@ -504,7 +504,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					MakeRiver(tile, Random());
 					if (_game_mode == GM_EDITOR) {
 						TileIndex tile2 = tile;
-						CircularTileSearch(&tile2, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
+						CircularTileSearch(&tile2, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 					}
 					break;
 

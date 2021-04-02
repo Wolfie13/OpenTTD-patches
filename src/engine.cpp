@@ -654,7 +654,7 @@ void SetYearEngineAgingStops()
  * @param e The engine to initialise.
  * @param aging_date The date used for age calculations.
  */
-void StartupOneEngine(Engine *e, Date aging_date)
+void StartupOneEngine(Engine *e, Date aging_date, Date no_introduce_after_date)
 {
 	const EngineInfo *ei = &e->info;
 
@@ -677,7 +677,7 @@ void StartupOneEngine(Engine *e, Date aging_date)
 	 * of engines in early starting games.
 	 * Note: TTDP uses fixed 1922 */
 	e->intro_date = ei->base_intro <= ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (Date)GB(r, 0, 9) + ei->base_intro;
-	if (e->intro_date <= _date) {
+	if (e->intro_date <= _date && e->intro_date <= no_introduce_after_date) {
 		e->age = (aging_date - e->intro_date) >> 5;
 		e->company_avail = (CompanyMask)-1;
 		e->flags |= ENGINE_AVAILABLE;
@@ -713,10 +713,19 @@ void StartupOneEngine(Engine *e, Date aging_date)
 void StartupEngines()
 {
 	/* Aging of vehicles stops, so account for that when starting late */
-	const Date aging_date = std::min(_date, ConvertYMDToDate(_year_engine_aging_stops, 0, 1));
+	Year aging_stop_year = _year_engine_aging_stops;
+	if (_settings_game.vehicle.no_introduce_vehicles_after > 0 && _settings_game.vehicle.no_expire_vehicles_after > 0) {
+		aging_stop_year = std::min<Year>(aging_stop_year, std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after));
+	}
+	const Date aging_date = std::min(_date, ConvertYMDToDate(aging_stop_year, 0, 1));
+
+	Date no_introduce_after_date = INT_MAX;
+	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
+		no_introduce_after_date = ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
+	}
 
 	for (Engine *e : Engine::Iterate()) {
-		StartupOneEngine(e, aging_date);
+		StartupOneEngine(e, aging_date, no_introduce_after_date);
 	}
 
 	/* Update the bitmasks for the vehicle lists */
@@ -1049,6 +1058,14 @@ static void NewVehicleAvailable(Engine *e)
 void EnginesMonthlyLoop()
 {
 	if (_cur_year < _year_engine_aging_stops) {
+		Date no_introduce_after = INT_MAX;
+		if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
+			if (_settings_game.vehicle.no_expire_vehicles_after > 0 && _cur_year >= std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after)) {
+				return;
+			}
+			no_introduce_after = ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
+		}
+
 		for (Engine *e : Engine::Iterate()) {
 			/* Age the vehicle */
 			if ((e->flags & ENGINE_AVAILABLE) && e->age != MAX_DAY) {
@@ -1058,6 +1075,8 @@ void EnginesMonthlyLoop()
 
 			/* Do not introduce invalid engines */
 			if (!e->IsEnabled()) continue;
+
+			if (e->intro_date > no_introduce_after) continue;
 
 			if (!(e->flags & ENGINE_AVAILABLE) && _date >= (e->intro_date + DAYS_IN_YEAR)) {
 				/* Introduce it to all companies */

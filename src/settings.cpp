@@ -1267,6 +1267,12 @@ static bool InvalidateVehTimetableWindow(int32 p1)
 	return true;
 }
 
+static bool ChangeTimetableInTicksMode(int32 p1)
+{
+	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+	return InvalidateVehTimetableWindow(p1);
+}
+
 static bool UpdateTimeSettings(int32 p1)
 {
 	SetupTimeSettings();
@@ -1295,6 +1301,12 @@ static bool ZoomMinMaxChanged(int32 p1)
 		UpdateFontHeightCache();
 		LoadStringWidthTable();
 	}
+	return true;
+}
+
+static bool InvalidateSettingsWindow(int32 p1)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 	return true;
 }
 
@@ -1497,6 +1509,12 @@ static bool DifficultyNoiseChange(int32 i)
 static bool DifficultyMoneyCheatMultiplayerChange(int32 i)
 {
 	DeleteWindowById(WC_CHEATS, 0);
+	return true;
+}
+
+static bool DifficultyRenameTownsMultiplayerChange(int32 i)
+{
+	SetWindowClassesDirty(WC_TOWN_VIEW);
 	return true;
 }
 

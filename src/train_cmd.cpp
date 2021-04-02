@@ -65,8 +65,18 @@ struct ChooseTrainTrackLookAheadState {
 	DestinationID reverse_dest = 0;       ///< Reverse station ID when CTTLASF_REVERSE_FOUND is set
 };
 
+/** Flags for ChooseTrainTrack */
+enum ChooseTrainTrackFlags {
+	CTTF_NONE                   = 0,      ///< No flags
+	CTTF_FORCE_RES              = 0x01,   ///< Force a reservation to be made
+	CTTF_MARK_STUCK             = 0x02,   ///< The train has to be marked as stuck when needed
+	CTTF_NON_LOOKAHEAD          = 0x04,   ///< Any lookahead should not be used, if necessary reset the lookahead state
+	CTTF_NO_LOOKAHEAD_VALIDATE  = 0x08,   ///< Don't validate the lookahead state as it has already been done
+};
+DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
+
 static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_reserve_vehicle_tile = false);
-static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool force_res, bool *p_got_reservation, bool mark_stuck, ChooseTrainTrackLookAheadState lookahead_state = {});
+static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, ChooseTrainTrackFlags flags, bool *p_got_reservation, ChooseTrainTrackLookAheadState lookahead_state = {});
 static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse);
 static bool TrainCheckIfLineEnds(Train *v, bool reverse = true);
 static bool TrainCanLeaveTile(const Train *v);
@@ -80,6 +90,11 @@ extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, c
 static void TrainEnterStation(Train *v, StationID station);
 static void UnreserveBridgeTunnelTile(TileIndex tile);
 static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile);
+
+inline void ClearLookAheadIfInvalid(Train *v)
+{
+	if (v->lookahead != nullptr && !ValidateLookAhead(v)) v->lookahead.reset();
+}
 
 static const byte _vehicle_initial_x_fract[4] = {10, 8, 4,  8};
 static const byte _vehicle_initial_y_fract[4] = { 8, 4, 8, 10};
@@ -447,8 +462,19 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 	}
 	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
 		/* The train is longer than the station, and we can run through the station to load/unload */
+		bool advance_beyond_platform_end = false;
+		if (update_train_state) {
+			/* Only advance beyond platform end if there is at least one vehicle with capacity in the active part of the train.
+			 * This avoids the entire train being beyond the platform end. */
+			for (Train *u = v; u != nullptr; u = u->Next()) {
+				if (u->cargo_cap != 0) {
+					advance_beyond_platform_end = true;
+					break;
+				}
+			}
+		}
 		for (Train *u = v; u != nullptr; u = u->Next()) {
-			if (update_train_state && overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
+			if (advance_beyond_platform_end && overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
 				bool skip = true;
 				for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
 					if (part->cargo_cap != 0) {
@@ -680,8 +706,8 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 				}
 				if (skip) {
 					for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
-						overhang -= u->gcache.cached_veh_length;
-						adjust += u->gcache.cached_veh_length;
+						overhang -= part->gcache.cached_veh_length;
+						adjust += part->gcache.cached_veh_length;
 					}
 					continue;
 				}
@@ -804,7 +830,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 					v_calc -= IntCbrt(-cb2);
 				}
 				int64 v_calc_sq = sqr(v_calc);
-				if (v_calc_sq < speed_sqr) {
+				if (v_calc_sq < speed_sqr && v_calc_sq > slope_speed_sqr) {
 					return std::max((int)REALISTIC_BRAKING_MIN_SPEED, v_calc);
 				}
 			}
@@ -835,7 +861,7 @@ static void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats
 }
 
 static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadItem &item, int &max_speed, int &advisory_max_speed,
-		VehicleOrderID &current_order_index, const Order *&order, const TrainDecelerationStats &stats, int current_position)
+		VehicleOrderID &current_order_index, const Order *&order, StationID &last_station_visited, const TrainDecelerationStats &stats, int current_position)
 {
 	auto limit_speed = [&](int position, int end_speed, int z) {
 		LimitSpeedFromLookAhead(max_speed, stats, current_position, position, end_speed, z - stats.z_pos);
@@ -847,10 +873,12 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 
 	switch (item.type) {
 		case TRLIT_STATION: {
-			if (order->ShouldStopAtStation(nullptr, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+			if (order->ShouldStopAtStation(last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
 				limit_advisory_speed(item.start + PredictStationStoppingLocation(v, order, item.end - item.start, item.data_id), 0, item.z_pos);
+				last_station_visited = item.data_id;
 			} else if (order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == item.data_id && (order->GetWaypointFlags() & OWF_REVERSE)) {
 				limit_advisory_speed(item.start + v->gcache.cached_total_length, 0, item.z_pos);
+				if (order->IsWaitTimetabled()) last_station_visited = item.data_id;
 			}
 			if (order->IsBaseStationOrder() && order->GetDestination() == item.data_id && v->GetNumOrders() > 0) {
 				current_order_index++;
@@ -1010,8 +1038,9 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			}
 			VehicleOrderID current_order_index = this->cur_real_order_index;
 			const Order *order = &(this->current_order);
+			StationID last_station_visited = this->last_station_visited;
 			for (const TrainReservationLookAheadItem &item : this->lookahead->items) {
-				ApplyLookAheadItem(this, item, max_speed, advisory_max_speed, current_order_index, order, stats, this->lookahead->current_position);
+				ApplyLookAheadItem(this, item, max_speed, advisory_max_speed, current_order_index, order, last_station_visited, stats, this->lookahead->current_position);
 			}
 			if (HasBit(this->lookahead->flags, TRLF_APPLY_ADVISORY)) {
 				max_speed = std::min(max_speed, advisory_max_speed);
@@ -2969,7 +2998,9 @@ static FindDepotData FindClosestTrainDepot(Train *v, int max_distance)
 
 	if (IsRailDepotTile(v->tile)) return FindDepotData(v->tile, 0);
 
-	PBSTileInfo origin = FollowTrainReservation(v);
+	if (v->lookahead != nullptr && !ValidateLookAhead(v)) return FindDepotData();
+
+	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	if (IsRailDepotTile(origin.tile)) return FindDepotData(origin.tile, 0);
 
 	switch (_settings_game.pf.pathfinder_for_trains) {
@@ -3072,7 +3103,7 @@ static void CheckNextTrainTile(Train *v)
 				if (ft.m_tiles_skipped == 0 && Rail90DegTurnDisallowedTilesFromTrackdir(ft.m_old_tile, ft.m_new_tile, ft.m_old_td)) {
 					tracks &= ~TrackCrossesTracks(TrackdirToTrack(ft.m_old_td));
 				}
-				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, tracks, false, nullptr, false);
+				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, tracks, CTTF_NONE, nullptr);
 			}
 		}
 	} else if (v->lookahead != nullptr && v->lookahead->reservation_end_tile == ft.m_new_tile && IsTileType(ft.m_new_tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationEntrance(ft.m_new_tile) &&
@@ -3602,6 +3633,8 @@ static bool TryReserveSafeTrack(const Train *v, TileIndex tile, Trackdir td, boo
 	}
 }
 
+const Order *_choose_train_track_saved_current_order = nullptr;
+
 /** This class will save the current order of a vehicle and restore it on destruction. */
 class VehicleOrderSaver {
 private:
@@ -3613,6 +3646,7 @@ private:
 	VehicleOrderID old_impl_index;
 	VehicleOrderID old_tt_index;
 	bool           suppress_implicit_orders;
+	bool           clear_saved_order_ptr;
 
 public:
 	VehicleOrderSaver(Train *_v) :
@@ -3625,6 +3659,12 @@ public:
 		old_tt_index(_v->cur_timetable_order_index),
 		suppress_implicit_orders(HasBit(_v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS))
 	{
+		if (_choose_train_track_saved_current_order == nullptr) {
+			_choose_train_track_saved_current_order = &(this->old_order);
+			this->clear_saved_order_ptr = true;
+		} else {
+			this->clear_saved_order_ptr = false;
+		}
 	}
 
 	~VehicleOrderSaver()
@@ -3636,6 +3676,7 @@ public:
 		this->v->cur_implicit_order_index = this->old_impl_index;
 		this->v->cur_timetable_order_index = this->old_tt_index;
 		SB(this->v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS, 1, suppress_implicit_orders ? 1: 0);
+		if (this->clear_saved_order_ptr) _choose_train_track_saved_current_order = nullptr;
 	}
 
 	/**
@@ -3705,8 +3746,9 @@ public:
 				HasStationTileRail(v->tile) && v->current_order.GetDestination() == GetStationIndex(v->tile) :
 				v->tile == v->dest_tile))) {
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->current_order.IsBaseStationOrder()) {
-				if (v->current_order.ShouldStopAtStation(nullptr, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
+				if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
 					SetBit(state.flags, CTTLASF_STOP_FOUND);
+					v->last_station_visited = v->current_order.GetDestination();
 				}
 			}
 			if (v->current_order.IsAnyLoadingType()) SetBit(state.flags, CTTLASF_STOP_FOUND);
@@ -3725,12 +3767,14 @@ public:
 				case TRLIT_STATION:
 					if (this->v->current_order.IsBaseStationOrder()) {
 						/* we've already seen this station in the lookahead, advance current order */
-						if (this->v->current_order.ShouldStopAtStation(nullptr, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+						if (this->v->current_order.ShouldStopAtStation(this->v, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
 							SetBit(state.flags, CTTLASF_STOP_FOUND);
+							this->v->last_station_visited = item.data_id;
 						} else if (this->v->current_order.IsType(OT_GOTO_WAYPOINT) && this->v->current_order.GetDestination() == item.data_id && (this->v->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 							if (!HasBit(state.flags, CTTLASF_REVERSE_FOUND)) {
 								SetBit(state.flags, CTTLASF_REVERSE_FOUND);
 								state.reverse_dest = item.data_id;
+								if (this->v->current_order.IsWaitTimetabled()) this->v->last_station_visited = item.data_id;
 							}
 						}
 						if (this->v->current_order.GetDestination() == item.data_id) {
@@ -3787,7 +3831,9 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 	}
 
 	if (found_signal) {
-		int64 distance = GetRealisticBrakingDistanceForSpeed(stats, signal_speed, 0, v->lookahead->reservation_end_z - signal_z);
+		int delta_z = v->lookahead->reservation_end_z - signal_z;
+		delta_z += (delta_z >> 2); // Slightly overestimate slope changes to compensate for non-uniform descents
+		int64 distance = GetRealisticBrakingDistanceForSpeed(stats, signal_speed, 0, delta_z);
 		if (signal_position + distance <= v->lookahead->reservation_end_position) return true;
 	}
 
@@ -3870,7 +3916,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 				}
 				SetTunnelBridgeExitSignalState(exit_tile, SIGNAL_STATE_GREEN);
 
-				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), force_res, nullptr, false, lookahead_state);
+				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), nullptr, lookahead_state);
 
 				if (reserved_bits == GetReservedTrackbits(ft.m_new_tile)) {
 					/* next tile is still not reserved, so unreserve exit and restore signal state */
@@ -3891,13 +3937,15 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 	CFollowTrackRail ft(v);
 	if (ft.Follow(tile, td) && HasLongReservePbsSignalOnTrackdir(v, ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits), !long_enough)) {
 		// We reserved up to a LR signal, reserve past it as well. recursion
-		ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), force_res, nullptr, false, lookahead_state);
+		ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), nullptr, lookahead_state);
 	}
 }
 
 static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_reserve_vehicle_tile)
 {
-	PBSTileInfo origin = FollowTrainReservation(v);
+	ClearLookAheadIfInvalid(v);
+
+	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	if (IsRailDepotTile(origin.tile)) return;
 
 	ChooseTrainTrackLookAheadState lookahead_state;
@@ -3921,15 +3969,14 @@ static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_r
  * @param tile The tile from which to start
  * @param enterdir
  * @param tracks
- * @param force_res Force a reservation to be made
+ * @param flags ChooseTrainTrackFlags flags
  * @param got_reservation [out] If the train has a reservation
- * @param mark_stuck The train has to be marked as stuck when needed
  * @return The track the train should take.
  */
-static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool force_res, bool *p_got_reservation, bool mark_stuck, ChooseTrainTrackLookAheadState lookahead_state)
+static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, ChooseTrainTrackFlags flags, bool *p_got_reservation, ChooseTrainTrackLookAheadState lookahead_state)
 {
 	Track best_track = INVALID_TRACK;
-	bool do_track_reservation = _settings_game.pf.reserve_paths || force_res;
+	bool do_track_reservation = _settings_game.pf.reserve_paths || (flags & CTTF_FORCE_RES);
 	Trackdir changed_signal = INVALID_TRACKDIR;
 
 	assert((tracks & ~TRACK_BIT_MASK) == 0);
@@ -3941,6 +3988,8 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 	TrackBits res_tracks = (TrackBits)(GetReservedTrackbits(tile) & DiagdirReachesTracks(enterdir));
 	/* Do we have a suitable reserved track? */
 	if (res_tracks != TRACK_BIT_NONE) return FindFirstTrack(res_tracks);
+
+	bool mark_stuck = (flags & CTTF_MARK_STUCK);
 
 	/* Quick return in case only one possible track is available */
 	if (KillFirstBit(tracks) == TRACK_BIT_NONE) {
@@ -3975,7 +4024,17 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		best_track = track;
 	}
 
-	PBSTileInfo   origin = FollowTrainReservation(v);
+	if ((flags & CTTF_NON_LOOKAHEAD) && v->lookahead != nullptr) {
+		/* We have reached a diverging junction with no reservation, yet we have a lookahead state.
+		 * Clear the lookahead state. */
+		v->lookahead.reset();
+	}
+
+	if (!(flags & CTTF_NO_LOOKAHEAD_VALIDATE)) {
+		ClearLookAheadIfInvalid(v);
+	}
+
+	PBSTileInfo   origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	PBSTileInfo   res_dest(tile, INVALID_TRACKDIR, false);
 	DiagDirection dest_enterdir = enterdir;
 	if (do_track_reservation) {
@@ -4046,7 +4105,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 	/* No possible reservation target found, we are probably lost. */
 	if (res_dest.tile == INVALID_TILE) {
 		/* Try to find any safe destination. */
-		PBSTileInfo path_end = FollowTrainReservation(v);
+		PBSTileInfo path_end = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 		if (TryReserveSafeTrack(v, path_end.tile, path_end.trackdir, false)) {
 			TrackBits res = GetReservedTrackbits(tile) & DiagdirReachesTracks(enterdir);
 			best_track = FindFirstTrack(res);
@@ -4066,7 +4125,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 	auto check_destination_seen = [&](TileIndex tile) {
 		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->current_order.IsBaseStationOrder() &&
 				HasStationTileRail(tile)) {
-			if (v->current_order.ShouldStopAtStation(nullptr, GetStationIndex(tile), IsRailWaypoint(tile))) {
+			if (v->current_order.ShouldStopAtStation(v, GetStationIndex(tile), IsRailWaypoint(tile))) {
 				SetBit(lookahead_state.flags, CTTLASF_STOP_FOUND);
 			} else if (v->current_order.IsType(OT_GOTO_WAYPOINT) && v->current_order.GetDestination() == GetStationIndex(tile) && (v->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 				if (!HasBit(lookahead_state.flags, CTTLASF_REVERSE_FOUND)) {
@@ -4126,7 +4185,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			FillTrainReservationLookAhead(v);
 			if (v->lookahead != nullptr) lookahead_state.order_items_start = (uint)v->lookahead->items.size();
 		}
-		TryLongReserveChooseTrainTrack(v, res_dest.tile, res_dest.trackdir, force_res, lookahead_state);
+		TryLongReserveChooseTrainTrack(v, res_dest.tile, res_dest.trackdir, (flags & CTTF_FORCE_RES), lookahead_state);
 	}
 
 	if (!HasBit(lookahead_state.flags, CTTLASF_NO_RES_VEH_TILE)) TryReserveRailTrack(v->tile, TrackdirToTrack(v->GetVehicleTrackdir()));
@@ -4148,6 +4207,8 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 {
 	assert(v->IsFrontEngine());
+
+	ClearLookAheadIfInvalid(v);
 
 	if (v->lookahead != nullptr && HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return true;
 
@@ -4240,7 +4301,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 
 	bool res_made = false;
 	if (reachable != TRACK_BIT_NONE) {
-		ChooseTrainTrack(v, new_tile, exitdir, reachable, true, &res_made, mark_as_stuck);
+		ChooseTrainTrack(v, new_tile, exitdir, reachable, CTTF_FORCE_RES | (mark_as_stuck ? CTTF_MARK_STUCK : CTTF_NONE), &res_made);
 	}
 
 	if (!res_made) {
@@ -5050,7 +5111,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				if (prev == nullptr) {
 					/* Currently the locomotive is active. Determine which one of the
 					 * available tracks to choose */
-					chosen_track = TrackToTrackBits(ChooseTrainTrack(v, gp.new_tile, enterdir, bits, false, nullptr, true));
+					chosen_track = TrackToTrackBits(ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD, nullptr));
 					assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x%X, 0x%X, 0x%X", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
 
 					if (v->force_proceed != TFP_NONE && IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile)) {
@@ -5485,8 +5546,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		}
 
 		/* Do not check on every tick to save some computing time. */
-		if (v->IsFrontEngine() && ((v->tick_counter % _settings_game.pf.path_backoff_interval == 0) ||
-				(v->lookahead != nullptr && v->cur_speed > 0 && v->lookahead->reservation_end_position <= v->lookahead->current_position + 12))) {
+		if (v->IsFrontEngine() && (v->lookahead != nullptr && v->cur_speed > 0 && v->lookahead->reservation_end_position <= v->lookahead->current_position + 24)) {
+			TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
+		} else if (v->IsFrontEngine() && (v->tick_counter % _settings_game.pf.path_backoff_interval == 0)) {
 			CheckNextTrainTile(v);
 		}
 	}

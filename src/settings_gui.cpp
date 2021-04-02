@@ -1770,6 +1770,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("station.never_expire_airports"));
 			limitations->Add(new SettingEntry("vehicle.never_expire_vehicles"));
 			limitations->Add(new SettingEntry("vehicle.no_expire_vehicles_after"));
+			limitations->Add(new SettingEntry("vehicle.no_introduce_vehicles_after"));
 			limitations->Add(new SettingEntry("vehicle.max_trains"));
 			limitations->Add(new SettingEntry("vehicle.max_roadveh"));
 			limitations->Add(new SettingEntry("vehicle.max_aircraft"));
@@ -1813,7 +1814,19 @@ static SettingsContainer &GetSettingsTree()
 			genworld->Add(new SettingEntry("game_creation.tgen_smoothness"));
 			genworld->Add(new SettingEntry("game_creation.variety"));
 			genworld->Add(new SettingEntry("game_creation.snow_line_height"));
-			genworld->Add(new SettingEntry("game_creation.amount_of_rivers"));
+			genworld->Add(new SettingEntry("game_creation.rainforest_line_height"));
+			SettingsPage *rivers = genworld->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES));
+			{
+				rivers->Add(new SettingEntry("game_creation.amount_of_rivers"));
+				rivers->Add(new SettingEntry("game_creation.min_river_length"));
+				rivers->Add(new SettingEntry("game_creation.river_route_random"));
+				rivers->Add(new SettingEntry("game_creation.rivers_top_of_hill"));
+				rivers->Add(new SettingEntry("game_creation.river_tropics_width"));
+				rivers->Add(new SettingEntry("game_creation.lake_size"));
+				rivers->Add(new SettingEntry("game_creation.lakes_allowed_in_deserts"));
+			}
+			genworld->Add(new SettingEntry("game_creation.amount_of_rocks"));
+			genworld->Add(new SettingEntry("game_creation.height_affects_rocks"));
 			genworld->Add(new SettingEntry("game_creation.tree_placer"));
 			genworld->Add(new SettingEntry("vehicle.road_side"));
 			genworld->Add(new SettingEntry("economy.larger_towns"));
@@ -1841,6 +1854,18 @@ static SettingsContainer &GetSettingsTree()
 			{
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
 				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
+				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
+				SettingsPage *town_zone = towns->Add(new SettingsPage(STR_CONFIG_SETTING_TOWN_ZONES));
+				{
+					town_zone->hide_callback = []() -> bool {
+						return !GetGameSettings().economy.town_zone_calc_mode;
+					};
+					town_zone->Add(new SettingEntry("economy.town_zone_0_mult"));
+					town_zone->Add(new SettingEntry("economy.town_zone_1_mult"));
+					town_zone->Add(new SettingEntry("economy.town_zone_2_mult"));
+					town_zone->Add(new SettingEntry("economy.town_zone_3_mult"));
+					town_zone->Add(new SettingEntry("economy.town_zone_4_mult"));
+				}
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.found_town"));
@@ -1928,6 +1953,7 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("economy.allow_shares"));
 			ai->Add(new SettingEntry("economy.min_years_for_shares"));
 			ai->Add(new SettingEntry("difficulty.money_cheat_in_multiplayer"));
+			ai->Add(new SettingEntry("difficulty.rename_towns_in_multiplayer"));
 		}
 
 		SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
