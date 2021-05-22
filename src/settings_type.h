@@ -129,6 +129,7 @@ struct GUISettings : public TimeSettings {
 	uint8  window_soft_limit;                ///< soft limit of maximum number of non-stickied non-vital windows (0 = no limit)
 	ZoomLevel zoom_min;                      ///< minimum zoom out level
 	ZoomLevel zoom_max;                      ///< maximum zoom out level
+	ZoomLevel sprite_zoom_min;               ///< maximum zoom level at which higher-resolution alternative sprites will be used (if available) instead of scaling a lower resolution sprite
 	byte   autosave;                         ///< how often should we do autosaves?
 	bool   threaded_saves;                   ///< should we do threaded saves?
 	bool   keep_all_autosave;                ///< name the autosave in a different way
@@ -217,7 +218,6 @@ struct GUISettings : public TimeSettings {
 	bool   show_depot_sell_gui;              ///< Show go to depot and sell in UI
 	bool   open_vehicle_gui_clone_share;     ///< Open vehicle GUI when share-cloning vehicle from depot GUI
 	uint8  linkgraph_colours;                ///< linkgraph overlay colours
-	bool   disable_vehicle_image_update;     ///< Disable NewGRFs from continuously updating vehicle images
 	uint8  vehicle_names;                    ///< Vehicle naming scheme
 	bool   shade_trees_on_slopes;            ///< Shade trees on slopes
 
@@ -343,7 +343,6 @@ struct NetworkSettings {
 	uint8  max_spectators;                                ///< maximum amount of spectators
 	Year   restart_game_year;                             ///< year the server restarts
 	uint8  min_active_clients;                            ///< minimum amount of active clients to unpause the game
-	uint8  server_lang;                                   ///< language of the server
 	bool   reload_cfg;                                    ///< reload the config file before restarting
 	char   last_host[NETWORK_HOSTNAME_LENGTH];            ///< IP address of the last joined server
 	uint16 last_port;                                     ///< port of the last joined server
@@ -360,8 +359,12 @@ struct GameCreationSettings {
 	uint8  map_y;                            ///< Y size of map
 	byte   land_generator;                   ///< the landscape generator
 	byte   oil_refinery_limit;               ///< distance oil refineries allowed from map edge
-	byte   snow_line_height;                 ///< the configured snow line height
+	byte   snow_line_height;                 ///< the configured snow line height (deduced from "snow_coverage")
+	byte   snow_coverage;                    ///< the amount of snow coverage on the map
 	byte   rainforest_line_height;           ///< the configured rainforest line height
+	byte   desert_coverage;                  ///< the amount of desert coverage on the map
+	byte   climate_threshold_mode;           ///< climate threshold mode
+	byte   heightmap_height;                 ///< highest mountain for heightmap (towards what it scales)
 	byte   tgen_smoothness;                  ///< how rough is the terrain from 0-3
 	byte   tree_placer;                      ///< the tree placer algorithm
 	byte   heightmap_rotation;               ///< rotation director for the heightmap
@@ -371,6 +374,7 @@ struct GameCreationSettings {
 	byte   water_borders;                    ///< bitset of the borders that are water
 	uint16 custom_town_number;               ///< manually entered number of towns
 	byte   variety;                          ///< variety level applied to TGP
+	byte   custom_terrain_type;              ///< manually entered height for TGP to aim for
 	byte   custom_sea_level;                 ///< manually entered percentage of water in the map
 	byte   min_river_length;                 ///< the minimum river length
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
@@ -385,7 +389,7 @@ struct GameCreationSettings {
 
 /** Settings related to construction in-game */
 struct ConstructionSettings {
-	uint8  max_heightlevel;                  ///< maximum allowed heightlevel
+	uint8  map_height_limit;                 ///< the maximum allowed heightlevel
 	bool   build_on_slopes;                  ///< allow building on slopes
 	bool   autoslope;                        ///< allow terraforming under things
 	uint16 max_bridge_length;                ///< maximum length of bridges
@@ -608,11 +612,16 @@ struct EconomySettings {
 	int8   town_growth_rate;                 ///< town growth rate
 	uint8  town_growth_cargo_transported;    ///< percentage of town growth rate which depends on proportion of transported cargo in the last month
 	bool   town_zone_calc_mode;              ///< calc mode for town zones
-	uint16 town_zone_0_mult;                 ///< multiplier for the size of zone 0
-	uint16 town_zone_1_mult;                 ///< multiplier for the size of zone 1
-	uint16 town_zone_2_mult;                 ///< multiplier for the size of zone 2
-	uint16 town_zone_3_mult;                 ///< multiplier for the size of zone 3
-	uint16 town_zone_4_mult;                 ///< multiplier for the size of zone 4
+	uint16 town_zone_0_mult;                 ///< multiplier for the size of town zone 0
+	uint16 town_zone_1_mult;                 ///< multiplier for the size of town zone 1
+	uint16 town_zone_2_mult;                 ///< multiplier for the size of town zone 2
+	uint16 town_zone_3_mult;                 ///< multiplier for the size of town zone 3
+	uint16 town_zone_4_mult;                 ///< multiplier for the size of town zone 4
+	uint16 city_zone_0_mult;                 ///< multiplier for the size of city zone 0
+	uint16 city_zone_1_mult;                 ///< multiplier for the size of city zone 1
+	uint16 city_zone_2_mult;                 ///< multiplier for the size of city zone 2
+	uint16 city_zone_3_mult;                 ///< multiplier for the size of city zone 3
+	uint16 city_zone_4_mult;                 ///< multiplier for the size of city zone 4
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayout town_layout;                  ///< select town layout, @see TownLayout

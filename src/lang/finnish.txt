@@ -756,7 +756,7 @@ STR_SMALLMAP_LEGENDA_WATER                                      :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_NO_OWNER                                   :{TINY_FONT}{BLACK}Ei omistajaa
 STR_SMALLMAP_LEGENDA_TOWNS                                      :{TINY_FONT}{BLACK}Taajamia
 STR_SMALLMAP_LEGENDA_INDUSTRIES                                 :{TINY_FONT}{BLACK}Teollisuutta
-STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLACK}Autiomaata
+STR_SMALLMAP_LEGENDA_DESERT                                     :{TINY_FONT}{BLACK}Aavikko
 STR_SMALLMAP_LEGENDA_SNOW                                       :{TINY_FONT}{BLACK}Lunta
 
 STR_SMALLMAP_TOOLTIP_TOGGLE_TOWN_NAMES_ON_OFF                   :{BLACK}Näytä kuntien nimet kartalla
@@ -954,7 +954,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malesian ringgi
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Vasemmanpuolinen liikenne
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Oikeanpuolinen liikenne
 
-STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Kuntien nimet
+STR_GAME_OPTIONS_TOWN_NAMES_FRAME                               :{BLACK}Kuntien nimet:
 STR_GAME_OPTIONS_TOWN_NAMES_DROPDOWN_TOOLTIP                    :{BLACK}Valitse kuntien nimien tyyli
 
 ############ start of townname region
@@ -994,6 +994,7 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :Kerran vuodessa
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}Kieli
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}Valitse käyttöliittymän kieli
+STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} ({NUM}{NBSP}% valmiina)
 
 STR_GAME_OPTIONS_FULLSCREEN                                     :{BLACK}Koko näyttö
 STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Valitse tämä pelataksesi kokoruututilassa
@@ -1001,6 +1002,14 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Valitse 
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Näytön tarkkuus
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Valitse käytettävä näytön tarkkuus
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :muu
+STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}×{NUM}
+
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Laitteistokiihdytys
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Valitse tämä, jos haluat, että OpenTTD yrittää käyttää laitteistokiihdytystä. Muutettu asetus tulee voimaan vasta pelin uudelleenkäynnistyksen jälkeen.
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Asetus tulee voimaan vasta pelin uudelleenkäynnistyksen jälkeen
+
+STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}Pystytahdistus
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Valitse tämä ottaaksesi käyttöön näytön pystytahdistuksen. Muutettu asetus tulee voimaan vasta pelin uudelleenkäynnistyksen jälkeen. Edellyttää, että laitteistokiihdytys on käytössä.
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Käyttöliittymän koko
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Valitse käyttöliittymäelementtien koko
@@ -1017,6 +1026,14 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(tunnista autom
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normaali
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Kaksinkertainen koko
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Nelinkertainen koko
+
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafiikka
+
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Näytön virkistystaajuus
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Valitse käytettävä näytönvirkistystaajuus
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :muu
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM} Hz
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Yli 60 Hz:n virkistystaajuudet saattavat vaikuttaa suorituskykyyn.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Perusgrafiikat
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Valitse käytettävät perusgrafiikat
@@ -1112,6 +1129,8 @@ STR_TERRAIN_TYPE_FLAT                                           :Tasainen
 STR_TERRAIN_TYPE_HILLY                                          :Kukkulainen
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Vuoristoinen
 STR_TERRAIN_TYPE_ALPINIST                                       :Vuorikiipeilijä
+STR_TERRAIN_TYPE_CUSTOM                                         :Oma korkeus
+STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Oma korkeus ({NUM})
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Salliva
 STR_CITY_APPROVAL_TOLERANT                                      :Suvaitseva
@@ -1124,6 +1143,7 @@ STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Asetukse
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Suodatinteksti:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Avaa kaikki
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Sulje kaikki
+STR_CONFIG_SETTING_RESET_ALL                                    :{BLACK}Palauta oletukset
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(selitystä ei saatavilla)
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Oletusarvo: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Asetuksen tyyppi: {ORANGE}{STRING}
@@ -1132,6 +1152,8 @@ STR_CONFIG_SETTING_TYPE_GAME_MENU                               :Pelin asetus (t
 STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :Pelin asetus (tallennetaan tallenteeseen; vaikuttaa vain nykyiseen peliin)
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :Yhtiön asetus (tallennetaan tallenteisiin; vaikuttaa vain uusiin peleihin)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Yhtiön asetus (tallennetaan tallennukseen; vaikuttaa vain nykyiseen yhtiöön)
+STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}Varoitus!
+STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}Tämä toiminto palauttaa pelin kaikki asetukset oletusarvoihinsa.{}Haluatko varmasti jatkaa?
 
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategoria:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Tyyppi:
@@ -1193,9 +1215,11 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Ottaa käyttö�
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Valtuuston asenne alueiden uudelleenjärjestelyyn: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Valitse, kuinka paljon yhtiöiden aiheuttama melu ja ympäristövahingot vaikuttavat niiden arvioihin sekä tuleviin rakennustoimiin alueella
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Kartan suurin sallittu korkeus: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Määritä suurin sallittu korkeus vuorille
-STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Tämä arvo ei kelpaa kartan suurimmaksi sallituksi korkeudeksi, sillä kartalla on ainakin yksi sitä korkeampi vuori
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :Kartan korkeusraja: {STRING}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :Aseta kartan maaston maksimikorkeus. Kun valittuna on ”(auto)”, sopiva arvo valitaan maaston luomisen jälkeen
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(auto)
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Tämä arvo ei kelpaa kartan korkeusrajaksi, sillä kartalla on ainakin yksi sitä korkeampi vuori
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Salli maaston muokkaaminen rakennusten, raiteiden jne. juurella: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Sallii maaston muokkaamisen rakennusten ja ratojen alta tuhoamatta niitä
 STR_CONFIG_SETTING_CATCHMENT                                    :Realistisemman kokoiset vaikutusalueet: {STRING}
@@ -1339,7 +1363,13 @@ STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Määritä, kui
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Suurin sallittu etäisyys kartan reunoilta öljyteollisuudelle: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Öljynjalostamojen ja öljylauttojen suurin etäisyys kartan reunasta. Saarikartoilla tämä takaa sen, että ne ovat lähellä rannikkoa. Yli 256 ruudun kartoilla tätä arvoa suurennetaan suhteessa kartan kokoon.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Lumirajan korkeus: {STRING}
-STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Määritä, millä korkeudella lumiraja on pohjoisessa maastotyypissä. Lumi vaikuttaa teollisuuslaitosten luontiin sekä kuntien kasvuedellytyksiin
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Määritä, millä korkeudella lumiraja on pohjoisessa maastotyypissä. Lumi vaikuttaa teollisuuslaitosten luontiin sekä kuntien kasvuedellytyksiin. Voidaan muuttaa vain Skenaariomuokkaimessa, muuten lasketaan ”lumen peiton” perusteella
+STR_CONFIG_SETTING_SNOW_COVERAGE                                :Lumen peitto: {STRING}
+STR_CONFIG_SETTING_SNOW_COVERAGE_HELPTEXT                       :Säätele lumen määrän suuruusluokkaa pohjoisessa maastossa. Lumi vaikuttaa myös teollisuuden luontiin ja kuntien kasvuedellytyksiin. Käytetään vain karttaa luodessa. Juuri merenpinnan yläpuolella oleva maa on aina lumetonta
+STR_CONFIG_SETTING_SNOW_COVERAGE_VALUE                          :{NUM}{NBSP}%
+STR_CONFIG_SETTING_DESERT_COVERAGE                              :Aavikon peitto: {STRING}
+STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :Säätele aavikon määrän suuruusluokkaa subtrooppisessa maastossa. Aavikko vaikuttaa myös teollisuuden luontiin. Käytetään vain karttaa luodessa
+STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}{NBSP}%
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Maaston epätasaisuus: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Vain TerraGenesis) Määritä mäkien tiheys: Tasaisessa maastossa mäet ovat laajempia ja niitä on vähemmän. Epätasaisessa maastossa on enemmän mäkiä, mikä voi saada maaston näyttämään itseään toistavalta
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Erittäin tasainen
@@ -1649,12 +1679,17 @@ STR_CONFIG_SETTING_ZOOM_MIN                                     :Suurin sallittu
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Suurin mahdollinen lähennystaso näkymille. Huomioi, että suuret lähennystasot vaativat enemmän muistia
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Suurin sallittu pienennystaso: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Pienin mahdollinen lähennystaso näkymille. Pienet lähennystasot voivat aiheuttaa suorituskykyongelmia
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Korkein käytettävä sprite-resoluutio: {STRING}
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Rajoita suurinta spriteille käytettävää resoluutiota. Resoluution rajoittaminen estää korkean tarkkuuden grafiikoiden käyttämisen vaikka niitä olisi saatavilla. Tämä voi auttaa pitämään pelin ulkoasun yhtenäisenä käytettäessä sekaisin GRF-tiedostoja, joista osalla on ja osalla ei ole korkean tarkkuuden grafiikoita.
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Tavallinen
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Kuntien kasvunopeus: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Kunnan kasvunopeus
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Ei kasvua
@@ -1787,6 +1822,10 @@ STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ohit
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ohitetaan musiikkipaketti ”{STRING}”: ei löydetty
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Muisti lopussa
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES} sprite-välimuistin varaaminen epäonnistui. Sprite-välimuistin kooksi valittiin {BYTES}. Tämä heikentää OpenTTD:n suorituskykyä. Vähentääksesi muistivaatimuksia voit kokeilla poistaa käytöstä 32bpp-grafiikat ja/tai lähennystasoja
+
+# Video initalization errors
+STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Virhe näyttöasetuksissa…
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}… yhteensopivaa grafiikkasuoritinta ei löytynyt. Laitteistokiihdytystä ei käytetä.
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -1953,6 +1992,9 @@ STR_FACE_TIE                                                    :Solmio:
 STR_FACE_EARRING                                                :Korvakoru:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Vaihda solmio tai korvakoru
 
+STR_NETWORK_SERVER_VISIBILITY_PRIVATE                           :Yksityinen
+STR_NETWORK_SERVER_VISIBILITY_PUBLIC                            :Julkinen
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Moninpeli
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Pelaajan nimi
@@ -2015,10 +2057,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Nimi nä
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Aseta salasana
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Jos peliin ei halua ulkopuolisia, voi sen suojata salasanalla
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Mainostettu
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Valitse mainostettu (internet) tai ei-mainostettu (paikallisverkko, LAN) peli
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Ei
-STR_NETWORK_START_SERVER_ADVERTISED                             :Kyllä
+STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Näkyvyys
+STR_NETWORK_START_SERVER_VISIBILITY_TOOLTIP                     :{BLACK}Näkyykö palvelimesi muille julkisessa listauksessa
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} asiakas{P "" ta}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Pelaajien enimmäismäärä:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Pelaajien enimmäismäärä. Pelissä voi olla myös vähemmän pelaajia
@@ -2032,46 +2072,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Puhuttu 
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Toiset pelaajat tietävät tästä, mitä kieltä palvelimella puhutaan
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Syötä nimi verkkopelille
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :mikä tahansa
-STR_NETWORK_LANG_ENGLISH                                        :englanti
-STR_NETWORK_LANG_GERMAN                                         :saksa
-STR_NETWORK_LANG_FRENCH                                         :ranska
-STR_NETWORK_LANG_BRAZILIAN                                      :brasilianportugali
-STR_NETWORK_LANG_BULGARIAN                                      :bulgaria
-STR_NETWORK_LANG_CHINESE                                        :kiina
-STR_NETWORK_LANG_CZECH                                          :tšekki
-STR_NETWORK_LANG_DANISH                                         :tanska
-STR_NETWORK_LANG_DUTCH                                          :hollanti
-STR_NETWORK_LANG_ESPERANTO                                      :esperanto
-STR_NETWORK_LANG_FINNISH                                        :suomi
-STR_NETWORK_LANG_HUNGARIAN                                      :unkari
-STR_NETWORK_LANG_ICELANDIC                                      :islanti
-STR_NETWORK_LANG_ITALIAN                                        :italia
-STR_NETWORK_LANG_JAPANESE                                       :japani
-STR_NETWORK_LANG_KOREAN                                         :korea
-STR_NETWORK_LANG_LITHUANIAN                                     :liettua
-STR_NETWORK_LANG_NORWEGIAN                                      :norja
-STR_NETWORK_LANG_POLISH                                         :puola
-STR_NETWORK_LANG_PORTUGUESE                                     :portugali
-STR_NETWORK_LANG_ROMANIAN                                       :romania
-STR_NETWORK_LANG_RUSSIAN                                        :venäjä
-STR_NETWORK_LANG_SLOVAK                                         :slovakia
-STR_NETWORK_LANG_SLOVENIAN                                      :sloveeni
-STR_NETWORK_LANG_SPANISH                                        :espanja
-STR_NETWORK_LANG_SWEDISH                                        :ruotsi
-STR_NETWORK_LANG_TURKISH                                        :turkki
-STR_NETWORK_LANG_UKRAINIAN                                      :ukraina
-STR_NETWORK_LANG_AFRIKAANS                                      :afrikaans
-STR_NETWORK_LANG_CROATIAN                                       :kroatia
-STR_NETWORK_LANG_CATALAN                                        :katalaani
-STR_NETWORK_LANG_ESTONIAN                                       :viro
-STR_NETWORK_LANG_GALICIAN                                       :galego
-STR_NETWORK_LANG_GREEK                                          :kreikka
-STR_NETWORK_LANG_LATVIAN                                        :latvia
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Moninpeliaula
@@ -2120,19 +2120,46 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Pura yht
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Palvelin on suojattu. Anna salasana
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Yhtiö on suojattu. Anna salasana
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Asiakaslista
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Asiakaslista
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Katsele
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Uusi yhtiö
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Kytkeytyneet pelaajat
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Potkaise
-STR_NETWORK_CLIENTLIST_BAN                                      :Kiellä
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Puhu kaikille
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Puhu yhtiölle
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Yksityinen viesti
+STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}Moninpeli
+STR_NETWORK_CLIENT_LIST_SERVER                                  :{BLACK}Palvelin
+STR_NETWORK_CLIENT_LIST_SERVER_NAME                             :{BLACK}Nimi
+STR_NETWORK_CLIENT_LIST_SERVER_NAME_TOOLTIP                     :{BLACK}Sen palvelimen nimi, jolla pelaat
+STR_NETWORK_CLIENT_LIST_SERVER_NAME_EDIT_TOOLTIP                :{BLACK}Muokkaa palvelimesi nimeä
+STR_NETWORK_CLIENT_LIST_SERVER_NAME_QUERY_CAPTION               :Palvelimen nimi
+STR_NETWORK_CLIENT_LIST_SERVER_VISIBILITY                       :{BLACK}Näkyvyys
+STR_NETWORK_CLIENT_LIST_SERVER_VISIBILITY_TOOLTIP               :{BLACK}Näkyykö palvelimesi muille julkisessa listauksessa
+STR_NETWORK_CLIENT_LIST_PLAYER                                  :{BLACK}Pelaaja
+STR_NETWORK_CLIENT_LIST_PLAYER_NAME                             :{BLACK}Nimi
+STR_NETWORK_CLIENT_LIST_PLAYER_NAME_TOOLTIP                     :{BLACK}Pelaajanimesi
+STR_NETWORK_CLIENT_LIST_PLAYER_NAME_EDIT_TOOLTIP                :{BLACK}Muokkaa pelaajanimeäsi
+STR_NETWORK_CLIENT_LIST_PLAYER_NAME_QUERY_CAPTION               :Pelaajanimesi
+STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP                    :{BLACK}Tähän asiakkaaseen kohdistettavat ylläpitotoiminnot
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP                   :{BLACK}Tähän yhtiöön kohdistettavat ylläpitotoiminnot
+STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP                            :{BLACK}Liity tähän yhtiöön
+STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP                     :{BLACK}Lähetä tälle pelaajalle viesti
+STR_NETWORK_CLIENT_LIST_CHAT_COMPANY_TOOLTIP                    :{BLACK}Lähetä viesti kaikille tämän yhtiön pelaajille
+STR_NETWORK_CLIENT_LIST_CHAT_SPECTATOR_TOOLTIP                  :{BLACK}Lähetä viesti kaikille katsojille
+STR_NETWORK_CLIENT_LIST_SPECTATORS                              :Katsojat
+STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Uusi yhtiö)
+STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Perusta uusi yhtiö ja liity siihen
+STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}Tämä olet sinä
+STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}Tämä on pelin ylläpitäjä
+
+STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Potki
+STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Estä
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Poista
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Poista salasanalukitus
+
+STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Ylläpitäjän toiminta
+STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Haluatko varmasti potkia pelaajan ”{STRING}” pelistä?
+STR_NETWORK_CLIENT_LIST_ASK_CLIENT_BAN                          :{YELLOW}Haluatko varmasti estää pelaajan ”{STRING}”?
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_RESET                       :{YELLOW}Haluatko varmasti poistaa yhtiön ”{COMPANY}”?
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Haluatko varmasti nollata yhtiön ”{COMPANY}” salasanan?
 
 STR_NETWORK_SERVER                                              :Palvelin
 STR_NETWORK_CLIENT                                              :Pelaaja
@@ -2177,6 +2204,7 @@ STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}Palvelin
 STR_NETWORK_ERROR_CLIENT_START                                  :{WHITE}Yhdistäminen ei onnistunut
 STR_NETWORK_ERROR_TIMEOUT                                       :{WHITE}Yhteys nro {NUM} aikakatkaistiin
 STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}Protokollavirhe tapahtui ja yhteys suljettiin
+STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Et ole asettanut pelaajanimeäsi. Nimen voi asettaa moninpeli-ikkunan ylälaidassa.
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Tämän asiakkaan versio ei vastaa palvelimen versiota
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Väärä salasana
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Palvelin on täynnä
@@ -2189,6 +2217,7 @@ STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}Käytit 
 STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}Tietokoneesi on liian hidas pysyäkseen palvelimen tahdissa
 STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}Kartan lataus kesti liian kauan
 STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Palvelimelle liittyminen kesti liian kauan
+STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Pelaajanimesi ei kelpaa
 
 ############ Leave those lines in this order!!
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :yleinen virhe
@@ -2211,6 +2240,7 @@ STR_NETWORK_ERROR_CLIENT_TIMEOUT_PASSWORD                       :salasanaa ei va
 STR_NETWORK_ERROR_CLIENT_TIMEOUT_COMPUTER                       :yleinen aikakatkaisu
 STR_NETWORK_ERROR_CLIENT_TIMEOUT_MAP                            :kartan lataaminen kesti liian kauan
 STR_NETWORK_ERROR_CLIENT_TIMEOUT_JOIN                           :kartan käsittely kesti liian kauan
+STR_NETWORK_ERROR_CLIENT_INVALID_CLIENT_NAME                    :Epäkelpo asiakasnimi
 ############ End of leave-in-this-order
 
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mahdollinen yhteyden menetys
@@ -2316,7 +2346,11 @@ STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Ei voitu
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Puuttuvat grafiikat
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD vaatii toimiakseen grafiikat, mutta niitä ei löydetty. Sallitaanko grafiikoiden lataus ja asennus?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Kyllä, lataa grafiiikat
-STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ei, sulje OpenTTD
+STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ei, lopeta OpenTTD
+
+STR_MISSING_GRAPHICS_ERROR_TITLE                                :{WHITE}Lataus epäonnistui
+STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Grafiikoiden lataus epäonnistui.{}Lataa grafiikat manuaalisesti.
+STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Lopeta OpenTTD
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Läpinäkyvyysasetukset
@@ -2496,7 +2530,7 @@ STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Rakenna 
 STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}Sijoita poiju, jota voi käyttää reittipisteenä. Shift vaihtaa rakennustilan ja kustannusarvion välillä
 STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}Rakenna akvedukti. Shift vaihtaa rakennustilan ja kustannusarvion välillä
 STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}Määrittele vesialue.{}Tee kanava, paitsi jos Ctrl on painettuna merenpinnalla. Tällöin meri laajenee ympäristöön
-STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Sijoita jokia
+STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Sijoita jokia. Ctrl valitsee alueen vinottain.
 
 # Ship depot construction window
 STR_DEPOT_BUILD_SHIP_CAPTION                                    :{WHITE}Telakan suunta
@@ -2867,9 +2901,17 @@ STR_MAPGEN_BY                                                   :{BLACK}×
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Kuntien määrä:
 STR_MAPGEN_DATE                                                 :{BLACK}Päivämäärä:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Teollisuuden määrä:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Suurin sallittu kartan korkeus:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Kasvata suurinta sallittua vuorten korkeutta yhdellä
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Vähennä suurinta sallittua vuorten korkeutta yhdellä
+STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Korkein huippu:
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Korota kartan korkeimman huipun maksimikorkeutta yhdellä
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Madalla kartan korkeimman huipun maksimikorkeutta yhdellä
+STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Lumen peitto:
+STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Kasvata lumen peittoa 10 prosentilla
+STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Vähennä lumen peittoa 10 prosentilla
+STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}{NBSP}%
+STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Aavikon peitto:
+STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Kasvata aavikon peittoa 10 prosentilla
+STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Vähennä aavikon peittoa 10 prosentilla
+STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}{NBSP}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Lumirajan korkeus:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Siirrä lumirajaa yksi taso ylöspäin
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Siirrä lumirajaa yksi taso alaspäin
@@ -2898,7 +2940,10 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Korkeusk
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Koko:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM}×{NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Muuta suurinta sallittua kartan korkeutta
+STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Huipun tavoitekorkeus
+STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Korkein huippu
+STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Lumen peitto (%)
+STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Aavikon peitto (%)
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Vaihda lumirajan korkeutta
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Vaihda aloitusvuosi
 
@@ -3177,26 +3222,27 @@ STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Rahoita uusia r
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Osta yksinoikeudet kuljetuksiin
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Lahjo viranomaisia
 
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Käynnistä pieni mainoskampanja hoikutellaksesi lisää matkustajia ja rahtia kuljetuspalveluihisi.{}Kustannus: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Käynnistä keskikokoinen mainoskampanja houkutellaksesi lisää matkustajia ja rahtia kuljetuspalveluihisi.{}Kustannus: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Käynnistä suuri mainoskampanja hoikutellaksesi lisää matkustajia ja rahtia kuljetuspalveluihisi.{}Kustannus: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Rahoita tieverkon uudelleenrakentamista. Aiheuttaa huomattavaa häiriötä tieliikenteessä jopa kuuden kuukauden ajan.{}Kustannus: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Rakenna patsas yhtiösi kunniaksi.{}Kustannus: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Rahoita uusien liikerakennusten rakentamista kunnassa.{}Kustannus: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Osta vuoden yksinoikeudet kunnan liikennöintiin. Paikallisviranomaiset eivät salli muiden yhtiöiden kuljettaa matkustajia ja rahtia.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Käynnistä pieni mainoskampanja hoikutellaksesi lisää matkustajia ja rahtia kuljetuspalveluihisi.{}Tämä kasvattaa tilapäisesti asemien arvioita pienellä säteellä kunnan keskustan ympärillä.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Käynnistä keskikokoinen mainoskampanja houkutellaksesi lisää matkustajia ja rahtia kuljetuspalveluihisi.{}Tämä kasvattaa tilapäisesti asemien arvioita keskikokoisella säteellä kunnan keskustan ympärillä.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Käynnistä suuri mainoskampanja hoikutellaksesi lisää matkustajia ja rahtia kuljetuspalveluihisi.{}Tämä kasvattaa tilapäisesti asemien arvioita suurella säteellä kunnan keskustan ympärillä.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Rahoita tieverkon uudelleenrakentamista.{}Aiheuttaa huomattavaa häiriötä tieliikenteessä jopa kuuden kuukauden ajan.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Rakenna patsas yhtiösi kunniaksi.{}Parantaa asemien arvioita pysyvästi tässä kunnassa.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Rahoita uusien liikerakennusten rakentamista kunnassa.{}Tämä kiihdyttää tämän kunnan kasvua tilapäisesti.{}Kustannus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Osta vuoden yksinoikeudet kunnan liikennöintiin.{}Tällöin paikallisviranomaiset eivät salli matkustajien ja rahdin käyttää kilpailijoittesi asemia.{}Kustannus: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Lahjo viranomaisia lisätäksesi arviotasi; rangaistus voi olla kuitenkin suuri, jos jäät kiinni.{}Kustannus: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Tavoitteet
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Maailmanlaajuiset tavoitteet
 STR_GOALS_SPECTATOR                                             :Maailmanlaajuiset tavoitteet
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Maailmanlaajuiset tavoitteet:
+STR_GOALS_GLOBAL_BUTTON                                         :{BLACK}Maailmanlaajuiset
+STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Näytä maailmanlaajuiset tavoitteet
+STR_GOALS_COMPANY_BUTTON                                        :{BLACK}Yhtiö
+STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Näytä yhtiön tavoitteet
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Ei mitään -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Ei saatavilla -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Yhtiön tavoitteet:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Keskitä päänäkymä laitokseen/kuntaan/ruutuun napsauttamalla tavoitetta. Ctrl+napsautus avaa uuden näkymäikkunan laitoksen/kunnan/ruudun sijaintiin.
 
 # Goal question window
@@ -3567,6 +3613,7 @@ STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Moottoro
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Sovitettavissa: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Kaikki rahtityypit
 STR_PURCHASE_INFO_NONE                                          :Ei mitään
+STR_PURCHASE_INFO_ENGINES_ONLY                                  :Vain veturit
 STR_PURCHASE_INFO_ALL_BUT                                       :Kaikki paitsi {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Suurin vetovoima: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Toimintasäde: {GOLD}{COMMA} ruutua
@@ -4314,6 +4361,7 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Vain til
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Suuri kuvankaappaus
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Kuvankaappauksen tarkkuus tulee olemaan {COMMA} x {COMMA} pikseliä. Kuvankaappauksen ottaminen voi kestää jonkin aikaa. Haluatko jatkaa?
 
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}Korkeuskartta tallennettu nimellä ”{STRING}”. Korkein huippu on {NUM}
 STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Kuvakaappaus tallennettu nimellä ”{STRING}”.
 STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Kuvakaappaus epäonnistui!
 

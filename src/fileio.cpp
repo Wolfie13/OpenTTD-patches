@@ -241,6 +241,7 @@ static_assert(lengthof(_subdirs) == NUM_SUBDIRS);
  * current operating system.
  */
 std::array<std::string, NUM_SEARCHPATHS> _searchpaths;
+std::vector<Searchpath> _valid_searchpaths;
 std::array<TarList, NUM_SUBDIRS> _tar_list;
 TarFileList _tar_filelist[NUM_SUBDIRS];
 
@@ -252,9 +253,17 @@ static TarLinkList _tar_linklist[NUM_SUBDIRS]; ///< List of directory links
  * @param sp the search path to check
  * @return true if the search path is valid
  */
-bool IsValidSearchPath(Searchpath sp)
+static bool IsValidSearchPath(Searchpath sp)
 {
 	return sp < _searchpaths.size() && !_searchpaths[sp].empty();
+}
+
+static void FillValidSearchPaths()
+{
+	_valid_searchpaths.clear();
+	for (Searchpath sp = SP_FIRST_DIR; sp < NUM_SEARCHPATHS; sp++) {
+		if (IsValidSearchPath(sp)) _valid_searchpaths.emplace_back(sp);
+	}
 }
 
 /**
@@ -279,7 +288,7 @@ bool FioCheckFileExists(const std::string &filename, Subdirectory subdir)
  */
 bool FileExists(const std::string &filename)
 {
-	return access(OTTD2FS(filename.c_str()), 0) == 0;
+	return access(OTTD2FS(filename).c_str(), 0) == 0;
 }
 
 /**
@@ -298,10 +307,9 @@ void FioFCloseFile(FILE *f)
  */
 std::string FioFindFullPath(Subdirectory subdir, const char *filename)
 {
-	Searchpath sp;
 	assert(subdir < NUM_SUBDIRS);
 
-	FOR_ALL_SEARCHPATHS(sp) {
+	for (Searchpath sp : _valid_searchpaths) {
 		std::string buf = FioGetDirectory(sp, subdir);
 		buf += filename;
 		if (FileExists(buf)) return buf;
@@ -326,10 +334,8 @@ std::string FioGetDirectory(Searchpath sp, Subdirectory subdir)
 
 std::string FioFindDirectory(Subdirectory subdir)
 {
-	Searchpath sp;
-
 	/* Find and return the first valid directory */
-	FOR_ALL_SEARCHPATHS(sp) {
+	for (Searchpath sp : _valid_searchpaths) {
 		std::string ret = FioGetDirectory(sp, subdir);
 		if (FileExists(ret)) return ret;
 	}
@@ -358,7 +364,7 @@ static FILE *FioFOpenFileSp(const std::string &filename, const char *mode, Searc
 	}
 
 #if defined(_WIN32)
-	if (mode[0] == 'r' && GetFileAttributes(OTTD2FS(buf.c_str())) == INVALID_FILE_ATTRIBUTES) return nullptr;
+	if (mode[0] == 'r' && GetFileAttributes(OTTD2FS(buf).c_str()) == INVALID_FILE_ATTRIBUTES) return nullptr;
 #endif
 
 	f = fopen(buf.c_str(), mode);
@@ -409,11 +415,10 @@ FILE *FioFOpenFileTar(const TarFileListEntry &entry, size_t *filesize)
 FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory subdir, size_t *filesize, std::string *output_filename)
 {
 	FILE *f = nullptr;
-	Searchpath sp;
 
 	assert(subdir < NUM_SUBDIRS || subdir == NO_DIRECTORY);
 
-	FOR_ALL_SEARCHPATHS(sp) {
+	for (Searchpath sp : _valid_searchpaths) {
 		f = FioFOpenFileSp(filename, mode, sp, subdir, filesize, output_filename);
 		if (f != nullptr || subdir == NO_DIRECTORY) break;
 	}
@@ -512,11 +517,11 @@ void FioCreateDirectory(const std::string &name)
 	/* Ignore directory creation errors; they'll surface later on, and most
 	 * of the time they are 'directory already exists' errors anyhow. */
 #if defined(_WIN32)
-	CreateDirectory(OTTD2FS(name.c_str()), nullptr);
+	CreateDirectory(OTTD2FS(name).c_str(), nullptr);
 #elif defined(OS2) && !defined(__INNOTEK_LIBC__)
-	mkdir(OTTD2FS(name.c_str()));
+	mkdir(OTTD2FS(name).c_str());
 #else
-	mkdir(OTTD2FS(name.c_str()), 0755);
+	mkdir(OTTD2FS(name).c_str(), 0755);
 #endif
 }
 
@@ -1136,6 +1141,7 @@ std::string _personal_dir;
 void DeterminePaths(const char *exe)
 {
 	DetermineBasePaths(exe);
+	FillValidSearchPaths();
 
 #ifdef USE_XDG
 	std::string config_home;
@@ -1154,8 +1160,7 @@ void DeterminePaths(const char *exe)
 	AppendPathSeparator(config_home);
 #endif
 
-	Searchpath sp;
-	FOR_ALL_SEARCHPATHS(sp) {
+	for (Searchpath sp : _valid_searchpaths) {
 		if (sp == SP_WORKING_DIR && !_do_scan_working_directory) continue;
 		DEBUG(misc, 4, "%s added as search path", _searchpaths[sp].c_str());
 	}
@@ -1228,6 +1233,7 @@ void DeterminePaths(const char *exe)
 	/* If we have network we make a directory for the autodownloading of content */
 	_searchpaths[SP_AUTODOWNLOAD_DIR] = _personal_dir + "content_download" PATHSEP;
 	FioCreateDirectory(_searchpaths[SP_AUTODOWNLOAD_DIR]);
+	FillValidSearchPaths();
 
 	/* Create the directory for each of the types of content */
 	const Subdirectory dirs[] = { SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR };
@@ -1265,7 +1271,7 @@ void SanitizeFilename(char *filename)
  * @return Pointer to new memory containing the loaded data, or \c nullptr if loading failed.
  * @note If \a maxsize less than the length of the file, loading fails.
  */
-std::unique_ptr<char> ReadFileToMem(const std::string &filename, size_t &lenp, size_t maxsize)
+std::unique_ptr<char[]> ReadFileToMem(const std::string &filename, size_t &lenp, size_t maxsize)
 {
 	FILE *in = fopen(filename.c_str(), "rb");
 	if (in == nullptr) return nullptr;
@@ -1277,10 +1283,7 @@ std::unique_ptr<char> ReadFileToMem(const std::string &filename, size_t &lenp, s
 	fseek(in, 0, SEEK_SET);
 	if (len > maxsize) return nullptr;
 
-	/* std::unique_ptr assumes new/delete unless a custom deleter is supplied.
-	 * As we don't want to have to carry that deleter all over the place, use
-	 * new directly to allocate the memory instead of malloc. */
-	std::unique_ptr<char> mem(static_cast<char *>(::operator new(len + 1)));
+	std::unique_ptr<char[]> mem = std::make_unique<char[]>(len + 1);
 
 	mem.get()[len] = 0;
 	if (fread(mem.get(), len, 1, in) != 1) return nullptr;
@@ -1324,7 +1327,7 @@ static uint ScanPath(FileScanner *fs, const char *extension, const char *path, s
 	if (path == nullptr || (dir = ttd_opendir(path)) == nullptr) return 0;
 
 	while ((dirent = readdir(dir)) != nullptr) {
-		const char *d_name = FS2OTTD(dirent->d_name);
+		std::string d_name = FS2OTTD(dirent->d_name);
 
 		if (!FiosIsValidFile(path, dirent, &sb)) continue;
 
@@ -1334,7 +1337,7 @@ static uint ScanPath(FileScanner *fs, const char *extension, const char *path, s
 		if (S_ISDIR(sb.st_mode)) {
 			/* Directory */
 			if (!recursive) continue;
-			if (strcmp(d_name, ".") == 0 || strcmp(d_name, "..") == 0) continue;
+			if (d_name == "." || d_name == "..") continue;
 			AppendPathSeparator(filename);
 			num += ScanPath(fs, extension, filename.c_str(), basepath_length, recursive);
 		} else if (S_ISREG(sb.st_mode)) {
@@ -1354,12 +1357,12 @@ static uint ScanPath(FileScanner *fs, const char *extension, const char *path, s
  * @param extension the extension of files to search for.
  * @param tar       the tar to search in.
  */
-static uint ScanTar(FileScanner *fs, const char *extension, TarFileList::iterator tar)
+static uint ScanTar(FileScanner *fs, const char *extension, const TarFileList::value_type &tar)
 {
 	uint num = 0;
-	const auto &filename = (*tar).first;
+	const auto &filename = tar.first;
 
-	if (MatchesExtension(extension, filename.c_str()) && fs->AddFile(filename, 0, (*tar).second.tar_filename)) num++;
+	if (MatchesExtension(extension, filename.c_str()) && fs->AddFile(filename, 0, tar.second.tar_filename)) num++;
 
 	return num;
 }
@@ -1377,11 +1380,9 @@ uint FileScanner::Scan(const char *extension, Subdirectory sd, bool tars, bool r
 {
 	this->subdir = sd;
 
-	Searchpath sp;
-	TarFileList::iterator tar;
 	uint num = 0;
 
-	FOR_ALL_SEARCHPATHS(sp) {
+	for (Searchpath sp : _valid_searchpaths) {
 		/* Don't search in the working directory */
 		if (sp == SP_WORKING_DIR && !_do_scan_working_directory) continue;
 
@@ -1390,7 +1391,7 @@ uint FileScanner::Scan(const char *extension, Subdirectory sd, bool tars, bool r
 	}
 
 	if (tars && sd != NO_DIRECTORY) {
-		FOR_ALL_TARS(tar, sd) {
+		for (const auto &tar : _tar_filelist[sd]) {
 			num += ScanTar(this, extension, tar);
 		}
 	}

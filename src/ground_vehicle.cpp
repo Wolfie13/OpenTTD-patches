@@ -102,16 +102,34 @@ void GroundVehicle<T, Type>::CargoChanged()
 {
 	assert(this->First() == this);
 	uint32 weight = 0;
+	uint64 mass_offset = 0;
+	uint32 veh_offset = 0;
+	uint16 articulated_weight = 0;
 
 	for (T *u = T::From(this); u != nullptr; u = u->Next()) {
-		uint32 current_weight = u->GetWeight();
-		if (Type == VEH_TRAIN) Train::From(u)->tcache.cached_veh_weight = current_weight;
+		uint32 current_weight = u->GetCargoWeight();
+		if (u->IsArticulatedPart()) {
+			current_weight += articulated_weight;
+		} else {
+			uint16 engine_weight = u->GetWeightWithoutCargo();
+			uint part_count = u->GetEnginePartsCount();
+			articulated_weight = engine_weight / part_count;
+			current_weight += articulated_weight + (engine_weight % part_count);
+		}
+		if (Type == VEH_TRAIN) {
+			Train::From(u)->tcache.cached_veh_weight = current_weight;
+			mass_offset += current_weight * (veh_offset + (Train::From(u)->gcache.cached_veh_length / 2));
+			veh_offset += Train::From(u)->gcache.cached_veh_length;
+		}
 		weight += current_weight;
 		/* Slope steepness is in percent, result in N. */
 		u->gcache.cached_slope_resistance = current_weight * u->GetSlopeSteepness() * 100;
 		u->InvalidateImageCache();
 	}
 	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
+	if (Type == VEH_TRAIN) {
+		Train::From(this)->tcache.cached_centre_mass = (weight != 0) ? (mass_offset / weight) : (this->gcache.cached_total_length / 2);
+	}
 
 	/* Store consist weight in cache. */
 	this->gcache.cached_weight = std::max(1u, weight);
@@ -174,7 +192,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	/* This value allows to know if the vehicle is accelerating or braking. */
 	AccelStatus mode = v->GetAccelerationStatus();
 
-	const int braking_power = power;
+	int braking_power = power;
 
 	/* handle breakdown power reduction */
 	uint32 max_te = this->gcache.cached_max_te; // [N]
@@ -205,6 +223,10 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		force = (mode == AS_ACCEL && !maglev) ? std::min<uint64>(max_te, power) : power;
 		force = std::max(force, (mass * 8) + resistance);
 		braking_force = force;
+	}
+
+	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
+		braking_power += (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
@@ -243,11 +265,11 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	int braking_accel;
-	if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */
-		braking_accel = ClampToI32((-braking_force - resistance - (this->gcache.cached_total_length * 300)) / mass);
+		braking_accel = ClampToI32((-braking_force - resistance - (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */

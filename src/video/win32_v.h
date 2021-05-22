@@ -21,7 +21,7 @@
 /** Base class for Windows video drivers. */
 class VideoDriver_Win32Base : public VideoDriver {
 public:
-	VideoDriver_Win32Base() : main_wnd(nullptr), fullscreen(false), draw_mutex(nullptr), draw_signal(nullptr) {}
+	VideoDriver_Win32Base() : main_wnd(nullptr), fullscreen(false), buffer_locked(false) {}
 
 	void Stop() override;
 
@@ -33,13 +33,11 @@ public:
 
 	bool ToggleFullscreen(bool fullscreen) override;
 
-	void AcquireBlitterLock() override;
-
-	void ReleaseBlitterLock() override;
-
 	bool ClaimMousePointer() override;
 
 	void EditBoxLostFocus() override;
+
+	std::vector<int> GetListOfMonitorRefreshRates() override;
 
 protected:
 	HWND main_wnd;          ///< Handle to system window.
@@ -51,12 +49,7 @@ protected:
 	int width_org = 0;      ///< Original monitor resolution width, before we changed it.
 	int height_org = 0;     ///< Original monitor resolution height, before we changed it.
 
-	bool draw_threaded;          ///< Whether the drawing is/may be done in a separate thread.
-	bool buffer_locked;          ///< Video buffer was locked by the main thread.
-	volatile bool draw_continue; ///< Should we keep continue drawing?
-
-	std::recursive_mutex *draw_mutex;         ///< Mutex to keep the access to the shared memory controlled.
-	std::condition_variable_any *draw_signal; ///< Signal to draw the next frame.
+	bool buffer_locked;     ///< Video buffer was locked by the main thread.
 
 	Dimension GetScreenSize() const override;
 	float GetDPIScale() override;
@@ -67,7 +60,7 @@ protected:
 	bool PollEvent() override;
 
 	void Initialize();
-	bool MakeWindow(bool full_screen);
+	bool MakeWindow(bool full_screen, bool resize = true);
 	void ClientSizeChanged(int w, int h, bool force = false);
 
 	/** Get screen depth to use for fullscreen mode. */
@@ -82,10 +75,6 @@ protected:
 	virtual void PaletteChanged(HWND hWnd) = 0;
 
 private:
-	std::unique_lock<std::recursive_mutex> draw_lock;
-
-	static void PaintThreadThunk(VideoDriver_Win32Base *drv);
-
 	friend LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 /** The GDI video driver for windows. */
@@ -108,7 +97,6 @@ protected:
 
 	void Paint() override;
 	void *GetVideoPointer() override { return this->buffer_bits; }
-	void PaintThread() override;
 
 	bool AllocateBackingStore(int w, int h, bool force = false) override;
 	void PaletteChanged(HWND hWnd) override;
@@ -147,23 +135,25 @@ public:
 
 	bool UseSystemCursor() override { return true; }
 
+	void PopulateSystemSprites() override;
+
 	void ClearSystemSprites() override;
 
 	bool HasAnimBuffer() override { return true; }
 	uint8 *GetAnimBuffer() override { return this->anim_buffer; }
+
+	void ToggleVsync(bool vsync) override;
 
 	const char *GetName() const override { return "win32-opengl"; }
 
 protected:
 	HDC    dc;          ///< Window device context.
 	HGLRC  gl_rc;       ///< OpenGL context.
-	bool   vsync;       ///< Enable VSync?
 	uint8 *anim_buffer; ///< Animation buffer from OpenGL back-end.
 
 	uint8 GetFullscreenBpp() override { return 32; } // OpenGL is always 32 bpp.
 
 	void Paint() override;
-	void PaintThread() override {}
 
 	bool AllocateBackingStore(int w, int h, bool force = false) override;
 	void *GetVideoPointer() override;
@@ -177,8 +167,11 @@ protected:
 /** The factory for Windows' OpenGL video driver. */
 class FVideoDriver_Win32OpenGL : public DriverFactoryBase {
 public:
-	FVideoDriver_Win32OpenGL() : DriverFactoryBase(Driver::DT_VIDEO, 8, "win32-opengl", "Win32 OpenGL Video Driver") {}
+	FVideoDriver_Win32OpenGL() : DriverFactoryBase(Driver::DT_VIDEO, 10, "win32-opengl", "Win32 OpenGL Video Driver") {}
 	/* virtual */ Driver *CreateInstance() const override { return new VideoDriver_Win32OpenGL(); }
+
+protected:
+	bool UsesHardwareAcceleration() const override { return true; }
 };
 
 #endif /* WITH_OPENGL */

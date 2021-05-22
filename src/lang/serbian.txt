@@ -1196,6 +1196,12 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Pritisni
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Veličina ekrana
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Odaberite željenu veličinu ekrana
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :drugo
+STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
+
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Hardversko ubrzanje
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Označavanje ove opcije čini da OpenTTD pokuša da koristi hardversko ubrzanje. Promena ovog podešavanja će imati efekta tek nakon ponvnog pokretanja igre
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Podešavanje će imati efekta tek nakon ponovnog pokretanja igre
+
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Veličina interfejsa
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Izaberite većinu elementa koja će se koristiti
@@ -1212,6 +1218,14 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automatska det
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Uobičajen
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvostruka veličina
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Četvorostruka veličina
+
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafike
+
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Frekvencija osvežavanja ekrana
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Odaberite frekvenciju osvežavanja ekrana
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :ostalo
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Frekvencije osvežavanja veće od 60Hz mogu uticati na performanse.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Osnovni skup grafika
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Odaberite željeni skup osnovnih grafika
@@ -1307,6 +1321,8 @@ STR_TERRAIN_TYPE_FLAT                                           :Brdski
 STR_TERRAIN_TYPE_HILLY                                          :Brdsko-planinski
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Planinski
 STR_TERRAIN_TYPE_ALPINIST                                       :Planinar
+STR_TERRAIN_TYPE_CUSTOM                                         :Posebna visina
+STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Posebna visina ({NUM})
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Popustljiv
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantan
@@ -1388,9 +1404,11 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Uključuje i is
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Stav gradskog odbora u pogledu restrukturiranja zone: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Izbor koliko će buka i zagađenje koje proizvode kompanije uticati na njihov gradski rejting i dalje građevinske akcije u toj zoni
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimalna visina mape: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Namestite dozvoljen maksimum visine planina na ovoj mapi
-STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Ne mozete namestiti maksimalnu visinu mape ovoj vrednosti. Barem još jedna planina je veća
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :Ograničenje visine mape: {STRING}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :Podešava maksimalnu visinu terena mape. Sa "(automatski)" će prikladna vrednost biti odabrana nakon generisanja terena
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(automatski)
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Ne možete dodeliti ovu vrednost maksimalnoj visini mape. Barem jedna planina na ovoj mapi je viša
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Dozvoljena izmena nagiba ispod zgrada, koloseka, itd. (autoslope): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Dozvoli iskopavanja ispod građevina i pruge bez da se uklone
 STR_CONFIG_SETTING_CATCHMENT                                    :Realističnije veličine prihvatnih površina: {STRING}
@@ -1534,7 +1552,13 @@ STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Odaberite kolik
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Najveće rastojanje od ivice za Rafinerije Nafte: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Rafinerije nafte se grade samo u blizini ivice karte, to jest uz obalu za otočne karte
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Nivo snežnog pokrivača: {STRING}
-STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Odredite na kojoj visini počinje sneg u subarktičkoj klimi. Sneg takođe utiče na stvaranje industrija i uslove rasta gradova
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Određuje na kojoj visini počinje sneg u subarktičkoj klimi. Sneg takođe utiče na stvaranje industrija i uslove rasta gradova. Može se promeniti samo kroz Editor scenarija ili se drugačije izračunava kroz "pokrivenost snega"
+STR_CONFIG_SETTING_SNOW_COVERAGE                                :Pokrivenost snegom: {STRING}
+STR_CONFIG_SETTING_SNOW_COVERAGE_HELPTEXT                       :Kontroliše približnu veličinu snega u subarktičkoj klimi. Sneg takođe utiče na generisanje industrija i na uslove za rast gradova. Podešavanje se koristi samo kod generisanja mape. Zemlja odmah iznad nivoa mora je uvek bez snega
+STR_CONFIG_SETTING_SNOW_COVERAGE_VALUE                          :{NUM}%
+STR_CONFIG_SETTING_DESERT_COVERAGE                              :Pokrivenost pustinjom: {STRING}
+STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :Kontroliše približnu veličinu pustinje u tropskoj klimi. Pustinja takođe utiče na generisanje industrija. Podešavanje se koristi samo kod generisanja mape
+STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Vrste terena (samo za TerraGenesis) : {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Samo TerraGenesis) Odaberite učestalost brda: Blaži tereni imaju rjeđa, ali šira brda. Teži tereni imaju mnogo brda koja bi mogla da izgledaju kao da se ponavljaju
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Ravnomerna
@@ -1844,12 +1868,17 @@ STR_CONFIG_SETTING_ZOOM_MIN                                     :Najbliži nivo:
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Najveći nivo zumiranja prema unutra u prikazima. Uzmite u obzir da uključivanje većih nivoa zumiranja prema unutra povećava i upotrebu memorije
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Najudaljeniji nivo: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Najmanji nivo zumiranja prema van u prikazima. Veći nivo zumiranja prema van može uzrokovati usporavanje igre
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Sprajtovi najviše rezolucije: {STRING}
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Ograničava maksimalnu rezoluciju sprajtova. Ovim ograničenjem izbegava se korišćenje grafike visoke rezolucije čak i kada je takva grafika dostupna. Na ovaj način se može zadržati jedinstven izgled igre čak i kada se koristi mešavina GRF datoteka sa i bez grafika visoke rezolucije.
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Uobičajen
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Brzina razvoja naselja: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Brzina kojom se naselje razvija
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Nimalo
@@ -1982,6 +2011,10 @@ STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}...ignor
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoriram osnovni set muzike '{STRING}': nije pronađen
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nema više memorije
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Dodela {BYTES} predmemorije sprajtova nije uspelo. Predmemorija sprajtova je smanjena na {BYTES}. Ovo će smanjiti performanse OpenTTDa. Kako bi smanjili memorijske zahteve možete pokušati da isključite 32bpp grafiku i/ili nivo zumiranja
+
+# Video initalization errors
+STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Greška sa podešavanjima videa...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... kompatibilan GPU nije pronađen. Hardversko ubrzanje je isključeno
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -2148,6 +2181,7 @@ STR_FACE_TIE                                                    :Kravata:
 STR_FACE_EARRING                                                :Minđuše:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Promena kravate ili minđuša
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Mrežna partija
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Ime igrača:
@@ -2210,10 +2244,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Naziv pa
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Postavi lozinku
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Ukoliko ne želite da bude javno dostupna zaštitite Vašu partiju lozinkom
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK} Sa reklamama
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Odaberite između igre s oglasima (internet) i bez oglasa (Local Area Network, LAN)
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Ne
-STR_NETWORK_START_SERVER_ADVERTISED                             :Da
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} igrač{P "" a a}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Najviše igrača:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Odaberite koliko najviše može da ima igrača. Nemoraju sva mesta da budu popunjena
@@ -2227,46 +2257,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Govorni 
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Drugi igrači će znati sa kojim jezikom se razgovara na serveru
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Unos naziva mrežne partije
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Bilo koji
-STR_NETWORK_LANG_ENGLISH                                        :Engleski
-STR_NETWORK_LANG_GERMAN                                         :Nemački
-STR_NETWORK_LANG_FRENCH                                         :Francuski
-STR_NETWORK_LANG_BRAZILIAN                                      :Brazilski
-STR_NETWORK_LANG_BULGARIAN                                      :Bugarski
-STR_NETWORK_LANG_CHINESE                                        :Kineski
-STR_NETWORK_LANG_CZECH                                          :Češki
-STR_NETWORK_LANG_DANISH                                         :Danski
-STR_NETWORK_LANG_DUTCH                                          :Holandski
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Finski
-STR_NETWORK_LANG_HUNGARIAN                                      :Mađarski
-STR_NETWORK_LANG_ICELANDIC                                      :Islandski
-STR_NETWORK_LANG_ITALIAN                                        :Italijanski
-STR_NETWORK_LANG_JAPANESE                                       :Japanski
-STR_NETWORK_LANG_KOREAN                                         :Koreanski
-STR_NETWORK_LANG_LITHUANIAN                                     :Litvanski
-STR_NETWORK_LANG_NORWEGIAN                                      :Norveški
-STR_NETWORK_LANG_POLISH                                         :Poljski
-STR_NETWORK_LANG_PORTUGUESE                                     :Portugalski
-STR_NETWORK_LANG_ROMANIAN                                       :Rumunski
-STR_NETWORK_LANG_RUSSIAN                                        :Ruski
-STR_NETWORK_LANG_SLOVAK                                         :Slovački
-STR_NETWORK_LANG_SLOVENIAN                                      :Slovenački
-STR_NETWORK_LANG_SPANISH                                        :Španski
-STR_NETWORK_LANG_SWEDISH                                        :Švedski
-STR_NETWORK_LANG_TURKISH                                        :Turski
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukrajinski
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikans
-STR_NETWORK_LANG_CROATIAN                                       :Hrvatski
-STR_NETWORK_LANG_CATALAN                                        :Katalonski
-STR_NETWORK_LANG_ESTONIAN                                       :Estonski
-STR_NETWORK_LANG_GALICIAN                                       :Galicijski
-STR_NETWORK_LANG_GREEK                                          :Grčki
-STR_NETWORK_LANG_LATVIAN                                        :Letonski
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Predvorje partije sa više igrača
@@ -2315,19 +2305,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Isključ
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server je zaštićen. Unesite lozinku
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Preduzeće je zaštićeno. Unesite lozinku
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Spisak klijenata
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Spisak klijenata
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Praćenje
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Novo preduzeće
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Izbaci
-STR_NETWORK_CLIENTLIST_BAN                                      :Zabrani pristup
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Razgovaraj sa svima
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Razgovaraj sa ekipom
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privatna poruka
+
+
 
 STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Igrač
@@ -2512,6 +2496,10 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Nedostaj
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD zahteva grafike kako bi radio ali nijedne nisu nađene. Da li dozvoljavate da OpenTTD preuzme i instalira te neophodne grafike?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Da, preuzmi grafike
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ne, napusti OpenTTD
+
+STR_MISSING_GRAPHICS_ERROR_TITLE                                :{WHITE}Neuspešno preuzimanje
+STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Preuzimanje grafike nije uspelo.{}Pokušajte da preuzmete grafiku ručno.
+STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Napusti OpenTTD
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Podešavanja Prozirnosti
@@ -3062,9 +3050,17 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Broj naselja:
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Broj fabrika:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maksimalna visina mape
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Povećaj maksimalnu visinu planina na mapi za jedan
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Smanji maksimalnu visinu planina na mapi za jedan
+STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Najviši vrh:
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Povećaj maksimalnu visinu najvišeg vrha za jedan korak
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Smanji maksimalnu visinu najvišeg vrha za jedan korak
+STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Pokrivenost snegom:
+STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Povećaj pokrivenost snegom za deset procenata
+STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Smanji pokrivenost snegom za deset procenata
+STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
+STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Pokrivenost pustinjom:
+STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Povećaj pokrivenost pustinjom za deset procenata
+STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Smanji pokrivenost pustinjom za deset procenata
+STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Nivo snežnog pokrivača:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sužava snežni pokrivač naviše za jedan
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Proširuje snežni pojas naniže za jedan
@@ -3093,7 +3089,10 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Naziv el
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Veličina:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Promenite maksimalnu visinu mape
+STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Ciljna visina vrha
+STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Najviši vrh
+STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Pokrivenost snegom (u %)
+STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Pokrivenost pustinjom (u %)
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Promena donjeg nivoa snežnog pojasa
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Promena početne godine
 
@@ -3372,26 +3371,27 @@ STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Finansiranje no
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Kupovina ekskluzivnih prava prevoza
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Podmićivanje lokalne vlasti
 
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Ulaganje u malu reklamnu kampanju će doneti preduzeću više putnika i robe iz ovog naselja.{} Trošak: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Ulaganje u reklamnu kampanju srednje veličine će doneti preduzeću više putnika i robe iz ovog naselja.{} Trošak: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Ulaganje u veliku reklamnu kampanju će doneti preduzeću više putnika i robe iz ovog naselja.{} Trošak: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Finansiranje rekonstrukcije lokalne mreže puteva. Može prouzrokovati kolaps u drumskom saobraćaju u trajanju do 6 meseci.{} Trošak: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Otkrivanje spomenika preduzeća.{} Trošak: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW} Finansiranje izgradnje novih komercijalnih objekata u naselju.{} Trošak: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Kupovina ekskluzivnih prava prevoza od lokalne vlasti na godinu dana, osigurava da će lokalni korisnici prevoza koristiti isključivo usluge vašeg preduzeća.{} Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Ulaganje u malu reklamnu kampanju će doneti preduzeću više putnika i robe iz ovog naselja.{}Privremeno povećava rejting stanica u malom prečniku oko centra grada tokom trajanja kampanje.{}Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Ulaganje u reklamnu kampanju srednje veličine će doneti preduzeću više putnika i robe iz ovog naselja.{}Privremeno povećava rejting stanica u prečniku srednje veličine oko centra grada tokom trajanja kampanje.{}Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Ulaganje u veliku reklamnu kampanju će doneti preduzeću više putnika i robe iz ovog naselja.{}Privremeno povećava rejting stanica u velikom prečniku oko centra grada tokom trajanja kampanje.{}Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Finansiranje rekonstrukcije lokalne mreže puteva.{}Može prouzrokovati kolaps u drumskom saobraćaju u trajanju do 6 meseci.{}Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Otkrivanje spomenika preduzeća.{}Trajno povećava rejting stanica u gradu tokom trajanja kampanje.{}Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW} Finansiranje izgradnje novih objekata u naselju.{}Privremeno povećava brzinu rasta grada u ovom gradu.{}Trošak: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Kupovina ekskluzivnih prava prevoza od lokalne vlasti na godinu dana.{}Grad osigurava da će lokalni korisnici prevoza koristiti isključivo usluge vašeg preduzeća.{}Trošak: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Davanje mita lokalnoj vlasti kako bi porastao rejting vašeg preduzeća, uz rizik velike štete ukoliko se otkrije.{} Cena: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Ciljevi
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Opšti ciljevi
 STR_GOALS_SPECTATOR                                             :Opšti ciljevi
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Opšti ciljevi:
+STR_GOALS_GLOBAL_BUTTON                                         :{BLACK}Opšte
+STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Prikaži opšte ciljeve
+STR_GOALS_COMPANY_BUTTON                                        :{BLACK}Kompanija
+STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Prikaži ciljeve kompanije
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nema -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nije primenjivo -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Ciljevi preduzeća:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikom na cilj premešta se glavni pogled na fabriku/naselje/pločicu. Ctrl+Kilk otvara novi pogled na lokaciju fabrike/naselja/pločice
 
 # Goal question window
@@ -3762,6 +3762,7 @@ STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Motorni 
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Prepravljivo za: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Sve vrste tereta
 STR_PURCHASE_INFO_NONE                                          :Nijedan
+STR_PURCHASE_INFO_ENGINES_ONLY                                  :Samo lokomotive
 STR_PURCHASE_INFO_ALL_BUT                                       :Sve sem {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Najveća vučna snaga: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} pločica
@@ -4525,6 +4526,7 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Pronađe
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Ogromna slika ekrana
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Slika ekrana će imati rezoluciju {COMMA} x {COMMA} tačaka. Snimanje slike će možda malo potrajati. Da li hoćete da nastavite?
 
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}Visinska mapa uspešno sačuvana kao '{STRING}'. Najviši vrh je {NUM}
 STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Slika je snimljena pod imenom '{STRING}'
 STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Slika nije snimljena!
 

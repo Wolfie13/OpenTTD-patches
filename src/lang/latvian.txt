@@ -1004,6 +1004,8 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ekrāna 
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Ekrāna izšķirtspējas izvēle
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Cita
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Lietotāja saskarnes lielums
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Lietotāja saskarnes elementu lieluma izvēle
 
@@ -1019,6 +1021,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automātiski n
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normāls
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Divkāršs izmērs
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Četrkāršs izmērs
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Pamata grafikas kopa
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Atlasīt lietošanai pamata grafikas kopu
@@ -1195,8 +1199,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Pārslēgt kata
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Pilsētu domju attieksme pret platības pārstrukturēšanu: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Izvēlieties, cik lielā mērā trokšņi un vides bojājumi ietekmē uzņēmuma reitingu un turpmākās būvniecības darbības viņu teritorijā
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimālais kartes augstums: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Uzstādīt maksimālo atļauto kalnu augstumu kartē
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Jūs nevarat izmantot šo maksimālo kartes augstumu. Vismaz viens kalns uz kartes ir augstāks.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Atļaut ainavas veidošanu zem ekām, ceļiem, utt. (automāt. nogāzes): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Atļauj ainavas veidošanu zem ekām un ceļiem bez to nojaukšanas
@@ -1792,6 +1794,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... igno
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nepietiek atmiņas
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Neizdevās piešķirt {BYTES} spraitu kešam. Spraitu kešs tika samazināts uz {BYTES}. Tas samazinās OpenTTD veiktspēju. Lai samazinātu prasības pret atmiņu, varat mēģināt izslēgt 32bpp grafiku un/vai tuvināšanas līmeņus
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1957,6 +1961,7 @@ STR_FACE_TIE                                                    :Kaklasaite:
 STR_FACE_EARRING                                                :Auskars:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Mainīt kaklasaiti vai auskarus
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Vairākspēlētāju spēle
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Spēlētāja vārds:
@@ -2019,10 +2024,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Spēles 
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Uzstādīt paroli
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Aizsargā jūsu spēli ar paroli, ja nevēlaties lai tā būtu publiski pieejama
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Izsludināt
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Izvēlieties starp reklamēto (interneta) un nereklamēto (lokālā tīkla, LAN) spēli
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Nē
-STR_NETWORK_START_SERVER_ADVERTISED                             :Jā
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} spēlētāj{P s i u}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Maksimālais spēlētāju skaits:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Izvēlēties maksimālo spēlētāju skaitu. Ne visiem slotiem ir jābūt aizpildītiem
@@ -2036,46 +2037,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Valoda, 
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Citi lietotāji zinās, kurā valodā tiek runāts uz servera
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Ievadīt tīkla spēles nosaukumu
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Jebkura
-STR_NETWORK_LANG_ENGLISH                                        :Angļu
-STR_NETWORK_LANG_GERMAN                                         :Vācu
-STR_NETWORK_LANG_FRENCH                                         :Franču
-STR_NETWORK_LANG_BRAZILIAN                                      :Brazīļu
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgāru
-STR_NETWORK_LANG_CHINESE                                        :Ķīniešu
-STR_NETWORK_LANG_CZECH                                          :Čehu
-STR_NETWORK_LANG_DANISH                                         :Dāņu
-STR_NETWORK_LANG_DUTCH                                          :Holandiešu
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Somu
-STR_NETWORK_LANG_HUNGARIAN                                      :Ungāru
-STR_NETWORK_LANG_ICELANDIC                                      :Īslandiešu
-STR_NETWORK_LANG_ITALIAN                                        :Itāliešu
-STR_NETWORK_LANG_JAPANESE                                       :Japāņu
-STR_NETWORK_LANG_KOREAN                                         :Korejiešu
-STR_NETWORK_LANG_LITHUANIAN                                     :Lietuviešu
-STR_NETWORK_LANG_NORWEGIAN                                      :Norvēģu
-STR_NETWORK_LANG_POLISH                                         :Poļu
-STR_NETWORK_LANG_PORTUGUESE                                     :Portugāļu
-STR_NETWORK_LANG_ROMANIAN                                       :Rumāņu
-STR_NETWORK_LANG_RUSSIAN                                        :Krievu
-STR_NETWORK_LANG_SLOVAK                                         :Slovāku
-STR_NETWORK_LANG_SLOVENIAN                                      :Slovēņu
-STR_NETWORK_LANG_SPANISH                                        :Spāņu
-STR_NETWORK_LANG_SWEDISH                                        :Zviedru
-STR_NETWORK_LANG_TURKISH                                        :Turku
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukraiņu
-STR_NETWORK_LANG_AFRIKAANS                                      :Āfrikāņu
-STR_NETWORK_LANG_CROATIAN                                       :Horvātu
-STR_NETWORK_LANG_CATALAN                                        :Kataloņu
-STR_NETWORK_LANG_ESTONIAN                                       :Igauņu
-STR_NETWORK_LANG_GALICIAN                                       :Galisiešu
-STR_NETWORK_LANG_GREEK                                          :Grieķu
-STR_NETWORK_LANG_LATVIAN                                        :Latviešu
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Vairākspēlētāju spēles vestibils
@@ -2124,19 +2085,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Atvienot
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Serveris ir aizsargāts. Ievadiet paroli
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Uzņēmums ir aizsargāts. Ievadiet paroli
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Klientu saraksts
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Spēlētāju saraksts
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Skatīt
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Jauns uzņēmums
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Izmest
-STR_NETWORK_CLIENTLIST_BAN                                      :Aizliegt
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Runāt ar visiem
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Runāt ar uzņēmumu
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privāts ziņojums
+
+
 
 STR_NETWORK_SERVER                                              :Serveris
 STR_NETWORK_CLIENT                                              :Spēlētājs
@@ -2321,6 +2276,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Trūkst 
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD vajag grafiku, lai strādātu, bet tādu nevarēja atrast. Vai ļaujat OpenTTD lejupielādēt un instalēt tādu grafiku?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Jā, lejupielādēt grafiku
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nē, iziet no OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Caurspīdības opcijas
@@ -2872,9 +2828,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Pilsētu daudzums:
 STR_MAPGEN_DATE                                                 :{BLACK}Datums:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Ražotņu daudzums:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maksimālais kartes augstums
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Palielināt kalnu maksimālo augstumu kartē par vienu vienību
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Samazināt kalnu maksimālu augstumu kartē par vienu vienību
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Sniega līnijas augstums
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Paaugstināt sniega līnijas augstumu
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Pazemināt sniega līnijas augstumu
@@ -2903,7 +2856,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Augstumu
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Lielums:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Mainīt kartes maksimālo augstumu
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Mainīt sniega līnijas augstumu
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Mainīt sākuma gadu
 
@@ -3198,13 +3150,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Piekuku
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} mērķi
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globālie mērķi
 STR_GOALS_SPECTATOR                                             :Globālie mērķi
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globālie mērķi:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nav -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nav attiecināms -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Uzņēmuma mērķi:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikšķināt uz mērķa, lai centrētu galveno skatu uz ražotni/pilsētu/lauciņu. Ctrl+klikšķis atver jaunu skatvietu uz ražotni/pilsētu/lauciņu
 
 # Goal question window

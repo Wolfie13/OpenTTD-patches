@@ -38,6 +38,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_QUIT(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_RCON(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
@@ -65,12 +66,14 @@ public:
 		STATUS_END,           ///< Must ALWAYS be on the end of this list!! (period).
 	};
 
+	static const char *GetClientStatusName(ClientStatus status);
+
 	byte lag_test;               ///< Byte used for lag-testing the client
 	byte last_token;             ///< The last random token we did send to verify the client is listening
 	uint32 last_token_frame;     ///< The last frame we received the right token
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
-	int receive_limit;           ///< Amount of bytes that we can receive at this moment
+	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
 	uint32 server_hash_bits;     ///< Server password hash entropy bits
 	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
 	uint32 settings_hash_bits;   ///< Settings password hash entropy bits
@@ -78,7 +81,7 @@ public:
 	bool supports_zstd = false;  ///< Client supports zstd compression
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
-	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
+	NetworkAddress client_address; ///< IP-address of the client (so they can be banned)
 
 	std::string desync_log;
 
@@ -111,6 +114,8 @@ public:
 	NetworkRecvStatus SendCompanyUpdate();
 	NetworkRecvStatus SendConfigUpdate();
 	NetworkRecvStatus SendSettingsAccessUpdate(bool ok);
+
+	std::string GetDebugInfo() const override;
 
 	static void Send();
 	static void AcceptConnection(SOCKET s, const NetworkAddress &address);

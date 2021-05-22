@@ -124,9 +124,12 @@ enum PacketGameType {
 	PACKET_SERVER_ERROR_QUIT,            ///< A server tells that a client has hit an error and did quit.
 	PACKET_CLIENT_DESYNC_LOG,            ///< A client reports a desync log
 	PACKET_SERVER_DESYNC_LOG,            ///< A server reports a desync log
+	PACKET_CLIENT_DESYNC_MSG,            ///< A client reports a desync message
 
 	PACKET_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
+
+const char *GetPacketTypeName(PacketGameType type);
 
 /** Packet that wraps a command */
 struct CommandPacket;
@@ -447,6 +450,7 @@ protected:
 	virtual NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p);
 	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p);
 	virtual NetworkRecvStatus Receive_SERVER_DESYNC_LOG(Packet *p);
+	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p);
 
 	/**
 	 * Notification that a client left the game:
@@ -546,6 +550,7 @@ public:
 	uint32 last_frame_server;    ///< Last frame the server has executed
 	CommandQueue incoming_queue; ///< The command-queue awaiting handling
 	std::chrono::steady_clock::time_point last_packet; ///< Time we received the last frame.
+	PacketGameType last_pkt_type;///< Last received packet type
 
 	NetworkRecvStatus CloseConnection(bool error = true) override;
 
@@ -579,6 +584,9 @@ public:
 
 	const char *ReceiveCommand(Packet *p, CommandPacket *cp);
 	void SendCommand(Packet *p, const CommandPacket *cp);
+
+	virtual std::string GetDebugInfo() const;
+	virtual void LogSentPacket(const Packet &pkt);
 };
 
 #endif /* NETWORK_CORE_TCP_GAME_H */

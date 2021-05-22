@@ -1743,7 +1743,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 			/* Clear the road if only one piece is on the tile OR we are not using the DC_AUTO flag */
 			if ((HasExactlyOneBit(b) && GetRoadBits(tile, RTT_TRAM) == ROAD_NONE) || !(flags & DC_AUTO)) {
 				CommandCost ret(EXPENSES_CONSTRUCTION);
-				FOR_ALL_ROADTRAMTYPES(rtt) {
+				for (RoadTramType rtt : _roadtramtypes) {
 					if (!MayHaveRoad(tile) || GetRoadType(tile, rtt) == INVALID_ROADTYPE) continue;
 
 					CommandCost tmp_ret = RemoveRoad(tile, flags, GetRoadBits(tile, rtt), rtt, true);
@@ -1928,8 +1928,23 @@ void DrawRoadTypeCatenary(const TileInfo *ti, RoadType rt, RoadBits rb)
 	 * For tiles with OWNER_TOWN or OWNER_NONE, recolour CC to grey as a neutral colour. */
 	Owner owner = GetRoadOwner(ti->tile, GetRoadTramType(rt));
 	PaletteID pal = (owner == OWNER_NONE || owner == OWNER_TOWN ? GENERAL_SPRITE_COLOUR(COLOUR_GREY) : COMPANY_SPRITE_COLOUR(owner));
-	if (back != 0) AddSortableSpriteToDraw(back,  pal, ti->x, ti->y, 16, 16, TILE_HEIGHT + BB_HEIGHT_UNDER_BRIDGE, ti->z, IsTransparencySet(TO_CATENARY));
-	if (front != 0) AddSortableSpriteToDraw(front, pal, ti->x, ti->y, 16, 16, TILE_HEIGHT + BB_HEIGHT_UNDER_BRIDGE, ti->z, IsTransparencySet(TO_CATENARY));
+	int z_wires = (ti->tileh == SLOPE_FLAT ? 0 : TILE_HEIGHT) + BB_HEIGHT_UNDER_BRIDGE;
+	if (back != 0) {
+		/* The "back" sprite contains the west, north and east pillars.
+		 * We cut the sprite at 3/8 of the west/east edges to create 3 sprites.
+		 * 3/8 is chosen so that sprites can somewhat graphically extend into the tile. */
+		static const int INF = 1000; ///< big number compared to sprite size
+		static const SubSprite west  = { -INF, -INF, -12, INF };
+		static const SubSprite north = {  -12, -INF,  12, INF };
+		static const SubSprite east  = {   12, -INF, INF, INF };
+		AddSortableSpriteToDraw(back, pal, ti->x, ti->y, 16,  1, z_wires, ti->z, IsTransparencySet(TO_CATENARY), 15,  0, GetSlopePixelZInCorner(ti->tileh, CORNER_W), &west);
+		AddSortableSpriteToDraw(back, pal, ti->x, ti->y,  1,  1, z_wires, ti->z, IsTransparencySet(TO_CATENARY),  0,  0, GetSlopePixelZInCorner(ti->tileh, CORNER_N), &north);
+		AddSortableSpriteToDraw(back, pal, ti->x, ti->y,  1, 16, z_wires, ti->z, IsTransparencySet(TO_CATENARY),  0, 15, GetSlopePixelZInCorner(ti->tileh, CORNER_E), &east);
+	}
+	if (front != 0) {
+		/* Draw the "front" sprite (containing south pillar and wires) at a Z height that is both above the vehicles and above the "back" pillars. */
+		AddSortableSpriteToDraw(front, pal, ti->x, ti->y, 16, 16, z_wires + 1, ti->z, IsTransparencySet(TO_CATENARY), 0, 0, z_wires);
+	}
 }
 
 /**
@@ -2741,7 +2756,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 				Company::Get(new_owner)->infrastructure.road[rt] += 2;
 
 				SetTileOwner(tile, new_owner);
-				FOR_ALL_ROADTRAMTYPES(rtt) {
+				for (RoadTramType rtt : _roadtramtypes) {
 					if (GetRoadOwner(tile, rtt) == old_owner) {
 						SetRoadOwner(tile, rtt, new_owner);
 					}
@@ -2751,7 +2766,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 		return;
 	}
 
-	FOR_ALL_ROADTRAMTYPES(rtt) {
+	for (RoadTramType rtt : _roadtramtypes) {
 		/* Update all roadtypes, no matter if they are present */
 		if (GetRoadOwner(tile, rtt) == old_owner) {
 			RoadType rt = GetRoadType(tile, rtt);
@@ -2949,6 +2964,13 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				error = ret;
 				continue;
 			}
+		}
+
+		/* Disallow converting town roads to types which do not allow houses */
+		if (rtt == RTT_ROAD && owner == OWNER_TOWN && HasBit(GetRoadTypeInfo(to_type)->flags, ROTF_NO_HOUSES)) {
+			error.MakeError(STR_ERROR_OWNED_BY);
+			GetNameOfOwner(OWNER_TOWN, tile);
+			continue;
 		}
 
 		/* Vehicle on the tile when not converting normal <-> powered

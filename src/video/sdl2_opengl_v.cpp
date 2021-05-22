@@ -73,9 +73,13 @@ const char *VideoDriver_SDL_OpenGL::Start(const StringList &param)
 	int w, h;
 	SDL_GetWindowSize(this->sdl_window, &w, &h);
 	this->ClientSizeChanged(w, h, true);
-
-	SDL_GL_SetSwapInterval(GetDriverParamBool(param, "vsync") ? 1 : 0);
-	this->draw_threaded = false;
+	/* We should have a valid screen buffer now. If not, something went wrong and we should abort. */
+	if (_screen.dst_ptr == nullptr) {
+		this->Stop();
+		return "Can't get pointer to screen buffer";
+	}
+	/* Main loop expects to start with the buffer unmapped. */
+	this->ReleaseVideoPointer();
 
 	return nullptr;
 }
@@ -96,6 +100,11 @@ void VideoDriver_SDL_OpenGL::DestroyContext()
 	}
 }
 
+void VideoDriver_SDL_OpenGL::ToggleVsync(bool vsync)
+{
+	SDL_GL_SetSwapInterval(vsync);
+}
+
 const char *VideoDriver_SDL_OpenGL::AllocateContext()
 {
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -112,7 +121,14 @@ const char *VideoDriver_SDL_OpenGL::AllocateContext()
 	this->gl_context = SDL_GL_CreateContext(this->sdl_window);
 	if (this->gl_context == nullptr) return "SDL2: Can't active GL context";
 
-	return OpenGLBackend::Create(&GetOGLProcAddressCallback);
+	ToggleVsync(_video_vsync);
+
+	return OpenGLBackend::Create(&GetOGLProcAddressCallback, this->GetScreenSize());
+}
+
+void VideoDriver_SDL_OpenGL::PopulateSystemSprites()
+{
+	OpenGLBackend::Get()->PopulateCursorCache();
 }
 
 void VideoDriver_SDL_OpenGL::ClearSystemSprites()
@@ -131,11 +147,13 @@ bool VideoDriver_SDL_OpenGL::AllocateBackingStore(int w, int h, bool force)
 	MemSetT(&this->dirty_rect, 0);
 
 	bool res = OpenGLBackend::Get()->Resize(w, h, force);
+	SDL_GL_SwapWindow(this->sdl_window);
 	_screen.dst_ptr = this->GetVideoPointer();
 
 	_cur_palette.first_dirty = 0;
 	_cur_palette.count_dirty = 256;
 	this->local_palette = _cur_palette;
+	_cur_palette.count_dirty = 0;
 
 	return res;
 }
@@ -160,7 +178,7 @@ void VideoDriver_SDL_OpenGL::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
-	if (_cur_palette.count_dirty != 0) {
+	if (this->local_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		/* Always push a changed palette to OpenGL. */
@@ -169,11 +187,11 @@ void VideoDriver_SDL_OpenGL::Paint()
 			blitter->PaletteAnimate(this->local_palette);
 		}
 
-		_cur_palette.count_dirty = 0;
+		this->local_palette.count_dirty = 0;
 	}
 
 	OpenGLBackend::Get()->Paint();
-	if (_cursor.in_window) OpenGLBackend::Get()->DrawMouseCursor();
+	OpenGLBackend::Get()->DrawMouseCursor();
 
 	SDL_GL_SwapWindow(this->sdl_window);
 }

@@ -222,6 +222,19 @@ protected:
 public:
 	ByteReader(byte *data, byte *end) : data(data), end(end) { }
 
+	inline byte *ReadBytes(size_t size)
+	{
+		if (data + size >= end) {
+			/* Put data at the end, as would happen if every byte had been individually read. */
+			data = end;
+			throw OTTDByteReaderSignal();
+		}
+
+		byte *ret = data;
+		data += size;
+		return ret;
+	}
+
 	inline byte ReadByte()
 	{
 		if (data < end) return *(data)++;
@@ -1918,7 +1931,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				StationSpec **spec = &_cur.grffile->stations[stid + i];
 
 				/* Property 0x08 is special; it is where the station is allocated */
-				if (*spec == nullptr) *spec = CallocT<StationSpec>(1);
+				if (*spec == nullptr) *spec = new StationSpec();
 
 				/* Swap classid because we read it in BE meaning WAYP or DFLT */
 				uint32 classid = buf->ReadDWord();
@@ -1926,13 +1939,13 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 			}
 
-			case 0x09: // Define sprite layout
-				statspec->tiles = buf->ReadExtendedByte();
-				delete[] statspec->renderdata; // delete earlier loaded stuff
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
+			case 0x09: { // Define sprite layout
+				uint16 tiles = buf->ReadExtendedByte();
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(tiles);
 
-				for (uint t = 0; t < statspec->tiles; t++) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
+				for (uint t = 0; t < tiles; t++) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					dts->consistent_max_offset = UINT16_MAX; // Spritesets are unknown, so no limit.
 
 					if (buf->HasData(4) && *(unaligned_uint32*)buf->Data() == 0) {
@@ -1968,6 +1981,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					dts->Clone(tmp_layout.data());
 				}
 				break;
+			}
 
 			case 0x0A: { // Copy sprite layout
 				byte srcid = buf->ReadByte();
@@ -1978,12 +1992,12 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					continue;
 				}
 
-				delete[] statspec->renderdata; // delete earlier loaded stuff
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(srcstatspec->renderdata.size());
 
-				statspec->tiles = srcstatspec->tiles;
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
-				for (uint t = 0; t < statspec->tiles; t++) {
-					statspec->renderdata[t].Clone(&srcstatspec->renderdata[t]);
+				for (const auto &it : srcstatspec->renderdata) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
+					dts->Clone(&it);
 				}
 				break;
 			}
@@ -2001,54 +2015,25 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 
 			case 0x0E: // Define custom layout
-				ClrBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS);
-
 				while (buf->HasData()) {
 					byte length = buf->ReadByte();
 					byte number = buf->ReadByte();
-					StationLayout layout;
-					uint l, p;
 
 					if (length == 0 || number == 0) break;
 
-					if (length > statspec->lengths) {
-						byte diff_length = length - statspec->lengths;
-						statspec->platforms = ReallocT(statspec->platforms, length);
-						memset(statspec->platforms + statspec->lengths, 0, diff_length);
+					if (statspec->layouts.size() < length) statspec->layouts.resize(length);
+					if (statspec->layouts[length - 1].size() < number) statspec->layouts[length - 1].resize(number);
 
-						statspec->layouts = ReallocT(statspec->layouts, length);
-						memset(statspec->layouts + statspec->lengths, 0, diff_length * sizeof(*statspec->layouts));
+					const byte *layout = buf->ReadBytes(length * number);
+					statspec->layouts[length - 1][number - 1].assign(layout, layout + length * number);
 
-						statspec->lengths = length;
-					}
-					l = length - 1; // index is zero-based
-
-					if (number > statspec->platforms[l]) {
-						statspec->layouts[l] = ReallocT(statspec->layouts[l], number);
-						/* We expect nullptr being 0 here, but C99 guarantees that. */
-						memset(statspec->layouts[l] + statspec->platforms[l], 0,
-						       (number - statspec->platforms[l]) * sizeof(**statspec->layouts));
-
-						statspec->platforms[l] = number;
-					}
-
-					p = 0;
-					layout = MallocT<byte>(length * number);
-					try {
-						for (l = 0; l < length; l++) {
-							for (p = 0; p < number; p++) {
-								layout[l * number + p] = buf->ReadByte();
-							}
+					/* Validate tile values are only the permitted 00, 02, 04 and 06. */
+					for (auto &tile : statspec->layouts[length - 1][number - 1]) {
+						if ((tile & 6) != tile) {
+							grfmsg(1, "StationChangeInfo: Invalid tile %u in layout %ux%u", tile, length, number);
+							tile &= 6;
 						}
-					} catch (...) {
-						free(layout);
-						throw;
 					}
-
-					l--;
-					p--;
-					free(statspec->layouts[l][p]);
-					statspec->layouts[l][p] = layout;
 				}
 				break;
 
@@ -2061,10 +2046,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					continue;
 				}
 
-				statspec->lengths   = srcstatspec->lengths;
-				statspec->platforms = srcstatspec->platforms;
-				statspec->layouts   = srcstatspec->layouts;
-				SetBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS);
+				statspec->layouts = srcstatspec->layouts;
 				break;
 			}
 
@@ -2109,18 +2091,19 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				statspec->animation.triggers = buf->ReadWord();
 				break;
 
-			case 0x1A: // Advanced sprite layout
-				statspec->tiles = buf->ReadExtendedByte();
-				delete[] statspec->renderdata; // delete earlier loaded stuff
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
+			case 0x1A: { // Advanced sprite layout
+				uint16 tiles = buf->ReadExtendedByte();
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(tiles);
 
-				for (uint t = 0; t < statspec->tiles; t++) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
+				for (uint t = 0; t < tiles; t++) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					uint num_building_sprites = buf->ReadByte();
 					/* On error, bail out immediately. Temporary GRF data was already freed */
 					if (ReadSpriteLayout(buf, num_building_sprites, false, GSF_STATIONS, true, false, dts)) return CIR_DISABLED;
 				}
 				break;
+			}
 
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
 				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
@@ -2818,13 +2801,13 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 						for (uint j = 0; j < SNOW_LINE_DAYS; j++) {
 							table[i][j] = buf->ReadByte();
 							if (_cur.grffile->grf_version >= 8) {
-								if (table[i][j] != 0xFF) table[i][j] = table[i][j] * (1 + _settings_game.construction.max_heightlevel) / 256;
+								if (table[i][j] != 0xFF) table[i][j] = table[i][j] * (1 + _settings_game.construction.map_height_limit) / 256;
 							} else {
 								if (table[i][j] >= 128) {
 									/* no snow */
 									table[i][j] = 0xFF;
 								} else {
-									table[i][j] = table[i][j] * (1 + _settings_game.construction.max_heightlevel) / 128;
+									table[i][j] = table[i][j] * (1 + _settings_game.construction.map_height_limit) / 128;
 								}
 							}
 						}
@@ -4377,6 +4360,11 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 				SB(rti->ctrl_flags, RTCF_RESTRICTEDSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(rti->ctrl_flags, RTCF_NOREALISTICBRAKING, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -4459,6 +4447,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 
 			case A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS:
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
+			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 
@@ -5163,16 +5152,13 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
 			}
 
-			static std::vector<DeterministicSpriteGroupAdjust> adjusts;
-			adjusts.clear();
-
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
 			do {
-				DeterministicSpriteGroupAdjust &adjust = adjusts.emplace_back();
+				DeterministicSpriteGroupAdjust &adjust = group->adjusts.emplace_back();
 
 				/* The first var adjust doesn't have an operation specified, so we set it to add. */
-				adjust.operation = adjusts.size() == 1 ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
+				adjust.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
 				adjust.variable  = buf->ReadByte();
 				if (adjust.variable == 0x7E) {
 					/* Link subroutine group */
@@ -5196,10 +5182,6 @@ static void NewSpriteGroup(ByteReader *buf)
 
 				/* Continue reading var adjusts while bit 5 is set. */
 			} while (HasBit(varadjust, 5));
-
-			group->num_adjusts = (uint)adjusts.size();
-			group->adjusts = MallocT<DeterministicSpriteGroupAdjust>(group->num_adjusts);
-			MemCpyT(group->adjusts, adjusts.data(), group->num_adjusts);
 
 			std::vector<DeterministicSpriteGroupRange> ranges;
 			ranges.resize(buf->ReadByte());
@@ -5237,27 +5219,20 @@ static void NewSpriteGroup(ByteReader *buf)
 			}
 			assert(target.size() == bounds.size());
 
-			std::vector<DeterministicSpriteGroupRange> optimised;
 			for (uint j = 0; j < bounds.size(); ) {
 				if (target[j] != group->default_group) {
-					DeterministicSpriteGroupRange r;
+					DeterministicSpriteGroupRange &r = group->ranges.emplace_back();
 					r.group = target[j];
 					r.low = bounds[j];
 					while (j < bounds.size() && target[j] == r.group) {
 						j++;
 					}
 					r.high = j < bounds.size() ? bounds[j] - 1 : UINT32_MAX;
-					optimised.push_back(r);
 				} else {
 					j++;
 				}
 			}
 
-			group->num_ranges = (uint)optimised.size(); // cast is safe, there should never be 2**31 elements here
-			if (group->num_ranges > 0) {
-				group->ranges = MallocT<DeterministicSpriteGroupRange>(group->num_ranges);
-				MemCpyT(group->ranges, &optimised.front(), group->num_ranges);
-			}
 			break;
 		}
 
@@ -5281,11 +5256,14 @@ static void NewSpriteGroup(ByteReader *buf)
 			group->triggers       = GB(triggers, 0, 7);
 			group->cmp_mode       = HasBit(triggers, 7) ? RSG_CMP_ALL : RSG_CMP_ANY;
 			group->lowest_randbit = buf->ReadByte();
-			group->num_groups     = buf->ReadByte();
-			group->groups = CallocT<const SpriteGroup*>(group->num_groups);
 
-			for (uint i = 0; i < group->num_groups; i++) {
-				group->groups[i] = GetGroupFromGroupID(setid, type, buf->ReadWord());
+			byte num_groups = buf->ReadByte();
+			if (!HasExactlyOneBit(num_groups)) {
+				grfmsg(1, "NewSpriteGroup: Random Action 2 nrand should be power of 2");
+			}
+
+			for (uint i = 0; i < num_groups; i++) {
+				group->groups.push_back(GetGroupFromGroupID(setid, type, buf->ReadWord()));
 			}
 
 			break;
@@ -5320,23 +5298,18 @@ static void NewSpriteGroup(ByteReader *buf)
 					group->nfo_line = _cur.nfo_line;
 					act_group = group;
 
-					group->num_loaded  = num_loaded;
-					group->num_loading = num_loading;
-					if (num_loaded  > 0) group->loaded = CallocT<const SpriteGroup*>(num_loaded);
-					if (num_loading > 0) group->loading = CallocT<const SpriteGroup*>(num_loading);
-
 					grfmsg(6, "NewSpriteGroup: New SpriteGroup 0x%02X, %u loaded, %u loading",
 							setid, num_loaded, num_loading);
 
 					for (uint i = 0; i < num_loaded; i++) {
 						uint16 spriteid = buf->ReadWord();
-						group->loaded[i] = CreateGroupFromGroupID(feature, setid, type, spriteid);
+						group->loaded.push_back(CreateGroupFromGroupID(feature, setid, type, spriteid));
 						grfmsg(8, "NewSpriteGroup: + rg->loaded[%i]  = subset %u", i, spriteid);
 					}
 
 					for (uint i = 0; i < num_loading; i++) {
 						uint16 spriteid = buf->ReadWord();
-						group->loading[i] = CreateGroupFromGroupID(feature, setid, type, spriteid);
+						group->loading.push_back(CreateGroupFromGroupID(feature, setid, type, spriteid));
 						grfmsg(8, "NewSpriteGroup: + rg->loading[%i] = subset %u", i, spriteid);
 					}
 
@@ -5471,8 +5444,7 @@ static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 			return CT_INVALID;
 		}
 
-		const CargoSpec *cs;
-		FOR_ALL_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : CargoSpec::Iterate()) {
 			if (cs->bitnum == ctype) {
 				grfmsg(6, "TranslateCargo: Cargo bitnum %d mapped to cargo type %d.", ctype, cs->Index());
 				return cs->Index();
@@ -6507,7 +6479,7 @@ bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 
 		case 0x20: { // snow line height
 			byte snowline = GetSnowLine();
-			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= _settings_game.construction.max_heightlevel) {
+			if (_settings_game.game_creation.landscape == LT_ARCTIC && snowline <= _settings_game.construction.map_height_limit) {
 				*value = Clamp(snowline * (grffile->grf_version >= 8 ? 1 : TILE_HEIGHT), 0, 0xFE);
 			} else {
 				/* No snow */
@@ -7182,7 +7154,7 @@ static uint32 GetPatchVariable(uint8 param)
 
 		/* The maximum height of the map. */
 		case 0x14:
-			return _settings_game.construction.max_heightlevel;
+			return _settings_game.construction.map_height_limit;
 
 		/* Extra foundations base sprite */
 		case 0x15:
@@ -8403,6 +8375,7 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action5_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
+	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
 	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
 	GRFFeatureInfo(),
 };
@@ -8522,6 +8495,7 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_AVAILABILITY_FLAGS, "bridge_availability_flags"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS, "railtype_enable_programmable_signals"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
+	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING, "railtype_disable_realistic_braking"),
 	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(),
@@ -9029,22 +9003,8 @@ static void ResetCustomStations()
 			if (stations[i] == nullptr) continue;
 			StationSpec *statspec = stations[i];
 
-			delete[] statspec->renderdata;
-
-			/* Release platforms and layouts */
-			if (!HasBit(statspec->internal_flags, SSIF_COPIED_LAYOUTS)) {
-				for (uint l = 0; l < statspec->lengths; l++) {
-					for (uint p = 0; p < statspec->platforms[l]; p++) {
-						free(statspec->layouts[l][p]);
-					}
-					free(statspec->layouts[l]);
-				}
-				free(statspec->layouts);
-				free(statspec->platforms);
-			}
-
 			/* Release this station */
-			free(statspec);
+			delete statspec;
 		}
 
 		/* Free and reset the station data */
@@ -9426,8 +9386,7 @@ static void CalculateRefitMasks()
 
 			if (_gted[engine].cargo_allowed != 0) {
 				/* Build up the list of cargo types from the set cargo classes. */
-				const CargoSpec *cs;
-				FOR_ALL_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : CargoSpec::Iterate()) {
 					if (_gted[engine].cargo_allowed    & cs->classes) SetBit(mask,     cs->Index());
 					if (_gted[engine].cargo_disallowed & cs->classes) SetBit(not_mask, cs->Index());
 				}

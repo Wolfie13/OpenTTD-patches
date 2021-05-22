@@ -42,6 +42,7 @@ uint _num_screenshot_formats;         ///< Number of available screenshot format
 uint _cur_screenshot_format;          ///< Index of the currently selected screenshot format in #_screenshot_formats.
 static char _screenshot_name[128];    ///< Filename of the screenshot file.
 char _full_screenshot_name[MAX_PATH]; ///< Pathname of the screenshot file.
+uint _heightmap_highest_peak;         ///< When saving a heightmap, this contains the highest peak on the map.
 
 static const char *_screenshot_aux_text_key = nullptr;
 static const char *_screenshot_aux_text_value = nullptr;
@@ -848,7 +849,7 @@ static void HeightmapCallback(void *userdata, void *buffer, uint y, uint pitch, 
 	while (n > 0) {
 		TileIndex ti = TileXY(MapMaxX(), y);
 		for (uint x = MapMaxX(); true; x--) {
-			*buf = 256 * TileHeight(ti) / (1 + _settings_game.construction.max_heightlevel);
+			*buf = 256 * TileHeight(ti) / (1 + _heightmap_highest_peak);
 			buf++;
 			if (x == 0) break;
 			ti = TILE_ADDXY(ti, -1, 0);
@@ -871,6 +872,13 @@ bool MakeHeightmapScreenshot(const char *filename)
 		palette[i].g = i;
 		palette[i].b = i;
 	}
+
+	_heightmap_highest_peak = 0;
+	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		uint h = TileHeight(tile);
+		_heightmap_highest_peak = std::max(h, _heightmap_highest_peak);
+	}
+
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(filename, HeightmapCallback, nullptr, MapSizeX(), MapSizeY(), 8, palette);
 }
@@ -884,7 +892,7 @@ static ScreenshotType _confirmed_screenshot_type; ///< Screenshot type the curre
  */
 static void ScreenshotConfirmationCallback(Window *w, bool confirmed)
 {
-	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, nullptr);
+	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, {});
 }
 
 /**
@@ -910,7 +918,7 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
 		ShowQuery(STR_WARNING_SCREENSHOT_SIZE_CAPTION, STR_WARNING_SCREENSHOT_SIZE_MESSAGE, nullptr, ScreenshotConfirmationCallback);
 	} else {
 		/* Less than 64M pixels, just do it */
-		MakeScreenshot(t, nullptr);
+		MakeScreenshot(t, {});
 	}
 }
 
@@ -918,11 +926,17 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
  * Show a a success or failure message indicating the result of a screenshot action
  * @param ret  whether the screenshot action was successful
  */
-static void ShowScreenshotResultMessage(bool ret)
+static void ShowScreenshotResultMessage(ScreenshotType t, bool ret)
 {
 	if (ret) {
-		SetDParamStr(0, _screenshot_name);
-		ShowErrorMessage(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+		if (t == SC_HEIGHTMAP) {
+			SetDParamStr(0, _screenshot_name);
+			SetDParam(1, _heightmap_highest_peak);
+			ShowErrorMessage(STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+		} else {
+			SetDParamStr(0, _screenshot_name);
+			ShowErrorMessage(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, INVALID_STRING_ID, WL_WARNING);
+		}
 	} else {
 		ShowErrorMessage(STR_ERROR_SCREENSHOT_FAILED, INVALID_STRING_ID, WL_ERROR);
 	}
@@ -930,18 +944,14 @@ static void ShowScreenshotResultMessage(bool ret)
 
 /**
  * Make a screenshot.
- * Unconditionally take a screenshot of the requested type.
  * @param t    the type of screenshot to make.
  * @param name the name to give to the screenshot.
  * @param width the width of the screenshot of, or 0 for current viewport width (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @return true iff the screenshot was made successfully
- * @see MakeScreenshotWithConfirm
  */
-bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 height)
+static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32 width, uint32 height)
 {
-	VideoDriver::VideoBufferLocker lock;
-
 	if (t == SC_VIEWPORT) {
 		/* First draw the dirty parts of the screen and only then change the name
 		 * of the screenshot. This way the screenshot will always show the name
@@ -954,7 +964,7 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 	}
 
 	_screenshot_name[0] = '\0';
-	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+	if (!name.empty()) strecpy(_screenshot_name, name.c_str(), lastof(_screenshot_name));
 
 	bool ret;
 	switch (t) {
@@ -983,16 +993,42 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 		}
 
 		case SC_MINIMAP:
-			ret = MakeMinimapWorldScreenshot(name);
+			ret = MakeMinimapWorldScreenshot(name.empty() ? nullptr : name.c_str());
 			break;
 
 		default:
 			NOT_REACHED();
 	}
 
-	ShowScreenshotResultMessage(ret);
+	ShowScreenshotResultMessage(t, ret);
 
 	return ret;
+}
+
+/**
+ * Schedule making a screenshot.
+ * Unconditionally take a screenshot of the requested type.
+ * @param t    the type of screenshot to make.
+ * @param name the name to give to the screenshot.
+ * @param width the width of the screenshot of, or 0 for current viewport width (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
+ * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
+ * @return true iff the screenshot was successfully made.
+ * @see MakeScreenshotWithConfirm
+ */
+bool MakeScreenshot(ScreenshotType t, std::string name, uint32 width, uint32 height)
+{
+	if (t == SC_CRASHLOG) {
+		/* Video buffer might or might not be locked. */
+		VideoDriver::VideoBufferLocker lock;
+
+		return RealMakeScreenshot(t, name, width, height);
+	}
+
+	VideoDriver::GetInstance()->QueueOnMainThread([=] { // Capture by value to not break scope.
+		RealMakeScreenshot(t, name, width, height);
+	});
+
+	return true;
 }
 
 /**
@@ -1021,7 +1057,7 @@ bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWin
 	_screenshot_name[0] = '\0';
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	bool ret = sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), SmallMapCallback, window, width, height, BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
-	ShowScreenshotResultMessage(ret);
+	ShowScreenshotResultMessage(SC_SMALLMAP, ret);
 	return ret;
 }
 

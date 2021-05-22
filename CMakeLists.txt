@@ -4,10 +4,12 @@ if(NOT BINARY_NAME)
     set(BINARY_NAME openttd)
 endif()
 
-project(${BINARY_NAME})
+project(${BINARY_NAME}
+    VERSION 1.12.0
+)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
-    message(FATAL_ERROR "In-source builds not allowed. Please run \"cmake ..\" from the bin directory")
+    message(FATAL_ERROR "In-source builds not allowed. Please run \"cmake ..\" from the build directory. You may need to delete \"${CMAKE_SOURCE_DIR}/CMakeCache.txt\" first.")
 endif()
 
 if (EMSCRIPTEN)
@@ -92,6 +94,9 @@ if(OPTION_TOOLS_ONLY)
             ${CMAKE_COMMAND}
                     -DFIND_VERSION_BINARY_DIR=${CMAKE_BINARY_DIR}/generated
                     -DCPACK_BINARY_DIR=${CMAKE_BINARY_DIR}
+                    -DREV_MAJOR=${PROJECT_VERSION_MAJOR}
+                    -DREV_MINOR=${PROJECT_VERSION_MINOR}
+                    -DREV_BUILD=${PROJECT_VERSION_PATCH}
                     $<$<PLATFORM_ID:Windows>:-DWIN32=TRUE>
                     -P "${CMAKE_SOURCE_DIR}/cmake/scripts/FindVersion.cmake"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -281,9 +286,9 @@ if(MSVC)
     target_sources(openttd PRIVATE "${CMAKE_SOURCE_DIR}/os/windows/openttd.manifest")
 endif()
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/src)
-add_subdirectory(${CMAKE_SOURCE_DIR}/media/baseset)
 add_subdirectory(${CMAKE_SOURCE_DIR}/bin)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
+add_subdirectory(${CMAKE_SOURCE_DIR}/media)
 
 if(NOT CMAKE_CROSSCOMPILING AND NOT HOST_BINARY_DIR)
     foreach(tgt IN ITEMS ${host_tools_list})
@@ -299,6 +304,7 @@ add_dependencies(openttd
 target_link_libraries(openttd
     openttd::languages
     openttd::settings
+    openttd::media
     openttd::basesets
     openttd::script_api
     openttd::binfiles
@@ -310,7 +316,7 @@ if(IPO_FOUND)
     set_target_properties(openttd PROPERTIES INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL True)
     set_target_properties(openttd PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO True)
 endif()
-set_target_properties(openttd PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set_target_properties(openttd PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 process_compile_flags()
 
 include(LinkPackage)
@@ -462,6 +468,9 @@ add_custom_target(find_version
         ${CMAKE_COMMAND}
                 -DFIND_VERSION_BINARY_DIR=${CMAKE_BINARY_DIR}/generated
                 -DCPACK_BINARY_DIR=${CMAKE_BINARY_DIR}
+                -DREV_MAJOR=${PROJECT_VERSION_MAJOR}
+                -DREV_MINOR=${PROJECT_VERSION_MINOR}
+                -DREV_BUILD=${PROJECT_VERSION_PATCH}
                 -DCONFIGURE_DEFINES="${CFG_DEFS}"
                 $<$<PLATFORM_ID:Windows>:-DWIN32=TRUE>
                 -P "${CMAKE_SOURCE_DIR}/cmake/scripts/FindVersion.cmake"

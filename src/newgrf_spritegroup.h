@@ -20,6 +20,8 @@
 #include "newgrf_storage.h"
 #include "newgrf_commons.h"
 
+#include "3rdparty/cpp-btree/btree_set.h"
+
 /**
  * Gets the value of a so-called newgrf "register".
  * @param i index of the register
@@ -47,6 +49,20 @@ struct SpriteGroup;
 typedef uint32 SpriteGroupID;
 struct ResolverObject;
 
+enum AnalyseCallbackOperationMode {
+	ACOM_CB_VAR,
+	ACOM_CB36_PROP,
+	ACOM_FIND_CB_RESULT,
+};
+
+struct AnalyseCallbackOperation {
+	btree::btree_set<const SpriteGroup *> seen;
+	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
+	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
+	uint64 properties_used = 0;
+	bool cb_result_found = false;
+};
+
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
  * Adding an 'extra' margin would be assuming 64 sprite groups per real
  * sprite. 64 = 2^6, so 2^30 should be enough (for now) */
@@ -69,6 +85,7 @@ public:
 	virtual SpriteID GetResult() const { return 0; }
 	virtual byte GetNumResults() const { return 0; }
 	virtual uint16 GetCallbackResult() const { return CALLBACK_FAILED; }
+	virtual void AnalyseCallbacks(AnalyseCallbackOperation &op) const {};
 
 	static const SpriteGroup *Resolve(const SpriteGroup *group, ResolverObject &object, bool top_level = true);
 };
@@ -78,7 +95,6 @@ public:
  * groups. */
 struct RealSpriteGroup : SpriteGroup {
 	RealSpriteGroup() : SpriteGroup(SGT_REAL) {}
-	~RealSpriteGroup();
 
 	/* Loaded = in motion, loading = not moving
 	 * Each group contains several spritesets, for various loading stages */
@@ -87,10 +103,8 @@ struct RealSpriteGroup : SpriteGroup {
 	 * with small amount of cargo whilst loading is for stations with a lot
 	 * of da stuff. */
 
-	byte num_loaded;       ///< Number of loaded groups
-	byte num_loading;      ///< Number of loading groups
-	const SpriteGroup **loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
-	const SpriteGroup **loading; ///< List of loading groups (can be SpriteIDs or Callback results)
+	std::vector<const SpriteGroup *> loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
+	std::vector<const SpriteGroup *> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const;
@@ -144,6 +158,8 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_SHL,  ///< a << b
 	DSGA_OP_SHR,  ///< (unsigned) a >> b
 	DSGA_OP_SAR,  ///< (signed) a >> b
+
+	DSGA_OP_END,
 };
 
 
@@ -169,20 +185,19 @@ struct DeterministicSpriteGroupRange {
 
 struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
-	~DeterministicSpriteGroup();
 
 	VarSpriteGroupScope var_scope;
 	DeterministicSpriteGroupSize size;
-	uint num_adjusts;
-	uint num_ranges;
 	bool calculated_result;
-	DeterministicSpriteGroupAdjust *adjusts;
-	DeterministicSpriteGroupRange *ranges; // Dynamically allocated
+	std::vector<DeterministicSpriteGroupAdjust> adjusts;
+	std::vector<DeterministicSpriteGroupRange> ranges; // Dynamically allocated
 
 	/* Dynamically allocated, this is the sole owner */
 	const SpriteGroup *default_group;
 
 	const SpriteGroup *error_group; // was first range, before sorting ranges
+
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const;
@@ -195,7 +210,6 @@ enum RandomizedSpriteGroupCompareMode {
 
 struct RandomizedSpriteGroup : SpriteGroup {
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
-	~RandomizedSpriteGroup();
 
 	VarSpriteGroupScope var_scope;  ///< Take this object:
 
@@ -204,9 +218,10 @@ struct RandomizedSpriteGroup : SpriteGroup {
 	byte count;
 
 	byte lowest_randbit; ///< Look for this in the per-object randomized bitmask:
-	byte num_groups; ///< must be power of 2
 
-	const SpriteGroup **groups; ///< Take the group with appropriate index:
+	std::vector<const SpriteGroup *> groups; ///< Take the group with appropriate index:
+
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const;
@@ -236,6 +251,7 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 
 	uint16 result;
 	uint16 GetCallbackResult() const { return this->result; }
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 };
 
 
@@ -420,5 +436,7 @@ struct ResolverObject {
 	 */
 	virtual uint32 GetDebugID() const { return 0; }
 };
+
+void DumpSpriteGroup(const SpriteGroup *sg, std::function<void(const char *)> print);
 
 #endif /* NEWGRF_SPRITEGROUP_H */

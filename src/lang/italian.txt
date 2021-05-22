@@ -1003,6 +1003,12 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Attiva q
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Risoluzione schermo
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Seleziona la risoluzione dello schermo da utilizzare
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Altra
+STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
+
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Accelerazione hardware
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Seleziona questa opzione per consentire a OpenTTD di utilizzare l'accelerazione hardware. Eventuali cambiamenti avranno effetto solo dopo un riavvio del gioco
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Le nuove impostazioni avranno effetto solo dopo un riavvio del gioco
+
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Dimensione interfaccia
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Seleziona la dimensione deglie elementi dell'interfaccia grafica
@@ -1019,6 +1025,14 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(rileva automat
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normale
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Doppia
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Quadrupla
+
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafica
+
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Frequenza di aggiornameno dello schermo
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Seleziona la frequenza di aggiornamento dello schermo da utilizzare
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :altro
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Frequenze di aggiornamento maggiori di 60Hz potrebbero impattare le prestazioni.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Pacchetto grafico di base
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Seleziona il pacchetto grafico di base da utilizzare
@@ -1114,6 +1128,8 @@ STR_TERRAIN_TYPE_FLAT                                           :Pianeggiante
 STR_TERRAIN_TYPE_HILLY                                          :Collinare
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Montuoso
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpino
+STR_TERRAIN_TYPE_CUSTOM                                         :Altezza personalizzata
+STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Altezza personalizzata ({NUM})
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permissivo
 STR_CITY_APPROVAL_TOLERANT                                      :Tollerante
@@ -1217,8 +1233,8 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Controlla l'att
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Atteggiamento della città in merito alle modifiche: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Seleziona il modo in cui il rumore e i danni all'ambiente da parte delle compagnie possono influenzare la valutazione delle città e le successive operazioni di costruzione nell'area controllata
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Altezza massima mappa: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Imposta l'altezza massima consentita per le montagne sulla mappa
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(automatico)
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Impossibile impostare l'altezza massima della mappa a questo valore. Almeno una delle montagne della mappa è più alta
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Consenti rimodellazione terreno sotto a edifici, rotaie, etc.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Consente la rimodellazione del terreno sotto edifici e rotaie senza doverli rimuovere
@@ -1364,6 +1380,10 @@ STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Massima distanz
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Limita la distanza dal bordo della mappa entro cui possono essere costruite raffinerie e piattaforme petrolifere. Nelle mappe insulari sono comunque sempre vicino alla costa. Su mappe più grandi di 256 riquadri il valore è aumentato in proporzione.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Altezza delle nevi perenni: {STRING}
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Determina la quota alla quale appare la neve nei paesaggi sub-artici. La neve ha anche l'effetto di influenzare la generazione delle industrie e i requisiti per la crescita delle città
+STR_CONFIG_SETTING_SNOW_COVERAGE                                :Aree innevate: {STRING}
+STR_CONFIG_SETTING_SNOW_COVERAGE_VALUE                          :{NUM}%
+STR_CONFIG_SETTING_DESERT_COVERAGE                              :Aree desertiche: {STRING}
+STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Irregolarità del terreno: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(Solo TerraGenesis) Seleziona la frequenza delle colline. I paesaggi morbidi presentano poche colline di forma allargata. I paesaggi accidentati hanno molte colline, che potrebbero apparire ripetitive
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Molto morbido
@@ -1673,12 +1693,17 @@ STR_CONFIG_SETTING_ZOOM_MIN                                     :Massimo livello
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Livello massimo di zoom in avanti per le visuali. Nota: abilitare alti livelli di zoom avanti aumenta la memoria richiesta
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Massimo livello di zoom indietro: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Livello massimo di zoom all'indietro per le visuali. Nota: i livelli alti di zoom indietro possono causare rallentamenti durante l'uso
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Risoluzione massima sprite: {STRING}
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Limita la risoluzione massima degli sprite da utilizzare. Questa limitazione eviterà di utilizzare texture ad alta risoluzione anche quando disponibili. Ciò può aiutare a rendere l'aspetto di gioco più uniforme quando si usano combinazioni di file GRF con e senza texture ad alta risoluzione.
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Normale
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Velocità di crescita delle città: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Velocità di crescita delle città
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Nessuna
@@ -1812,6 +1837,10 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... igno
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memoria esaurita
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Impossibile allocare {BYTES} della cache degli sprite. La cache degli sprite è stata limitata a {BYTES}; questo comporterà una riduzione delle prestazioni di OpenTTD. Per ridurre la quantità di memoria richiesta è possibile disabilitare la grafica a 32 bit e/o i livelli di zoom
 
+# Video initalization errors
+STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Errore nelle impostazioni video...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... non è stata trovata alcuna GPU compatibile. L'accelerazione hardware è stata disabilitata
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1848,7 +1877,7 @@ STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Mostra l
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Mostra le impostazioni NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Controlla la disponibilità di contenuti nuovi o aggiornati da scaricare
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Mostra le impostazioni delle IA e degli Script
-STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Esci da 'OpenTTD'
+STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Esci da OpenTTD
 
 STR_INTRO_BASESET                                               :{BLACK}Nel pacchetto grafico di base attualmente selezionato mancano {NUM} sprite. È consigliabile controllare gli aggiornamenti del pacchetto.
 STR_INTRO_TRANSLATION                                           :{BLACK}A questa traduzione mancano {NUM} string{P a he}. Aiutaci a migliorare OpenTTD iscrivendoti come traduttore. Vedi readme.txt per dettagli.
@@ -1977,6 +2006,7 @@ STR_FACE_TIE                                                    :Cravatta:
 STR_FACE_EARRING                                                :Orecchino:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Cambia la cravatta o l'orecchino
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multigiocatore
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Nome giocatore:
@@ -2039,10 +2069,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Il nome 
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Imposta password
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Protegge la partita con una password in modo che non sia accessibile pubblicamente
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Pubblico
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Sceglie fra partita pubblica (su Internet) o privata (su rete locale, LAN)
-STR_NETWORK_START_SERVER_UNADVERTISED                           :No
-STR_NETWORK_START_SERVER_ADVERTISED                             :Sì
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} client
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Limite client:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Imposta il numero massimo di client. Non tutti i posti dovranno essere occupati
@@ -2056,46 +2082,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Lingua p
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Fa sapere agli altri giocatori quale lingua è parlata sul server
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Inserire il nome della partita
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Qualsiasi
-STR_NETWORK_LANG_ENGLISH                                        :Inglese
-STR_NETWORK_LANG_GERMAN                                         :Tedesco
-STR_NETWORK_LANG_FRENCH                                         :Francese
-STR_NETWORK_LANG_BRAZILIAN                                      :Brasiliano
-STR_NETWORK_LANG_BULGARIAN                                      :Bùlgaro
-STR_NETWORK_LANG_CHINESE                                        :Cinese
-STR_NETWORK_LANG_CZECH                                          :Ceco
-STR_NETWORK_LANG_DANISH                                         :Danese
-STR_NETWORK_LANG_DUTCH                                          :Olandese
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Finlandese
-STR_NETWORK_LANG_HUNGARIAN                                      :Ungherese
-STR_NETWORK_LANG_ICELANDIC                                      :Islandese
-STR_NETWORK_LANG_ITALIAN                                        :Italiano
-STR_NETWORK_LANG_JAPANESE                                       :Giapponese
-STR_NETWORK_LANG_KOREAN                                         :Coreano
-STR_NETWORK_LANG_LITHUANIAN                                     :Lituano
-STR_NETWORK_LANG_NORWEGIAN                                      :Norvegese
-STR_NETWORK_LANG_POLISH                                         :Polacco
-STR_NETWORK_LANG_PORTUGUESE                                     :Portoghese
-STR_NETWORK_LANG_ROMANIAN                                       :Rumeno
-STR_NETWORK_LANG_RUSSIAN                                        :Russo
-STR_NETWORK_LANG_SLOVAK                                         :Slovacco
-STR_NETWORK_LANG_SLOVENIAN                                      :Sloveno
-STR_NETWORK_LANG_SPANISH                                        :Spagnolo
-STR_NETWORK_LANG_SWEDISH                                        :Svedese
-STR_NETWORK_LANG_TURKISH                                        :Turco
-STR_NETWORK_LANG_UKRAINIAN                                      :Ucraino
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaans
-STR_NETWORK_LANG_CROATIAN                                       :Croato
-STR_NETWORK_LANG_CATALAN                                        :Catalano
-STR_NETWORK_LANG_ESTONIAN                                       :Estone
-STR_NETWORK_LANG_GALICIAN                                       :Galiziano
-STR_NETWORK_LANG_GREEK                                          :Greco
-STR_NETWORK_LANG_LATVIAN                                        :Lèttone
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Stanza principale partita multigiocatore
@@ -2144,19 +2130,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Disconne
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server protetto. Inserire la password
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Compagnia protetta. Inserire la password
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Elenco dei client
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Elenco dei client
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Diventa spettatore
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nuova compagnia
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Espelli
-STR_NETWORK_CLIENTLIST_BAN                                      :Bandisci
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Parla a tutti
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Parla alla compagnia
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Messaggio privato
+
+
 
 STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Client
@@ -2341,6 +2321,10 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Pacchett
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD richiede un pacchetto grafico per funzionare, ma non è stato possibile trovarne alcuno. Consentire a OpenTTD di scaricare e installare un pacchetto grafico?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Sì, scarica il pacchetto
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}No, esci da OpenTTD
+
+STR_MISSING_GRAPHICS_ERROR_TITLE                                :{WHITE}Download non riuscito
+STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Download del pacchetto grafico non riuscito.{}Si prega di scaricare il pacchetto grafico manualmente.
+STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Esci da OpenTTD
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Opzioni trasparenza
@@ -2897,9 +2881,11 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Numero città:
 STR_MAPGEN_DATE                                                 :{BLACK}Data:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Numero industrie:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Altezza massima mappa:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Aumenta di uno l'altezza massima delle montagne sulla mappa
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Riduce di uno l'altezza massima delle montagne sulla mappa
+STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{WHITE}Picco massimo:
+STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Aree innevate:
+STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
+STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Aree desertiche:
+STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Altezza delle nevi:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sposta in su di uno l'altezza delle nevi perenni
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sposta in giù di uno l'altezza delle nevi perenni
@@ -2928,7 +2914,9 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nome hei
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Dim.:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Cambia l'altezza massima della mappa
+STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Picco massimo
+STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Aree innevate (in %)
+STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Aree desertiche (in %)
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambia l'altezza delle nevi perenni
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Cambia l'anno di inizio
 
@@ -3207,26 +3195,27 @@ STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Finanzia nuove 
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Acquista esclusiva sui trasporti
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Corrompi l'autorità locale
 
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Inizia una piccola campagna pubblicitaria, per attirare più passeggeri e merci ai servizi di trasporto della compagnia.{}Costo: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Inizia una campagna pubblicitaria moderata, per attirare più passeggeri e merci ai servizi di trasporto della compagnia.{}Costo: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Inizia una grande campagna pubblicitaria locale, per attirare più passeggeri e merci ai servizi di trasporto della compagnia.{}Costo: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Finanzia la ricostruzione della rete stradale cittadina. Causa un considerevole disagio al traffico stradale per 6 mesi.{}Costo: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Costruisce una statua in onore della compagnia.{}Costo: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Finanzia la costruzione di nuovi edifici commerciali nella città.{}Costo: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Acquista un anno di diritti di trasporto esclusivi in città. L'autorità cittadina permetterà a passeggeri e merci di usare solo le stazioni della compagnia.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Inizia una piccola campagna pubblicitaria, per attirare più passeggeri e merci ai servizi di trasporto della compagnia.{}Fornisce un aumento temporaneo della valutazione delle stazioni in un piccolo raggio dal centro della città.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Inizia una campagna pubblicitaria moderata, per attirare più passeggeri e merci ai servizi di trasporto della compagnia.{}Fornisce un aumento temporaneo della valutazione delle stazioni in un moderato raggio dal centro della città.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Inizia una grande campagna pubblicitaria locale, per attirare più passeggeri e merci ai servizi di trasporto della compagnia.{}Fornisce un aumento temporaneo della valutazione delle stazioni in un grande raggio dal centro della città.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Finanzia la ricostruzione della rete stradale cittadina.{}Causa un considerevole disagio al traffico stradale per 6 mesi.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Costruisci una statua in onore della compagnia.{}Fornisce un aumento permanente della valutazione delle stazioni in questa città.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Finanzia la costruzione di nuovi edifici nella città.{}Fornisce un aumento temporaneo della crescita della città.{}Costo: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Acquista un anno di diritti di trasporto esclusivi in città. L'autorità cittadina non permetterà a passeggeri e merci di usare le stazioni dei tuoi avversari.{}Costo: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Corrompi l'autorità locale per aumentare la tua valutazione, con il rischio di una severa multa se scoperto.{}Costo: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Obiettivi della {COMPANY}
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Obiettivi globali
 STR_GOALS_SPECTATOR                                             :Obiettivi globali
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Obiettivi globali:
+STR_GOALS_GLOBAL_BUTTON                                         :{BLACK}Globale
+STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Mostra obbiettivi globali
+STR_GOALS_COMPANY_BUTTON                                        :{BLACK}Compagnia
+STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Mostra obbiettivi della compagnia
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nessuno -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Non applicabile -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Obiettivi della compagnia:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Fare clic su un obiettivo per centrare la visuale principale sull'industria, città o riquadro. CTRL+clic mostra l'industria/città/riquadro in una mini visuale
 
 # Goal question window
@@ -3596,6 +3585,7 @@ STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Vagoni m
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Riadattabile per: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Tutti i tipi di carico
 STR_PURCHASE_INFO_NONE                                          :Niente
+STR_PURCHASE_INFO_ENGINES_ONLY                                  :Solo motori
 STR_PURCHASE_INFO_ALL_BUT                                       :Tutto tranne {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Sforzo di trazione massimo: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Autonomia: {GOLD}{COMMA} riquadr{P o i}

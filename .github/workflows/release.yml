@@ -96,7 +96,7 @@ jobs:
         TZ='UTC' date +"%Y-%m-%d %H:%M UTC" > .release_date
         head -1 .ottdrev-vc  | cut -f 1 -d$'\t' > .version
 
-        if [ $(head -1 .ottdrev-vc | cut -f 6 -d$'\t') = '1' ]; then
+        if [ $(head -1 .ottdrev-vc | cut -f 5 -d$'\t') = '1' ]; then
           # Assume that all tags are always releases. Why else make a tag?
           IS_TAG="true"
 
@@ -380,6 +380,8 @@ jobs:
           bundle_name: "groovy"
         - container_image: "debian:buster"
           bundle_name: "buster"
+        - container_image: "debian:bullseye"
+          bundle_name: "bullseye"
 
     runs-on: ubuntu-20.04
     container:
@@ -868,7 +870,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
     - name: Trigger 'New OpenTTD release'
       uses: peter-evans/repository-dispatch@v1

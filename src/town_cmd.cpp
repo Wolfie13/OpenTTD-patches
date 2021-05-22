@@ -113,10 +113,12 @@ Town::~Town()
 	DeleteWindowById(WC_TOWN_VIEW, this->index);
 
 	/* Check no industry is related to us. */
+#ifdef WITH_ASSERT
 	for (const Industry *i : Industry::Iterate()) assert(i->town != this);
 
 	/* ... and no object is related to us. */
 	for (const Object *o : Object::Iterate()) assert(o->town != this);
+#endif
 
 	/* Check no tile is related to us. */
 	for (TileIndex tile = 0; tile < MapSize(); ++tile) {
@@ -812,6 +814,7 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 		if (rating > t->ratings[_current_company]
 			&& !(flags & DC_NO_TEST_TOWN_RATING)
 			&& !_cheats.magic_bulldozer.value
+			&& !_extra_cheats.town_rating.value
 			&& _settings_game.difficulty.town_council_tolerance != TOWN_COUNCIL_INDIFFERENT) {
 			SetDParam(0, t->index);
 			return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
@@ -1978,7 +1981,14 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 36}, // 88
 	};
 
-	if (_settings_game.economy.town_zone_calc_mode) {
+	if (_settings_game.economy.town_zone_calc_mode && t->larger_town) {
+		int mass = t->cache.num_houses / 8;
+		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.city_zone_0_mult;
+		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.city_zone_1_mult;
+		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.city_zone_2_mult;
+		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.city_zone_3_mult;
+		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.city_zone_4_mult;
+	} else if (_settings_game.economy.town_zone_calc_mode) {
 		int mass = t->cache.num_houses / 8;
 		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult;
 		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult;
@@ -2392,6 +2402,7 @@ static Town *CreateRandomTown(uint attempts, uint32 townnameparts, TownSize size
 
 		Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
 		CommandCost rc = DoCommand(t->xy, t->index, 0, DC_EXEC, CMD_DELETE_TOWN);
+		(void)rc; // assert only
 		cur_company.Restore();
 		assert(rc.Succeeded());
 
@@ -2513,7 +2524,7 @@ HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile)
 static inline void ClearMakeHouseTile(TileIndex tile, Town *t, byte counter, byte stage, HouseID type, byte random_bits)
 {
 	CommandCost cc = DoCommand(tile, 0, 0, DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR);
-
+	(void)cc; // assert only
 	assert(cc.Succeeded());
 
 	IncreaseBuildingCount(t, type);
@@ -3091,8 +3102,7 @@ CommandCost CmdRenameTownNonAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1
  */
 const CargoSpec *FindFirstCargoWithTownEffect(TownEffect effect)
 {
-	const CargoSpec *cs;
-	FOR_ALL_CARGOSPECS(cs) {
+	for (const CargoSpec *cs : CargoSpec::Iterate()) {
 		if (cs->town_effect == effect) return cs;
 	}
 	return nullptr;
@@ -3218,6 +3228,9 @@ CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (!Company::IsValidID(company_id)) return CMD_ERROR;
 
 	int16 new_rating = Clamp((int16)GB(p2, 0, 16), RATING_MINIMUM, RATING_MAXIMUM);
+	if (_extra_cheats.town_rating.value) {
+		new_rating = RATING_MAXIMUM;
+	}
 	if (flags & DC_EXEC) {
 		t->ratings[company_id] = new_rating;
 		InvalidateWindowData(WC_TOWN_AUTHORITY, town_id);
@@ -3522,7 +3535,7 @@ static CommandCost TownActionFundBuildings(Town *t, DoCommandFlag flags)
 		 * than 1 house per 2 * TOWN_GROWTH_TICKS ticks.
 		 * Also emulate original behaviour when town was only growing in
 		 * TOWN_GROWTH_TICKS intervals, to make sure that it's not too
-		 * tick-perfect and gives player some time window where he can
+		 * tick-perfect and gives player some time window where they can
 		 * spam funding with the exact same efficiency.
 		 */
 		t->grow_counter = std::min<uint16>(t->grow_counter, 2 * TOWN_GROWTH_TICKS - (t->growth_rate - t->grow_counter) % TOWN_GROWTH_TICKS);
@@ -3701,6 +3714,8 @@ static void ForAllStationsNearTown(Town *t, Func func)
 
 static void UpdateTownRating(Town *t)
 {
+	if (_extra_cheats.town_rating.value) return;
+
 	/* Increase company ratings if they're low */
 	for (const Company *c : Company::Iterate()) {
 		if (t->ratings[c->index] < RATING_GROWTH_MAXIMUM) {
@@ -4024,13 +4039,15 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	/* if magic_bulldozer cheat is active, town doesn't penalize for removing stuff */
 	if (t == nullptr || (flags & DC_NO_MODIFY_TOWN_RATING) ||
 			!Company::IsValidID(_current_company) ||
-			(_cheats.magic_bulldozer.value && add < 0)) {
+			((_cheats.magic_bulldozer.value || _extra_cheats.town_rating.value) && add < 0)) {
 		return;
 	}
 
 	const int prev_rating = GetRating(t);
 	int rating = prev_rating;
-	if (add < 0) {
+	if (_extra_cheats.town_rating.value) {
+		rating = RATING_MAXIMUM;
+	} else if (add < 0) {
 		if (rating > max) {
 			rating += add;
 			if (rating < max) rating = max;
@@ -4054,6 +4071,26 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	}
 }
 
+
+void UpdateAllTownRatings()
+{
+	if (_extra_cheats.town_rating.value) {
+		for (Town *t : Town::Iterate()) {
+			if (Company::IsValidID(_local_company) && HasBit(t->have_ratings, _local_company) && t->ratings[_local_company] <= 0) {
+				ZoningTownAuthorityRatingChange();
+			}
+			uint8 c;
+			FOR_EACH_SET_BIT(c, t->have_ratings) {
+				t->ratings[c] = RATING_MAXIMUM;
+			}
+			if (t->have_ratings != 0) {
+				t->UpdateVirtCoord();
+				SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
+			}
+		}
+	}
+}
+
 /**
  * Does the town authority allow the (destructive) action of the current company?
  * @param flags Checking flags of the command.
@@ -4065,7 +4102,7 @@ CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType
 {
 	/* if magic_bulldozer cheat is active, town doesn't restrict your destructive actions */
 	if (t == nullptr || !Company::IsValidID(_current_company) ||
-			_cheats.magic_bulldozer.value || (flags & DC_NO_TEST_TOWN_RATING)) {
+			_cheats.magic_bulldozer.value || _extra_cheats.town_rating.value || (flags & DC_NO_TEST_TOWN_RATING)) {
 		return CommandCost();
 	}
 

@@ -80,18 +80,11 @@ Date   _last_sync_date;               ///< The game date of the last successfull
 DateFract _last_sync_date_fract;      ///< "
 uint8  _last_sync_tick_skip_counter;  ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
-bool _network_udp_server;             ///< Is the UDP server started?
-uint16 _network_udp_broadcast;        ///< Timeout for the UDP broadcasts.
-uint8 _network_advertise_retries;     ///< The number of advertisement retries we did.
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
 
 /* Check whether NETWORK_NUM_LANDSCAPES is still in sync with NUM_LANDSCAPE */
 static_assert((int)NETWORK_NUM_LANDSCAPES == (int)NUM_LANDSCAPE);
 static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
-
-extern NetworkUDPSocketHandler *_udp_client_socket; ///< udp client socket
-extern NetworkUDPSocketHandler *_udp_server_socket; ///< udp server socket
-extern NetworkUDPSocketHandler *_udp_master_socket; ///< udp master socket
 
 /** The amount of clients connected */
 byte _network_clients_connected = 0;
@@ -190,12 +183,15 @@ const char *GenerateCompanyPasswordHash(const char *password, const char *passwo
 	if (StrEmpty(password)) return password;
 
 	char salted_password[NETWORK_SERVER_ID_LENGTH];
+	size_t password_length = strlen(password);
+	size_t password_server_id_length = strlen(password_server_id);
 
-	memset(salted_password, 0, sizeof(salted_password));
-	seprintf(salted_password, lastof(salted_password), "%s", password);
 	/* Add the game seed and the server's ID as the salt. */
 	for (uint i = 0; i < NETWORK_SERVER_ID_LENGTH - 1; i++) {
-		salted_password[i] ^= password_server_id[i] ^ (password_game_seed >> (i % 32));
+		char password_char = (i < password_length ? password[i] : 0);
+		char server_id_char = (i < password_server_id_length ? password_server_id[i] : 0);
+		char seed_char = password_game_seed >> (i % 32);
+		salted_password[i] = password_char ^ server_id_char ^ seed_char;
 	}
 
 	Md5 checksum;
@@ -347,6 +343,7 @@ StringID GetNetworkErrorMsg(NetworkErrorCode err)
 		STR_NETWORK_ERROR_CLIENT_TIMEOUT_COMPUTER,
 		STR_NETWORK_ERROR_CLIENT_TIMEOUT_MAP,
 		STR_NETWORK_ERROR_CLIENT_TIMEOUT_JOIN,
+		STR_NETWORK_ERROR_CLIENT_INVALID_CLIENT_NAME,
 	};
 	static_assert(lengthof(network_error_strings) == NETWORK_ERROR_END);
 
@@ -480,6 +477,36 @@ static void CheckPauseOnJoin()
 }
 
 /**
+ * Converts a string to ip/port
+ *  Format: IP:port
+ *
+ * connection_string will be re-terminated to separate out the hostname, port will
+ * be set to the port strings given by the user, inside the memory area originally
+ * occupied by connection_string.
+ */
+void ParseConnectionString(const char **port, char *connection_string)
+{
+	bool ipv6 = (strchr(connection_string, ':') != strrchr(connection_string, ':'));
+	for (char *p = connection_string; *p != '\0'; p++) {
+		switch (*p) {
+			case '[':
+				ipv6 = true;
+				break;
+
+			case ']':
+				ipv6 = false;
+				break;
+
+			case ':':
+				if (ipv6) break;
+				*port = p + 1;
+				*p = '\0';
+				break;
+		}
+	}
+}
+
+/**
  * Converts a string to ip/port/company
  *  Format: IP:port#company
  *
@@ -487,11 +514,10 @@ static void CheckPauseOnJoin()
  * be set to the company and port strings given by the user, inside the memory area originally
  * occupied by connection_string.
  */
-void ParseConnectionString(const char **company, const char **port, char *connection_string)
+void ParseGameConnectionString(const char **company, const char **port, char *connection_string)
 {
 	bool ipv6 = (strchr(connection_string, ':') != strrchr(connection_string, ':'));
-	char *p;
-	for (p = connection_string; *p != '\0'; p++) {
+	for (char *p = connection_string; *p != '\0'; p++) {
 		switch (*p) {
 			case '[':
 				ipv6 = true;
@@ -525,9 +551,10 @@ void ParseConnectionString(const char **company, const char **port, char *connec
 	/* Register the login */
 	_network_clients_connected++;
 
-	SetWindowDirty(WC_CLIENT_LIST, 0);
 	ServerNetworkGameSocketHandler *cs = new ServerNetworkGameSocketHandler(s);
 	cs->client_address = address; // Save the IP of the client
+
+	InvalidateWindowData(WC_CLIENT_LIST, 0);
 }
 
 /**
@@ -629,7 +656,6 @@ void NetworkAddServer(const char *b)
 {
 	if (*b != '\0') {
 		const char *port = nullptr;
-		const char *company = nullptr;
 		char host[NETWORK_HOSTNAME_LENGTH];
 		uint16 rport;
 
@@ -638,7 +664,7 @@ void NetworkAddServer(const char *b)
 		strecpy(_settings_client.network.connect_to_ip, b, lastof(_settings_client.network.connect_to_ip));
 		rport = NETWORK_DEFAULT_PORT;
 
-		ParseConnectionString(&company, &port, host);
+		ParseConnectionString(&port, host);
 		if (port != nullptr) rport = atoi(port);
 
 		NetworkUDPQueryServer(NetworkAddress(host, rport), true);
@@ -695,14 +721,16 @@ public:
 
 
 /* Used by clients, to connect to a server */
-void NetworkClientConnectGame(NetworkAddress address, CompanyID join_as, const char *join_server_password, const char *join_company_password)
+void NetworkClientConnectGame(const char *hostname, uint16 port, CompanyID join_as, const char *join_server_password, const char *join_company_password)
 {
 	if (!_network_available) return;
 
-	if (address.GetPort() == 0) return;
+	if (port == 0) return;
 
-	strecpy(_settings_client.network.last_host, address.GetHostname(), lastof(_settings_client.network.last_host));
-	_settings_client.network.last_port = address.GetPort();
+	if (!NetworkValidateClientName()) return;
+
+	strecpy(_settings_client.network.last_host, hostname, lastof(_settings_client.network.last_host));
+	_settings_client.network.last_port = port;
 	_network_join_as = join_as;
 	_network_join_server_password = join_server_password;
 	_network_join_company_password = join_company_password;
@@ -713,13 +741,13 @@ void NetworkClientConnectGame(NetworkAddress address, CompanyID join_as, const c
 	_network_join_status = NETWORK_JOIN_STATUS_CONNECTING;
 	ShowJoinStatusWindow();
 
-	new TCPClientConnecter(address);
+	new TCPClientConnecter(NetworkAddress(hostname, port));
 }
 
 static void NetworkInitGameInfo()
 {
 	if (StrEmpty(_settings_client.network.server_name)) {
-		seprintf(_settings_client.network.server_name, lastof(_settings_client.network.server_name), "Unnamed Server");
+		strecpy(_settings_client.network.server_name, "Unnamed Server", lastof(_settings_client.network.server_name));
 	}
 
 	/* The server is a client too */
@@ -754,7 +782,7 @@ bool NetworkServerStart()
 
 	/* Try to start UDP-server */
 	DEBUG(net, 1, "starting listeners for incoming server queries");
-	_network_udp_server = _udp_server_socket->Listen();
+	NetworkUDPServerListen();
 
 	_network_company_states = CallocT<NetworkCompanyState>(MAX_COMPANIES);
 	_network_server = true;
@@ -1074,12 +1102,13 @@ static void NetworkGenerateServerId()
 	seprintf(_settings_client.network.network_id, lastof(_settings_client.network.network_id), "%s", hex_output);
 }
 
-void NetworkStartDebugLog(NetworkAddress address)
+void NetworkStartDebugLog(const char *hostname, uint16 port)
 {
 	extern SOCKET _debug_socket;  // Comes from debug.c
 
-	DEBUG(net, 0, "Redirecting DEBUG() to %s:%d", address.GetHostname(), address.GetPort());
+	DEBUG(net, 0, "Redirecting DEBUG() to %s:%d", hostname, port);
 
+	NetworkAddress address(hostname, port);
 	SOCKET s = address.Connect();
 	if (s == INVALID_SOCKET) {
 		DEBUG(net, 0, "Failed to open socket for redirection DEBUG()");
@@ -1100,7 +1129,6 @@ void NetworkStartUp()
 	_network_available = NetworkCoreInitialize();
 	_network_dedicated = false;
 	_network_need_advertise = true;
-	_network_advertise_retries = 0;
 
 	/* Generate an server id when there is none yet */
 	if (StrEmpty(_settings_client.network.network_id)) NetworkGenerateServerId();

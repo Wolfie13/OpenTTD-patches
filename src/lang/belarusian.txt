@@ -1299,6 +1299,8 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Выра
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Выбар вырашэньня экрана
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Iншае
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Памер элементаў інтэрфейсу
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Выберыце памер элементаў інтэрфейсу
 
@@ -1310,6 +1312,8 @@ STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Паме
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Абярыце памер шрыфта, выкарыстоўванага ў гульні
 
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Звычайны
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Набор базавай ґрафікі
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Выбар базавага набору ґрафічных аб'ектаў
@@ -1486,8 +1490,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Пераклю�
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Стаўленьне гарадзкой рады да рэструктурызацыі навакольляў: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Выберыце ўзровень шуму й забруджваньня навакольнага асяроддзя кампаніямі, які ўплывае на іх рэйтынґ у гарадах і магчымасьць далейшага будаўніцтва каля гарадоў
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Максімальная вышыня: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Усталёўка максімальна дапушчальнай вышыні гор на мапе
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Немагчыма зьмяніць максімальную вышыню. На мапе ёсць горы вышэй гэтага значэньня.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Дазволіць зьмену ляндшафту пад будынкамі, дарогамі й г. д. (аўтаспускі): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Дазволіць зьмену ляндшафту пад будынкамі й рэйкамi, не выдаляючы іx
@@ -2059,6 +2061,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... на
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Недахоп апэратыўнай памяці
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Не атрымалася вылучыць {BYTES} для кэша спрайтаў. Памер кэша зніжаны да {BYTES}. Гэта адмоўна адаб'ецца на прадукцыйнасьці OpenTTD. Каб зьменшыць выдаткі памяці, адключыце 32-бітную ґрафіку й зьменшыце максімальны ўзровень набліжэньня.
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2222,6 +2226,7 @@ STR_FACE_TIE                                                    :Гальшту�
 STR_FACE_EARRING                                                :Завушніца:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Зьмяніць гальштук або завушніцу
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Сеткавая гульня
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Імя гульца:
@@ -2280,10 +2285,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Назв
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Усталяваць пароль
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Абараніце вашу гульню паролем, калі ня хочаце рабіць яе публічна даступнай
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Інтэрнэт
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Выберыце паміж гульнёй праз Інтэрнэт або ў лакальнай сетцы
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Не
-STR_NETWORK_START_SERVER_ADVERTISED                             :Так
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} клiент{P "" ы аў}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Макс. колькасьць клiентаў:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Выбар максымальнай колькасьці кліентаў. Ня ўсе месцы павінны быць занятыя
@@ -2297,46 +2298,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Мова
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Іншыя гульцы будуць ведаць, на якой мове размаўляюць на сэрвэры
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Увядзіце назву сеткавай гульні
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Любая
-STR_NETWORK_LANG_ENGLISH                                        :Анґельская
-STR_NETWORK_LANG_GERMAN                                         :Нямецкая
-STR_NETWORK_LANG_FRENCH                                         :Француская
-STR_NETWORK_LANG_BRAZILIAN                                      :Бразыльская
-STR_NETWORK_LANG_BULGARIAN                                      :Балґарская
-STR_NETWORK_LANG_CHINESE                                        :Кітайская
-STR_NETWORK_LANG_CZECH                                          :Чэская
-STR_NETWORK_LANG_DANISH                                         :Дацкая
-STR_NETWORK_LANG_DUTCH                                          :Нідэрляндзкая
-STR_NETWORK_LANG_ESPERANTO                                      :Эспэранта
-STR_NETWORK_LANG_FINNISH                                        :Фінская
-STR_NETWORK_LANG_HUNGARIAN                                      :Вугорская
-STR_NETWORK_LANG_ICELANDIC                                      :Ісьляндзкая
-STR_NETWORK_LANG_ITALIAN                                        :Італьянская
-STR_NETWORK_LANG_JAPANESE                                       :Японская
-STR_NETWORK_LANG_KOREAN                                         :Карэйская
-STR_NETWORK_LANG_LITHUANIAN                                     :Летувіская
-STR_NETWORK_LANG_NORWEGIAN                                      :Нарвэская
-STR_NETWORK_LANG_POLISH                                         :Польская
-STR_NETWORK_LANG_PORTUGUESE                                     :Партуґальская
-STR_NETWORK_LANG_ROMANIAN                                       :Румынская
-STR_NETWORK_LANG_RUSSIAN                                        :Расейская
-STR_NETWORK_LANG_SLOVAK                                         :Славацкая
-STR_NETWORK_LANG_SLOVENIAN                                      :Славенская
-STR_NETWORK_LANG_SPANISH                                        :Гішпанская
-STR_NETWORK_LANG_SWEDISH                                        :Швэдзкая
-STR_NETWORK_LANG_TURKISH                                        :Турэцкая
-STR_NETWORK_LANG_UKRAINIAN                                      :Украінская
-STR_NETWORK_LANG_AFRIKAANS                                      :Афрыкаанс
-STR_NETWORK_LANG_CROATIAN                                       :Харвацкая
-STR_NETWORK_LANG_CATALAN                                        :Каталёнская
-STR_NETWORK_LANG_ESTONIAN                                       :Эстонская
-STR_NETWORK_LANG_GALICIAN                                       :Ґалісійская
-STR_NETWORK_LANG_GREEK                                          :Грэцкая
-STR_NETWORK_LANG_LATVIAN                                        :Латыская
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Вітальня сеткавай гульні
@@ -2385,19 +2346,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Адлу
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Сэрвэр абаронены. Увядзіце пароль
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Кампанія абароненая. Увядзіце пароль
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Сьпіс кліентаў
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Сьпіс кліентаў
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Назіраць
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Новая кампанія
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Выкінуць гульца
-STR_NETWORK_CLIENTLIST_BAN                                      :Бан
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Пагутарыць з усімі
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Пагутарыць з кампаніяй
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Прыватнае паведамленьне
+
+
 
 STR_NETWORK_SERVER                                              :Сэрвэр
 STR_NETWORK_CLIENT                                              :Кліент
@@ -2594,6 +2549,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Адсу
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD патрабуе ґрафiкi для функцыянаваньня, але ня можа знайсьцi нiякай. Вы дазваляеце OpenTTD спампаваць ды ўсталяваць гэтую ґрафiку?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Так, спампаваць ґрафiку
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Не, выйсьцi з OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Наладкі празрыстасьці
@@ -3106,9 +3062,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Колькасьць гарадоў:
 STR_MAPGEN_DATE                                                 :{BLACK}Дата:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Колькасьць прадпрыемстваў:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Макс. вышыня мапы:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Павялічыць максімальную вышыню мапы на 1
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Паменшыць максімальную вышыню мапы на 1
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Вышыня сьнегавой лініі:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Падняць сьнегавую лінію
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Апусьціць сьнегавую лінію
@@ -3137,7 +3090,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Назв
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Памер:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} * {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Максімальная вышыня мапы
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Зьмяніць вышыню сьнегавой лініі
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Зьмяніць год пачатку гульні
 
@@ -3424,13 +3376,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Дац�
 STR_GOALS_CAPTION                                               :{WHITE}Задачы кампаніі «{COMPANY}»
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Глабальныя задачы
 STR_GOALS_SPECTATOR                                             :Агульныя задачы
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Агульныя задачы:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Няма -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Непрыстасоўна -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Задачы кампаніі:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Пстрыкніце па задачы, каб паказаць прадпрыемства/горад/клетку. Ctrl+пстрычка паказвае ў новым вакне.
 
 # Goal question window

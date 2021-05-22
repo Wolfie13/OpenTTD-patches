@@ -189,8 +189,16 @@ struct LanguagePack : public LanguagePackHeader {
 	inline void operator delete(void *ptr) { ::operator delete (ptr); }
 };
 
+struct LanguagePackDeleter {
+	void operator()(LanguagePack *langpack)
+	{
+		/* LanguagePack is in fact reinterpreted char[], we need to reinterpret it back to free it properly. */
+		delete[] reinterpret_cast<char*>(langpack);
+	}
+};
+
 struct LoadedLanguagePack {
-	std::unique_ptr<LanguagePack> langpack;
+	std::unique_ptr<LanguagePack, LanguagePackDeleter> langpack;
 
 	std::vector<char *> offsets;
 
@@ -572,7 +580,7 @@ static int DeterminePluralForm(int64 count, int plural_form)
 
 		/* Only one form.
 		 * Used in:
-		 *   Hungarian, Japanese, Korean, Turkish */
+		 *   Hungarian, Japanese, Turkish */
 		case 1:
 			return 0;
 
@@ -666,6 +674,12 @@ static int DeterminePluralForm(int64 count, int plural_form)
 		 *  Scottish Gaelic */
 		case 13:
 			return ((n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : ((n > 2 && n < 11) || (n > 12 && n < 20)) ? 2 : 3);
+
+		/* Three forms: special cases for 1, 0 and numbers ending in 01 to 19.
+		 * Used in:
+		 *   Romanian */
+		case 14:
+			return n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2;
 	}
 }
 
@@ -1394,8 +1408,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				CargoTypes cmask = args->GetInt64(SCC_CARGO_LIST);
 				bool first = true;
 
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_CARGOSPECS(cs) {
+				for (const auto &cs : _sorted_cargo_specs) {
 					if (!HasBit(cmask, cs->Index())) continue;
 
 					if (buff >= last - 2) break; // ',' and ' '
@@ -2020,26 +2033,8 @@ static char *GetSpecialNameString(char *buff, int ind, StringParameters *args, c
 		return strecpy(buff, " Transport", last);
 	}
 
-	/* language name? */
-	if (IsInsideMM(ind, (SPECSTR_LANGUAGE_START - 0x70E4), (SPECSTR_LANGUAGE_END - 0x70E4) + 1)) {
-		int i = ind - (SPECSTR_LANGUAGE_START - 0x70E4);
-		return strecpy(buff,
-			&_languages[i] == _current_language ? _current_language->own_name : _languages[i].name, last);
-	}
-
-	/* resolution size? */
-	if (IsInsideBS(ind, (SPECSTR_RESOLUTION_START - 0x70E4), _resolutions.size())) {
-		int i = ind - (SPECSTR_RESOLUTION_START - 0x70E4);
-		buff += seprintf(
-			buff, last, "%ux%u", _resolutions[i].width, _resolutions[i].height
-		);
-		return buff;
-	}
-
 	NOT_REACHED();
 }
-
-extern void SortNetworkLanguages();
 
 /**
  * Check whether the header is a valid header for OpenTTD.
@@ -2063,6 +2058,15 @@ bool LanguagePackHeader::IsValid() const
 }
 
 /**
+ * Check whether a translation is sufficiently finished to offer it to the public.
+ */
+bool LanguagePackHeader::IsReasonablyFinished() const
+{
+	/* "Less than 25% missing" is "sufficiently finished". */
+	return 4 * this->missing < LANGUAGE_TOTAL_STRINGS;
+}
+
+/**
  * Read a particular language.
  * @param lang The metadata about the language.
  * @return Whether the loading went okay or not.
@@ -2071,7 +2075,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 {
 	/* Current language pack */
 	size_t len = 0;
-	std::unique_ptr<LanguagePack> lang_pack(reinterpret_cast<LanguagePack *>(ReadFileToMem(lang->file, len, 1U << 20).release()));
+	std::unique_ptr<LanguagePack, LanguagePackDeleter> lang_pack(reinterpret_cast<LanguagePack *>(ReadFileToMem(lang->file, len, 1U << 20).release()));
 	if (!lang_pack) return false;
 
 	/* End of read data (+ terminating zero added in ReadFileToMem()) */
@@ -2157,7 +2161,6 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	InitializeSortedCargoSpecs();
 	SortIndustryTypes();
 	BuildIndustriesLegend();
-	SortNetworkLanguages();
 	BuildContentTypeStringList();
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
@@ -2261,14 +2264,14 @@ static void GetLanguageList(const char *path)
 	if (dir != nullptr) {
 		struct dirent *dirent;
 		while ((dirent = readdir(dir)) != nullptr) {
-			const char *d_name    = FS2OTTD(dirent->d_name);
-			const char *extension = strrchr(d_name, '.');
+			std::string d_name = FS2OTTD(dirent->d_name);
+			const char *extension = strrchr(d_name.c_str(), '.');
 
 			/* Not a language file */
 			if (extension == nullptr || strcmp(extension, ".lng") != 0) continue;
 
 			LanguageMetadata lmd;
-			seprintf(lmd.file, lastof(lmd.file), "%s%s", path, d_name);
+			seprintf(lmd.file, lastof(lmd.file), "%s%s", path, d_name.c_str());
 
 			/* Check whether the file is of the correct version */
 			if (!GetLanguageFileHeader(lmd.file, &lmd)) {
@@ -2289,9 +2292,7 @@ static void GetLanguageList(const char *path)
  */
 void InitializeLanguagePacks()
 {
-	Searchpath sp;
-
-	FOR_ALL_SEARCHPATHS(sp) {
+	for (Searchpath sp : _valid_searchpaths) {
 		std::string path = FioGetDirectory(sp, LANG_DIR);
 		GetLanguageList(path.c_str());
 	}
@@ -2317,6 +2318,10 @@ void InitializeLanguagePacks()
 		}
 
 		if (strcmp (lng.isocode, "en_GB") == 0) en_GB_fallback    = &lng;
+
+		/* Only auto-pick finished translations */
+		if (!lng.IsReasonablyFinished()) continue;
+
 		if (strncmp(lng.isocode, lang, 5) == 0) chosen_language   = &lng;
 		if (strncmp(lng.isocode, lang, 2) == 0) language_fallback = &lng;
 	}

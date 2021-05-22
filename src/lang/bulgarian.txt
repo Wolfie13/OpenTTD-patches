@@ -969,12 +969,16 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Разм
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Избор размера на екран
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :друго
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Интерфейс размер
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Изберете размера на интерфейс елемент за използване
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Нормално
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Двукратно
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Четирикратно
+
+
 
 
 
@@ -1157,8 +1161,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Включва�
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Отношението на градския съвет към реструктурирането на района: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Изберете какво количество шум и поражения по околната среда причинени от компаниите афектират техния рейтинг в града и бъдещи конструкции в района.
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Максимална височина на картата: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Определете максималната допустима височина за планини на картата
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Не можете да зададете максималната височина на картата на тази стойност. Поне една планина на карта е по-висока
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Тераформиране под постройки (autoslope): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Разреши промяна на наклона на терена под постройки и пътища без необходимост от премахване
@@ -1672,6 +1674,8 @@ STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... пр
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... пропруска набора от основни песни '{STRING}': не е открит
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Отвъд паметта
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1833,6 +1837,7 @@ STR_FACE_TIE                                                    :Вратовр�
 STR_FACE_EARRING                                                :Oбица:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Cмени вратовръзкатa или oбицатa
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Онлайн играчи
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Име на играч:
@@ -1891,10 +1896,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Имет
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Поставяне на парола
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Защитаване на вашата игра с парола за да не е публично достъпна
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Рекламирана
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Избери игра измежду рекламирана през интернет или нерекламирана през Локален интернет хост или ЛАН
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Не
-STR_NETWORK_START_SERVER_ADVERTISED                             :Да
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} клиент{P "" s}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Макс. брой играчи:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Избор на максималния брой клиенти. Не всички слотове трябва да се попълнят
@@ -1908,46 +1909,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Гово
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Другите играчи ще знаят езика на който се говори на сървъра
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Въведете име за мрежовата игра
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Всеки
-STR_NETWORK_LANG_ENGLISH                                        :Английски
-STR_NETWORK_LANG_GERMAN                                         :Немски
-STR_NETWORK_LANG_FRENCH                                         :Френски
-STR_NETWORK_LANG_BRAZILIAN                                      :Бразилски
-STR_NETWORK_LANG_BULGARIAN                                      :Български
-STR_NETWORK_LANG_CHINESE                                        :Китайски
-STR_NETWORK_LANG_CZECH                                          :Чешки
-STR_NETWORK_LANG_DANISH                                         :Датски
-STR_NETWORK_LANG_DUTCH                                          :Холандски
-STR_NETWORK_LANG_ESPERANTO                                      :Eсперанто
-STR_NETWORK_LANG_FINNISH                                        :Финландски
-STR_NETWORK_LANG_HUNGARIAN                                      :Унгарски
-STR_NETWORK_LANG_ICELANDIC                                      :Исландски
-STR_NETWORK_LANG_ITALIAN                                        :Италиански
-STR_NETWORK_LANG_JAPANESE                                       :Японски
-STR_NETWORK_LANG_KOREAN                                         :Корейски
-STR_NETWORK_LANG_LITHUANIAN                                     :Литовски
-STR_NETWORK_LANG_NORWEGIAN                                      :Норвежки
-STR_NETWORK_LANG_POLISH                                         :Полски
-STR_NETWORK_LANG_PORTUGUESE                                     :Португалски
-STR_NETWORK_LANG_ROMANIAN                                       :Румънски
-STR_NETWORK_LANG_RUSSIAN                                        :Руски
-STR_NETWORK_LANG_SLOVAK                                         :Словашки
-STR_NETWORK_LANG_SLOVENIAN                                      :Словенски
-STR_NETWORK_LANG_SPANISH                                        :Испански
-STR_NETWORK_LANG_SWEDISH                                        :Шведски
-STR_NETWORK_LANG_TURKISH                                        :Турски
-STR_NETWORK_LANG_UKRAINIAN                                      :Украински
-STR_NETWORK_LANG_AFRIKAANS                                      :Африкаанс
-STR_NETWORK_LANG_CROATIAN                                       :Хърватски
-STR_NETWORK_LANG_CATALAN                                        :Каталонски
-STR_NETWORK_LANG_ESTONIAN                                       :Естонски
-STR_NETWORK_LANG_GALICIAN                                       :Галиматия
-STR_NETWORK_LANG_GREEK                                          :Гръцки
-STR_NETWORK_LANG_LATVIAN                                        :Латвийски
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Преддверие на мрежовите игри
@@ -1999,15 +1960,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Комп
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Списък с играчите
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Наблюдавай
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Нова фирма
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Изгони
-STR_NETWORK_CLIENTLIST_BAN                                      :Бан
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Кажи на всички
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Кажи на компания
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Лично съобщение
+
+
 
 STR_NETWORK_SERVER                                              :Сървър
 STR_NETWORK_CLIENT                                              :Клиент
@@ -2186,6 +2142,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Липс
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD изисква графики, които не могат да бъдат намерени. Ще позволите ли на OpenTTD да изтегли и инсталира тези графики?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Да, изтегли графиките
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Не, изход от OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Настройки на прозрачност
@@ -2666,9 +2623,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Брой градове:
 STR_MAPGEN_DATE                                                 :{BLACK}Дата:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Брой индустрии:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Максимална височина на картата:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Увеличаване на максималната височина на планините на карта с едно
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Намаляне максималната височина на планините на карта с едно
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Снежна линия:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Преместване снежната линия нагоре
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Преместване снежната линия надолу
@@ -2697,7 +2651,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Име �
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Размер:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Промяна на максималната височина на картата
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Височина на снежната линия
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Промяна началната година
 
@@ -2971,12 +2924,9 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW} Под
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Цели
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Глобални цели
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Основни цели:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Никакви -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Неприложимо-
 STR_GOALS_PROGRESS                                              :{ORANGE}напредък{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Цели на компанията:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Кликни на задачата за да центрирате камерата на фабрика/град/плочка. Ctrl+Click отваря нов прозорец центриран на фабрика/град/плочка
 
 # Goal question window

@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../gamelog_internal.h"
 #include "../fios.h"
+#include "../string_func.h"
 
 #include "saveload.h"
 
@@ -110,8 +111,11 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 	assert(gamelog_action == nullptr);
 	assert(gamelog_actions == 0);
 
-	GamelogActionType at;
-	while ((at = (GamelogActionType)SlReadByte()) != GLAT_NONE) {
+	byte type;
+	while ((type = SlReadByte()) != GLAT_NONE) {
+		if (type >= GLAT_END) SlErrorCorrupt("Invalid gamelog action type");
+		GamelogActionType at = (GamelogActionType)type;
+
 		gamelog_action = ReallocT(gamelog_action, gamelog_actions + 1);
 		LoggedAction *la = &gamelog_action[gamelog_actions++];
 
@@ -121,16 +125,16 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 		la->change = nullptr;
 		la->changes = 0;
 
-		GamelogChangeType ct;
-		while ((ct = (GamelogChangeType)SlReadByte()) != GLCT_NONE) {
+		while ((type = SlReadByte()) != GLCT_NONE) {
+			if (type >= GLCT_END) SlErrorCorrupt("Invalid gamelog change type");
+			GamelogChangeType ct = (GamelogChangeType)type;
+
 			la->change = ReallocT(la->change, la->changes + 1);
 
 			LoggedChange *lc = &la->change[la->changes++];
 			/* for SLE_STR, pointer has to be valid! so make it nullptr */
 			memset(lc, 0, sizeof(*lc));
 			lc->ct = ct;
-
-			assert((uint)ct < GLCT_END);
 
 			SlObject(lc, _glog_desc[ct]);
 			if (ct == GLCT_REVISION && SlXvIsFeatureMissing(XSLFI_EXTENDED_GAMELOG)) {

@@ -614,6 +614,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 
 					/* Sell wagon */
 					CommandCost ret = DoCommand(0, wagon->index, 0, DC_EXEC, GetCmdSellVeh(wagon));
+					(void)ret; // assert only
 					assert(ret.Succeeded());
 					new_vehs[i] = nullptr;
 
@@ -630,6 +631,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 				/* Success ! */
 				if ((flags & DC_EXEC) != 0 && new_head != old_head) {
 					*chain = new_head;
+					AI::NewEvent(old_head->owner, new ScriptEventVehicleAutoReplaced(old_head->index, new_head->index));
 				}
 
 				/* Transfer cargo of old vehicles and sell them */
@@ -643,10 +645,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 
 					if ((flags & DC_EXEC) != 0) {
 						old_vehs[i] = nullptr;
-						if (i == 0) {
-							AI::NewEvent(old_head->owner, new ScriptEventVehicleAutoReplaced(old_head->index, new_head->index));
-							old_head = nullptr;
-						}
+						if (i == 0) old_head = nullptr;
 					}
 					/* Sell the vehicle.
 					 * Note: This might temporarily construct new trains, so use DC_AUTOREPLACE to prevent
@@ -669,6 +668,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 
 				for (int i = num_units - 1; i > 0; i--) {
 					CommandCost ret = CmdMoveVehicle(old_vehs[i], old_head, DC_EXEC | DC_AUTOREPLACE, false);
+					(void)ret; // assert only
 					assert(ret.Succeeded());
 				}
 			}
@@ -757,6 +757,9 @@ CommandCost CmdAutoreplaceVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1
 	const Company *c = Company::Get(_current_company);
 	bool wagon_removal = c->settings.renew_keep_length;
 	bool same_type_only = HasBit(p2, 0);
+
+	const Group *g = Group::GetIfValid(v->group_id);
+	if (g != nullptr) wagon_removal = HasBit(g->flags, GroupFlags::GF_REPLACE_WAGON_REMOVAL);
 
 	/* Test whether any replacement is set, before issuing a whole lot of commands that would end in nothing changed */
 	Vehicle *w = v;

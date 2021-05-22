@@ -265,6 +265,35 @@ const Livery *GetParentLivery(const Group *g)
 	return &pg->livery;
 }
 
+static inline bool IsGroupDescendantOfGroup(const Group *g, const Group *top)
+{
+	if (g->owner != top->owner) return false;
+
+	while (true) {
+		if (g->parent == INVALID_GROUP) return false;
+		if (g->parent == top->index) return true;
+		g = Group::Get(g->parent);
+	}
+
+	NOT_REACHED();
+}
+
+template <typename F>
+void IterateDescendantsOfGroup(const Group *top, F func)
+{
+	for (Group *cg : Group::Iterate()) {
+		if (IsGroupDescendantOfGroup(cg, top)) {
+			func(cg);
+		}
+	}
+}
+
+template <typename F>
+void IterateDescendantsOfGroup(GroupID id_top, F func)
+{
+	const Group *top = Group::GetIfValid(id_top);
+	if (top != nullptr) IterateDescendantsOfGroup<F>(top, func);
+}
 
 /**
  * Propagate a livery change to a group's children.
@@ -283,13 +312,10 @@ void PropagateChildLivery(const Group *g)
 		}
 	}
 
-	for (Group *cg : Group::Iterate()) {
-		if (cg->parent == g->index) {
-			if (!HasBit(cg->livery.in_use, 0)) cg->livery.colour1 = g->livery.colour1;
-			if (!HasBit(cg->livery.in_use, 1)) cg->livery.colour2 = g->livery.colour2;
-			PropagateChildLivery(cg);
-		}
-	}
+	IterateDescendantsOfGroup(g, [&](Group *cg) {
+		if (!HasBit(cg->livery.in_use, 0)) cg->livery.colour1 = g->livery.colour1;
+		if (!HasBit(cg->livery.in_use, 1)) cg->livery.colour2 = g->livery.colour2;
+	});
 }
 
 
@@ -324,7 +350,6 @@ CommandCost CmdCreateGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 	if (flags & DC_EXEC) {
 		Group *g = new Group(_current_company);
-		g->replace_protection = false;
 		g->vehicle_type = vt;
 		g->parent = INVALID_GROUP;
 
@@ -332,10 +357,12 @@ CommandCost CmdCreateGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			const Company *c = Company::Get(_current_company);
 			g->livery.colour1 = c->livery[LS_DEFAULT].colour1;
 			g->livery.colour2 = c->livery[LS_DEFAULT].colour2;
+			if (c->settings.renew_keep_length) SetBit(g->flags, GroupFlags::GF_REPLACE_WAGON_REMOVAL);
 		} else {
 			g->parent = pg->index;
 			g->livery.colour1 = pg->livery.colour1;
 			g->livery.colour2 = pg->livery.colour2;
+			g->flags = pg->flags;
 		}
 
 		_new_group_id = g->index;
@@ -728,42 +755,50 @@ CommandCost CmdSetGroupLivery(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 }
 
 /**
- * Set replace protection for a group and its sub-groups.
+ * Set group flag for a group and its sub-groups.
  * @param g initial group.
- * @param protect 1 to set or 0 to clear protection.
+ * @param set 1 to set or 0 to clear protection.
  */
-static void SetGroupReplaceProtection(Group *g, bool protect)
+static void SetGroupFlag(Group *g, GroupFlags flag, bool set, bool children)
 {
-	g->replace_protection = protect;
-
-	for (Group *pg : Group::Iterate()) {
-		if (pg->parent == g->index) SetGroupReplaceProtection(pg, protect);
+	if (set) {
+		SetBit(g->flags, flag);
+	} else {
+		ClrBit(g->flags, flag);
 	}
+
+	if (!children) return;
+
+	IterateDescendantsOfGroup(g, [&](Group *pg) {
+		SetGroupFlag(pg, flag, set, false);
+	});
 }
 
 /**
- * (Un)set global replace protection from a group
+ * (Un)set group flag from a group
  * @param tile unused
  * @param flags type of operation
  * @param p1   index of group array
- * - p1 bit 0-15 : GroupID
+ * - p1 bit 0-15  : GroupID
+ * - p1 bit 16-18 : Flag to set, by value not bit.
  * @param p2
  * - p2 bit 0    : 1 to set or 0 to clear protection.
  * - p2 bit 1    : 1 to apply to sub-groups.
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetGroupReplaceProtection(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdSetGroupFlag(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	Group *g = Group::GetIfValid(p1);
+	Group *g = Group::GetIfValid(GB(p1, 0, 16));
 	if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
+	/* GroupFlags are stored in as an 8 bit bitfield but passed here by value,
+	 * so 3 bits is sufficient to cover each possible value. */
+	GroupFlags flag = (GroupFlags)GB(p1, 16, 3);
+	if (flag >= GroupFlags::GF_END) return CMD_ERROR;
+
 	if (flags & DC_EXEC) {
-		if (HasBit(p2, 1)) {
-			SetGroupReplaceProtection(g, HasBit(p2, 0));
-		} else {
-			g->replace_protection = HasBit(p2, 0);
-		}
+		SetGroupFlag(g, flag, HasBit(p2, 0), HasBit(p2, 1));
 
 		SetWindowDirty(GetWindowClassForVehicleType(g->vehicle_type), VehicleListIdentifier(VL_GROUP_LIST, g->vehicle_type, _current_company).Pack());
 		InvalidateWindowData(WC_REPLACE_VEHICLE, g->vehicle_type);
@@ -851,9 +886,9 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 {
 	uint count = 0;
 	const Engine *e = Engine::Get(id_e);
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) count += GetGroupNumEngines(company, g->index, id_e);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		count += GroupStatistics::Get(company, g->index, e->type).num_engines[id_e];
+	});
 	return count + GroupStatistics::Get(company, id_g, e->type).num_engines[id_e];
 }
 
@@ -868,9 +903,9 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) count += GetGroupNumVehicle(company, g->index, type);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		count += GroupStatistics::Get(company, g->index, type).num_vehicle;
+	});
 	return count + GroupStatistics::Get(company, id_g, type).num_vehicle;
 }
 
@@ -885,9 +920,9 @@ uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) count += GetGroupNumProfitVehicle(company, g->index, type);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		count += GroupStatistics::Get(company, g->index, type).num_profit_vehicle;
+	});
 	return count + GroupStatistics::Get(company, id_g, type).num_profit_vehicle;
 }
 
@@ -902,9 +937,9 @@ uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
 Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type)
 {
 	Money sum = 0;
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) sum += GetGroupProfitLastYear(company, g->index, type);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		sum += GroupStatistics::Get(company, g->index, type).profit_last_year;
+	});
 	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year;
 }
 

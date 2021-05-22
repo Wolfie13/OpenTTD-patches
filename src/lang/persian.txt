@@ -962,7 +962,11 @@ STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}وضوح
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
+
+
 
 
 
@@ -1430,6 +1434,8 @@ STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ناشناخت�
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... سطح فشردگی'{STRING}' معتبر نیست
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... قالب ذخیره بازی '{STRING}' در دسترس نیست.برگردان به '{STRING}'
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1586,6 +1592,7 @@ STR_FACE_TIE                                                    :کراوات:
 STR_FACE_EARRING                                                :گوشواره:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}تغییر کراوات یا گوشواره
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}چندنفره
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}نام بازیگر:
@@ -1644,9 +1651,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}بازی
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}ثبت رمز
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}اگر بازی برای استفاده همگان نیست، بازی خود را با رمز محافظت کنید
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}تبلیغ دار
-STR_NETWORK_START_SERVER_UNADVERTISED                           :خیر
-STR_NETWORK_START_SERVER_ADVERTISED                             :بله
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} سرویس گیرنده
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}بیشترین تعداد سرویس گیرنده:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}بیشترین تعداد سرویس گیرنده را مشخص کنید.لازم نیست دقیقا به تعداد نفرات باشد
@@ -1660,46 +1664,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}زبان
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}دیگر بازیگران می فهمند که با چه زبانی در این سرویس دهنده گفتگو می شود
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}برای بازی شبکه‌ای یک نام وارد نمایید
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :هر زبانی
-STR_NETWORK_LANG_ENGLISH                                        :انگلیسی
-STR_NETWORK_LANG_GERMAN                                         :آلمانی
-STR_NETWORK_LANG_FRENCH                                         :فرانسوی
-STR_NETWORK_LANG_BRAZILIAN                                      :برزیلی
-STR_NETWORK_LANG_BULGARIAN                                      :بلغاری
-STR_NETWORK_LANG_CHINESE                                        :چینی
-STR_NETWORK_LANG_CZECH                                          :چکی
-STR_NETWORK_LANG_DANISH                                         :دانمارکی
-STR_NETWORK_LANG_DUTCH                                          :هلندی
-STR_NETWORK_LANG_ESPERANTO                                      :اسپرانتو
-STR_NETWORK_LANG_FINNISH                                        :فنلاندی
-STR_NETWORK_LANG_HUNGARIAN                                      :مجارستانی
-STR_NETWORK_LANG_ICELANDIC                                      :ایسلندی
-STR_NETWORK_LANG_ITALIAN                                        :ایتالیایی
-STR_NETWORK_LANG_JAPANESE                                       :زاپنی
-STR_NETWORK_LANG_KOREAN                                         :کُره‌ای
-STR_NETWORK_LANG_LITHUANIAN                                     :لیتوانیایی
-STR_NETWORK_LANG_NORWEGIAN                                      :نروژی
-STR_NETWORK_LANG_POLISH                                         :لهستانی
-STR_NETWORK_LANG_PORTUGUESE                                     :پرتغالی
-STR_NETWORK_LANG_ROMANIAN                                       :رومانیایی
-STR_NETWORK_LANG_RUSSIAN                                        :روسی
-STR_NETWORK_LANG_SLOVAK                                         :اسلوواکیایی
-STR_NETWORK_LANG_SLOVENIAN                                      :اسلوونیایی
-STR_NETWORK_LANG_SPANISH                                        :اسپانیایی
-STR_NETWORK_LANG_SWEDISH                                        :سوئدی
-STR_NETWORK_LANG_TURKISH                                        :ترکی
-STR_NETWORK_LANG_UKRAINIAN                                      :اوکراینی
-STR_NETWORK_LANG_AFRIKAANS                                      :آفریقایی
-STR_NETWORK_LANG_CROATIAN                                       :کرواسی
-STR_NETWORK_LANG_CATALAN                                        :کاتالانی
-STR_NETWORK_LANG_ESTONIAN                                       :استوونی
-STR_NETWORK_LANG_GALICIAN                                       :گالیسیایی
-STR_NETWORK_LANG_GREEK                                          :یونانی
-STR_NETWORK_LANG_LATVIAN                                        :لاتویانی
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}سالن انتظار بازی چندنفره
@@ -1751,15 +1715,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}شرکت
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}لیست سرویس گیرنده ها
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}تماشا
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}شرکت جدید
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :اخراج
-STR_NETWORK_CLIENTLIST_BAN                                      :قدغن کردن
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :گفتگو با همه
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :گفتگو با شرکت
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :پیام خصوصی
+
+
 
 STR_NETWORK_SERVER                                              :سرویس دهنده
 STR_NETWORK_CLIENT                                              :سرویس گیرنده
@@ -1934,6 +1893,7 @@ STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}بازگ
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}گرافیک های یافت نشده
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}بله, فایلهای گرافیک را بارگیری کن
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}خیر, خروج OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}گزینه های شفافیت
@@ -2691,13 +2651,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}رشو�
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} اهداف
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}اهداف جهانی
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}اهداف جهانی:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- هیچکدام -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- غیرقابل اعمال -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}اهداف شرکت:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}روی هدف کلیک کنید تا نمای اصلی را به مرکز صنایع/شهر/قطعه ببرد. Ctrl+Click یک نمای جدید از محل صنایع/شهر قطعه باز می کند
 
 # Goal question window

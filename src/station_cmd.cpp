@@ -57,6 +57,7 @@
 #include "widgets/station_widget.h"
 #include "zoning.h"
 #include "tunnelbridge_map.h"
+#include "cheat_type.h"
 
 #include "table/strings.h"
 
@@ -716,6 +717,9 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 					ZoningTownAuthorityRatingChange();
 				}
 				SetBit((*st)->town->have_ratings, _current_company);
+				if (_extra_cheats.town_rating.value) {
+					(*st)->town->ratings[_current_company] = RATING_MAXIMUM;
+				}
 			}
 		}
 	}
@@ -1218,13 +1222,13 @@ static inline byte *CreateMulti(byte *layout, int n, byte b)
  * @param plat_len  The length of the platforms.
  * @param statspec  The specification of the station to (possibly) get the layout from.
  */
-void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSpec *statspec)
+void GetStationLayout(byte *layout, uint numtracks, uint plat_len, const StationSpec *statspec)
 {
-	if (statspec != nullptr && statspec->lengths >= plat_len &&
-			statspec->platforms[plat_len - 1] >= numtracks &&
-			statspec->layouts[plat_len - 1][numtracks - 1]) {
+	if (statspec != nullptr && statspec->layouts.size() >= plat_len &&
+			statspec->layouts[plat_len - 1].size() >= numtracks &&
+			!statspec->layouts[plat_len - 1][numtracks - 1].empty()) {
 		/* Custom layout defined, follow it. */
-		memcpy(layout, statspec->layouts[plat_len - 1][numtracks - 1],
+		memcpy(layout, statspec->layouts[plat_len - 1][numtracks - 1].data(),
 			plat_len * numtracks);
 		return;
 	}
@@ -1233,9 +1237,9 @@ void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSp
 		CreateSingle(layout, numtracks);
 	} else {
 		if (numtracks & 1) layout = CreateSingle(layout, plat_len);
-		numtracks >>= 1;
+		int n = numtracks >> 1;
 
-		while (--numtracks >= 0) {
+		while (--n >= 0) {
 			layout = CreateMulti(layout, plat_len, 4);
 			layout = CreateMulti(layout, plat_len, 6);
 		}
@@ -2174,7 +2178,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		}
 
 		/* Update company infrastructure counts. */
-		FOR_ALL_ROADTRAMTYPES(rtt) {
+		for (RoadTramType rtt : _roadtramtypes) {
 			RoadType rt = GetRoadType(tile, rtt);
 			UpdateCompanyRoadInfrastructure(rt, GetRoadOwner(tile, rtt), -static_cast<int>(ROAD_STOP_TRACKBIT_FACTOR));
 		}
@@ -2258,7 +2262,7 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		Owner road_owner[] = { OWNER_NONE, OWNER_NONE };
 		DisallowedRoadDirections drd = DRD_NONE;
 		if (IsDriveThroughStopTile(cur_tile)) {
-			FOR_ALL_ROADTRAMTYPES(rtt) {
+			for (RoadTramType rtt : _roadtramtypes) {
 				road_type[rtt] = GetRoadType(cur_tile, rtt);
 				if (road_type[rtt] == INVALID_ROADTYPE) continue;
 				road_owner[rtt] = GetRoadOwner(cur_tile, rtt);
@@ -2637,9 +2641,9 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 
 	if (flags & DC_EXEC) {
 		for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
-			DeleteWindowById(
-				WC_VEHICLE_DEPOT, st->airport.GetHangarTile(i)
-			);
+			TileIndex tile_cur = st->airport.GetHangarTile(i);
+			OrderBackup::Reset(tile_cur, false);
+			DeleteWindowById(WC_VEHICLE_DEPOT, tile_cur);
 		}
 
 		ZoningMarkDirtyStationCoverageArea(st);
@@ -2653,7 +2657,6 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		nearest->noise_reached -= GetAirportNoiseLevelForDistance(as, dist);
 
 		TILE_AREA_LOOP(tile_cur, st->airport) {
-			if (IsHangarTile(tile_cur)) OrderBackup::Reset(tile_cur, false);
 			DeleteAnimatedTile(tile_cur);
 			DoClearSquare(tile_cur);
 			DeleteNewGRFInspectWindow(GSF_AIRPORTTILES, tile_cur);
@@ -3084,8 +3087,8 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 				}
 
 				/* Ensure the chosen tile layout is valid for this custom station */
-				if (statspec->renderdata != nullptr) {
-					layout = &statspec->renderdata[tile_layout < statspec->tiles ? tile_layout : (uint)GetRailStationAxis(ti->tile)];
+				if (!statspec->renderdata.empty()) {
+					layout = &statspec->renderdata[tile_layout < statspec->renderdata.size() ? tile_layout : (uint)GetRailStationAxis(ti->tile)];
 					if (!layout->NeedsPreprocessing()) {
 						t = layout;
 						layout = nullptr;
@@ -3646,7 +3649,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			stop &= TILE_SIZE - 1;
 
 			if (x == stop) {
-				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
+				if (front->UsingRealisticBraking() && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
 					/* Travelling too fast, do not stop and report overshoot to player */
 					if (front->owner == _local_company) {
 						SetDParam(0, front->index);
@@ -3663,7 +3666,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 				}
 				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
-				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 30) {
+				if (front->UsingRealisticBraking()&& front->cur_speed > 30) {
 					/* Travelling too fast, take no action */
 					return VETSB_CONTINUE;
 				}
@@ -3771,8 +3774,7 @@ static void UpdateStationRating(Station *st)
 	byte_inc_sat(&st->time_since_load);
 	byte_inc_sat(&st->time_since_unload);
 
-	const CargoSpec *cs;
-	FOR_ALL_CARGOSPECS(cs) {
+	for (const CargoSpec *cs : CargoSpec::Iterate()) {
 		GoodsEntry *ge = &st->goods[cs->Index()];
 		/* Slowly increase the rating back to his original level in the case we
 		 *  didn't deliver cargo yet to this station. This happens when a bribe
@@ -3809,7 +3811,10 @@ static void UpdateStationRating(Station *st)
 			 */
 			uint waiting_avg = waiting / (num_dests + 1);
 
-			if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
+			if (_extra_cheats.station_rating.value) {
+				ge->rating = rating = 255;
+				skip = true;
+			} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
 				/* Perform custom station rating. If it succeeds the speed, days in transit and
 				 * waiting cargo ratings must not be executed. */
 
@@ -4133,6 +4138,14 @@ static void StationHandleSmallTick(BaseStation *st)
 	st->delete_ctr = b;
 
 	if (b == 0) UpdateStationRating(Station::From(st));
+}
+
+void UpdateAllStationRatings()
+{
+	for (Station *st : Station::Iterate()) {
+		if (!st->IsInUse()) continue;
+		UpdateStationRating(st);
+	}
 }
 
 void OnTick_Station()
@@ -4535,7 +4548,7 @@ void DeleteOilRig(TileIndex tile)
 static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_owner)
 {
 	if (IsRoadStopTile(tile)) {
-		FOR_ALL_ROADTRAMTYPES(rtt) {
+		for (RoadTramType rtt : _roadtramtypes) {
 			/* Update all roadtypes, no matter if they are present */
 			if (GetRoadOwner(tile, rtt) == old_owner) {
 				RoadType rt = GetRoadType(tile, rtt);

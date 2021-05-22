@@ -265,11 +265,15 @@ struct ViewportDrawer {
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
+static void HideMeasurementTooltips();
 
 static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
 static std::vector<Viewport *> _viewport_window_cache;
+static std::vector<Rect> _viewport_coverage_rects;
+std::vector<Rect> _viewport_vehicle_normal_redraw_rects;
+std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
@@ -342,6 +346,33 @@ static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 	return p;
 }
 
+static void FillViewportCoverageRect()
+{
+	_viewport_coverage_rects.resize(_viewport_window_cache.size());
+	_viewport_vehicle_normal_redraw_rects.clear();
+	_viewport_vehicle_map_redraw_rects.clear();
+
+	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
+		const Viewport *vp = _viewport_window_cache[i];
+		Rect &r = _viewport_coverage_rects[i];
+		r.left = vp->virtual_left;
+		r.top = vp->virtual_top;
+		r.right = vp->virtual_left + vp->virtual_width + (1 << vp->zoom) - 1;
+		r.bottom = vp->virtual_top + vp->virtual_height + (1 << vp->zoom) - 1;
+
+		if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+			_viewport_vehicle_map_redraw_rects.push_back(r);
+		} else {
+			_viewport_vehicle_normal_redraw_rects.push_back({
+				r.left - (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE),
+				r.top - (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE),
+				r.right + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE),
+				r.bottom + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE),
+			});
+		}
+	}
+}
+
 void ClearViewportLandPixelCache(Viewport *vp)
 {
 	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
@@ -375,6 +406,7 @@ void DeleteWindowViewport(Window *w)
 	delete w->viewport->overlay;
 	delete w->viewport;
 	w->viewport = nullptr;
+	FillViewportCoverageRect();
 }
 
 /**
@@ -438,6 +470,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 
 	w->viewport = vp;
 	_viewport_window_cache.push_back(vp);
+	FillViewportCoverageRect();
 }
 
 static Point _vp_move_offs;
@@ -452,7 +485,7 @@ static void DoViewportRedrawRegions(const Window *w, int left, int top, int widt
 {
 	if (width <= 0 || height <= 0) return;
 
-	FOR_ALL_WINDOWS_FROM_BACK_FROM(w, w) {
+	for (const Window *w : Window::IterateFromBack<const Window>(w)) {
 		if (left + width > w->left &&
 				w->left + w->width > left &&
 				top + height > w->top &&
@@ -698,6 +731,8 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewportCache(w->viewport);
+			FillViewportCoverageRect();
+			w->viewport->update_vehicles = true;
 		}
 	}
 }
@@ -2445,7 +2480,7 @@ void ViewportDrawPlans(const Viewport *vp)
 		ScaleByZoom(_dpi_for_text.left - 2, vp->zoom),
 		ScaleByZoom(_dpi_for_text.top - 2, vp->zoom),
 		ScaleByZoom(_dpi_for_text.left + _dpi_for_text.width + 2, vp->zoom),
-		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.max_heightlevel)
+		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
 	};
 
 	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);
@@ -3263,7 +3298,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 	} else {
 		/* Classic rendering. */
 		ViewportAddLandscape();
-		ViewportAddVehicles(&_vd.dpi);
+		ViewportAddVehicles(&_vd.dpi, vp->update_vehicles);
 
 		ViewportAddKdtreeSigns(&_vd.dpi, false);
 
@@ -3478,6 +3513,8 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		vp->land_pixel_cache.clear();
 		vp->land_pixel_cache.shrink_to_fit();
 	}
+	vp->update_vehicles = true;
+	FillViewportCoverageRect();
 }
 
 void UpdateActiveScrollingViewport(Window *w)
@@ -3596,9 +3633,16 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
-	for (Viewport * const vp : _viewport_window_cache) {
-		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZOOM_LVL_DRAW_MAP) continue;
-		MarkViewportDirty(vp, left, top, right, bottom, flags);
+	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
+		if (flags & VMDF_NOT_MAP_MODE && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP) continue;
+		const Rect &r = _viewport_coverage_rects[i];
+		if (left >= r.right ||
+				right <= r.left ||
+				top >= r.bottom ||
+				bottom <= r.top) {
+			continue;
+		}
+		MarkViewportDirty(_viewport_window_cache[i], left, top, right, bottom, flags);
 	}
 }
 
@@ -3640,8 +3684,7 @@ void MarkAllRouteStepsDirty(const Vehicle *veh)
  */
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
@@ -3651,8 +3694,7 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 
 void MarkAllViewportMapLandscapesDirty()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			ClearViewportLandPixelCache(vp);
@@ -3663,8 +3705,7 @@ void MarkAllViewportMapLandscapesDirty()
 
 void MarkWholeNonMapViewportsDirty()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom < ZOOM_LVL_DRAW_MAP) {
 			w->SetDirty();
@@ -3679,8 +3720,7 @@ void MarkWholeNonMapViewportsDirty()
  */
 void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->overlay != nullptr) {
 			vp->overlay->MarkStationViewportLinksDirty(st);
@@ -3690,8 +3730,7 @@ void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 
 void ConstrainAllViewportsZoom()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->viewport == nullptr) continue;
 
 		ZoomLevel zoom = static_cast<ZoomLevel>(Clamp(w->viewport->zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
@@ -4247,6 +4286,7 @@ HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int
 			static bool stop_snap_on_double_click = false;
 			if (double_click && stop_snap_on_double_click) {
 				SetRailSnapMode(RSM_NO_SNAP);
+				HideMeasurementTooltips();
 				return HVCR_DENY;
 			}
 			stop_snap_on_double_click = !(_thd.drawstyle & HT_LINE) || (_thd.dir2 == HT_DIR_END);
@@ -4617,7 +4657,7 @@ void UpdateTileSelection()
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
  * @param close_cond Condition for closing this tooltip.
  */
-static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_NONE)
+static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT)
 {
 	if (!_settings_client.gui.measure_tooltip) return;
 	GuiShowTooltips(_thd.GetCallbackWnd(), str, paramcount, params, close_cond);
@@ -4867,7 +4907,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 	return (int)(h1 - h0) * TILE_HEIGHT_STEP;
 }
 
-static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_NONE, bool show_single_tile_length = false)
+static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT, bool show_single_tile_length = false)
 {
 	static const StringID measure_strings_length[] = {STR_NULL, STR_MEASURE_LENGTH, STR_MEASURE_LENGTH_HEIGHTDIFF};
 
@@ -5288,6 +5328,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (snap_mode == RSM_SNAP_TO_TILE && GetRailSnapTile() == TileVirtXY(pt.x, pt.y)) {
 		_thd.selend.x = pt.x;
 		_thd.selend.y = pt.y;
+		HideMeasurementTooltips();
 		return GetAutorailHT(pt.x, pt.y);
 	}
 
@@ -5307,7 +5348,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
 	}
 
-	if (snap_point == nullptr) return HT_NONE; // no match
+	if (snap_point == nullptr) {
+		HideMeasurementTooltips();
+		return HT_NONE; // no match
+	}
 
 	if (lock_snapping && _current_snap_lock.x == -1) {
 		/* lock down the snap point */
@@ -5347,7 +5391,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	}
 
 	HighLightStyle ret = HT_LINE | (HighLightStyle)TrackdirToTrack(seldir);
-	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_NONE, true);
+	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_EXIT_VIEWPORT, true);
 	return ret;
 }
 
@@ -5469,7 +5513,7 @@ calc_heightdiff_single_direction:;
 			params[index++] = GetTileMaxZ(t1) * TILE_HEIGHT_STEP;
 			params[index++] = heightdiff;
 			//Show always the measurement tooltip
-			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_NONE);
+			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_EXIT_VIEWPORT);
 			break;
 		}
 

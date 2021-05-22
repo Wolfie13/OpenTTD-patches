@@ -16,13 +16,25 @@
 #include "../gfx_func.h"
 #include "../settings_type.h"
 #include "../zoom_type.h"
+#include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
 #include <vector>
+#include <functional>
+#if defined(__MINGW32__)
+#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
+#include "../3rdparty/mingw-std-threads/mingw.thread.h"
+#endif
 
 extern std::string _ini_videodriver;
 extern std::vector<Dimension> _resolutions;
 extern Dimension _cur_resolution;
 extern bool _rightclick_emulate;
+extern bool _video_hw_accel;
+extern bool _video_vsync;
 
 /** The base of all video drivers. */
 class VideoDriver : public Driver {
@@ -30,6 +42,8 @@ class VideoDriver : public Driver {
 	const uint DEFAULT_WINDOW_HEIGHT = 480u; ///< Default window height.
 
 public:
+	VideoDriver() : fast_forward_key_pressed(false), fast_forward_via_key(false), is_game_threaded(true) {}
+
 	/**
 	 * Mark a particular area dirty.
 	 * @param left   The left most line of the dirty area.
@@ -60,26 +74,19 @@ public:
 	virtual bool ToggleFullscreen(bool fullscreen) = 0;
 
 	/**
+	 * Change the vsync setting.
+	 * @param vsync The new setting.
+	 */
+	virtual void ToggleVsync(bool vsync) {}
+
+	/**
 	 * Callback invoked after the blitter was changed.
-	 * This may only be called between AcquireBlitterLock and ReleaseBlitterLock.
 	 * @return True if no error.
 	 */
 	virtual bool AfterBlitterChange()
 	{
 		return true;
 	}
-
-	/**
-	 * Acquire any lock(s) required to be held when changing blitters.
-	 * These lock(s) may not be acquired recursively.
-	 */
-	virtual void AcquireBlitterLock() { }
-
-	/**
-	 * Release any lock(s) required to be held when changing blitters.
-	 * These lock(s) may not be acquired recursively.
-	 */
-	virtual void ReleaseBlitterLock() { }
 
 	virtual bool ClaimMousePointer()
 	{
@@ -94,6 +101,11 @@ public:
 	{
 		return false;
 	}
+
+	/**
+	 * Populate all sprites in cache.
+	 */
+	virtual void PopulateSystemSprites() {}
 
 	/**
 	 * Clear all cached sprites.
@@ -151,6 +163,15 @@ public:
 	virtual void EditBoxGainedFocus() {}
 
 	/**
+	 * Get a list of refresh rates of each available monitor.
+	 * @return A vector of the refresh rates of all available monitors.
+	 */
+	virtual std::vector<int> GetListOfMonitorRefreshRates()
+	{
+		return {};
+	}
+
+	/**
 	 * Get a suggested default GUI zoom taking screen DPI into account.
 	 */
 	virtual ZoomLevel GetSuggestedUIZoom()
@@ -161,6 +182,21 @@ public:
 		if (dpi_scale >= 1.5f) return ZOOM_LVL_OUT_2X;
 		return ZOOM_LVL_OUT_4X;
 	}
+
+	/**
+	 * Queue a function to be called on the main thread with game state
+	 * lock held and video buffer locked. Queued functions will be
+	 * executed on the next draw tick.
+	 * @param func Function to call.
+	 */
+	void QueueOnMainThread(std::function<void()> &&func)
+	{
+		std::lock_guard<std::mutex> lock(this->cmd_queue_mutex);
+
+		this->cmd_queue.emplace_back(std::forward<std::function<void()>>(func));
+	}
+
+	void GameLoopPause();
 
 	/**
 	 * Get the currently active instance of the video driver.
@@ -187,6 +223,8 @@ public:
 	private:
 		bool unlock; ///< Stores if the lock did anything that has to be undone.
 	};
+
+	static bool EmergencyAcquireGameLock(uint tries, uint delay_ms);
 
 protected:
 	const uint ALLOWED_DRIFT = 5; ///< How many times videodriver can miss deadlines without it being overly compensated.
@@ -241,11 +279,6 @@ protected:
 	virtual void Paint() {}
 
 	/**
-	 * Thread function for threaded drawing.
-	 */
-	virtual void PaintThread() {}
-
-	/**
 	 * Process any pending palette animation.
 	 */
 	virtual void CheckPaletteAnim() {}
@@ -257,15 +290,28 @@ protected:
 	virtual bool PollEvent() { return false; };
 
 	/**
-	 * Run the game for a single tick, processing boththe game-tick and draw-tick.
-	 * @returns True if the driver should redraw the screen.
+	 * Start the loop for game-tick.
 	 */
-	bool Tick();
+	void StartGameThread();
+
+	/**
+	 * Stop the loop for the game-tick. This can still tick at most one time before truly shutting down.
+	 */
+	void StopGameThread();
+
+	/**
+	 * Give the video-driver a tick.
+	 * It will process any potential game-tick and/or draw-tick, and/or any
+	 * other video-driver related event.
+	 */
+	void Tick();
 
 	/**
 	 * Sleep till the next tick is about to happen.
 	 */
 	void SleepTillNextTick();
+
+	void InvalidateGameOptionsWindow();
 
 	std::chrono::steady_clock::duration GetGameInterval()
 	{
@@ -282,11 +328,43 @@ protected:
 		return std::chrono::microseconds(1000000 / _settings_client.gui.refresh_rate);
 	}
 
+	/** Execute all queued commands. */
+	void DrainCommandQueue()
+	{
+		std::vector<std::function<void()>> cmds{};
+
+		{
+			/* Exchange queue with an empty one to limit the time we
+			 * hold the mutex. This also ensures that queued functions can
+			 * add new functions to the queue without everything blocking. */
+			std::lock_guard<std::mutex> lock(this->cmd_queue_mutex);
+			cmds.swap(this->cmd_queue);
+		}
+
+		for (auto &f : cmds) {
+			f();
+		}
+	}
+
 	std::chrono::steady_clock::time_point next_game_tick;
 	std::chrono::steady_clock::time_point next_draw_tick;
 
 	bool fast_forward_key_pressed; ///< The fast-forward key is being pressed.
 	bool fast_forward_via_key; ///< The fast-forward was enabled by key press.
+
+	bool is_game_threaded;
+	std::thread game_thread;
+	std::recursive_mutex game_state_mutex;
+	std::mutex game_thread_wait_mutex;
+
+	static void GameThreadThunk(VideoDriver *drv);
+
+private:
+	std::mutex cmd_queue_mutex;
+	std::vector<std::function<void()>> cmd_queue;
+
+	void GameLoop();
+	void GameThread();
 };
 
 #endif /* VIDEO_VIDEO_DRIVER_HPP */

@@ -969,12 +969,16 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Taifeach
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Roghnaigh an taifeach scáileáin le húsáid
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :eile
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Méid an chomhéadain
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Roghnaigh méid na heiliminte comhéadain a úsáidfear
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Gnáth
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Méid dúbailte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Méid cheathrúil
+
+
 
 
 
@@ -1153,8 +1157,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Cuir tubaistí,
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Dearcadh chomhairle an bhaile i leith athstruchtúrú limistéir: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Roghnaigh a mhéid a mbeidh tionchar ag torann agus damáiste don chomhshaol a dhéanann cuideachtaí ar a rátáil sa bhaile agus ar imeachtaí tógála eile sa cheantar
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Airde uasta na léarscáile: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Socraigh an airde uasta atá ceadaithe do shléibhte ar an léarscáil
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Ní féidir leat airde uasta na léarscáile a shocrú ag an luach seo. Tá sliabh amháin ar a laghad ar an léarscáil níos airde
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Ceadaigh athrú talún faoi fhoirgnimh, ráillí iarnróid srl.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Ceadaigh tírdhreachú faoi fhoirgneamh agus ráillí gan iad a bhaint
@@ -1705,6 +1707,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ag t
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Easpa chuimhne
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Teipeadh {BYTES} a shannadh don taisce sprideanna. Laghdaíodh an taisce sprideanna go {BYTES}. Laghdófar feidhmíocht OpenTTD dá bharr. Chun an méid cuimhne atá riachtanach a laghdú, is féidir leat grafaicí 32bpp agus/nó leibhéil zúmála isteach a dhíchumasú
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1866,6 +1870,7 @@ STR_FACE_TIE                                                    :Carbhat:
 STR_FACE_EARRING                                                :Fáinne cluaise:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Athraigh carbhat nó fáinne cluaise
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Ilimreoirí
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Ainm imreora:
@@ -1924,10 +1929,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Taispeá
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Socraigh pasfhocal
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Cosain do chluiche le pasfhocal más mian leat nach mbeidh rochtain phoiblí air
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Fógartha
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Roghnaigh idir cluiche fógartha (idirlín) agus cluiche neamhfhógartha (Líonra Achair Logánta, LAN)
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Níl
-STR_NETWORK_START_SERVER_ADVERTISED                             :Tá
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} {P ch ch ch gc c}lia{P "" "" "" "" i}nt
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Cliaint uasta:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Roghnaigh uaslíon na gcliant. Ní gá gach áit a líonadh
@@ -1941,46 +1942,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}An teang
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Beidh a fhios ag imreoirí eile cén teanga a labhraítear ar an bhfreastalaí
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Iontráil ainm don chluiche líonra
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Teanga ar bith
-STR_NETWORK_LANG_ENGLISH                                        :Béarla
-STR_NETWORK_LANG_GERMAN                                         :Gearmáinis
-STR_NETWORK_LANG_FRENCH                                         :Fraincis
-STR_NETWORK_LANG_BRAZILIAN                                      :Brasaílis
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgáiris
-STR_NETWORK_LANG_CHINESE                                        :Sínis
-STR_NETWORK_LANG_CZECH                                          :Seicis
-STR_NETWORK_LANG_DANISH                                         :Danmhairgis
-STR_NETWORK_LANG_DUTCH                                          :Ollainnis
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Fionlainnis
-STR_NETWORK_LANG_HUNGARIAN                                      :Ungáiris
-STR_NETWORK_LANG_ICELANDIC                                      :Íoslainnis
-STR_NETWORK_LANG_ITALIAN                                        :Iodáilis
-STR_NETWORK_LANG_JAPANESE                                       :Seapáinis
-STR_NETWORK_LANG_KOREAN                                         :Cóiréis
-STR_NETWORK_LANG_LITHUANIAN                                     :Liotuáinis
-STR_NETWORK_LANG_NORWEGIAN                                      :Ioruais
-STR_NETWORK_LANG_POLISH                                         :Polainnis
-STR_NETWORK_LANG_PORTUGUESE                                     :Portaingéilis
-STR_NETWORK_LANG_ROMANIAN                                       :Rómáinis
-STR_NETWORK_LANG_RUSSIAN                                        :Rúisis
-STR_NETWORK_LANG_SLOVAK                                         :Slóvaicis
-STR_NETWORK_LANG_SLOVENIAN                                      :Slóivéinis
-STR_NETWORK_LANG_SPANISH                                        :Spáinnis
-STR_NETWORK_LANG_SWEDISH                                        :Sualainnis
-STR_NETWORK_LANG_TURKISH                                        :Tuircis
-STR_NETWORK_LANG_UKRAINIAN                                      :Úcráinis
-STR_NETWORK_LANG_AFRIKAANS                                      :Afracáinis
-STR_NETWORK_LANG_CROATIAN                                       :Cróitis
-STR_NETWORK_LANG_CATALAN                                        :Catalóinis
-STR_NETWORK_LANG_ESTONIAN                                       :Eastóinis
-STR_NETWORK_LANG_GALICIAN                                       :Gailísis
-STR_NETWORK_LANG_GREEK                                          :Gréigis
-STR_NETWORK_LANG_LATVIAN                                        :Laitvis
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Forsheomra cluichí ilimreoirí
@@ -2032,15 +1993,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Tá an c
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liosta na gcliant
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Féach air
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Cuideachta nua
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Ciceáil
-STR_NETWORK_CLIENTLIST_BAN                                      :Toirmisc
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Labhair le cách
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Labhair le cuideachta
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Teacht. phríobháideach
+
+
 
 STR_NETWORK_SERVER                                              :Freastalaí
 STR_NETWORK_CLIENT                                              :Cliant
@@ -2220,6 +2176,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Grafaic�
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}Tá grafaicí ag teastáil le go n-oibreoidh OpenTTD ach níorbh fhéidir teacht orthu. An dtugann tú cead do OpenTTD na grafaicí seo a íoslódáil agus a shuiteáil?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Tugann, íoslódáil na grafaicí
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ní thugann, scoir de OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Roghanna Trédhearcachta
@@ -2689,9 +2646,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Líon na mbailte:
 STR_MAPGEN_DATE                                                 :{BLACK}Dáta:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Líon na dtionscal:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Airde uasta na léarscáile
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Méadaigh airde uasta na sléibhte ar an léarscáil de leibhéal amháin
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Laghdaigh airde uasta na sléibhte ar an léarscáil de leibhéal amháin
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Airde na líne sneachta:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Bog airde na líne sneachta suas ceann amháin
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Bog airde na líne sneachta síos ceann amháin
@@ -2720,7 +2674,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Ainm an 
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Méid:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Athraigh airde uasta na léarscáile
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Athraigh airde na líne sneachta
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Athraigh an bhliain tosaigh
 
@@ -2998,13 +2951,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Tabhair
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Spriocanna {COMPANY}
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Spriocanna Uilíocha
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Spriocanna uilíocha:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Ceann ar bith -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Neamhbhainteach -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Spriocanna na cuideachta:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Cliceáil ar an sprioc chun an príomhamharc a lárú ar an tionscal/baile/tíle. Ctrl+Cliceáil chun fuinneog amhairc nua a oscailt ar shuíomh an tionscail/an bhaile/na tíle
 
 # Goal question window

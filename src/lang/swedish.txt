@@ -625,7 +625,7 @@ STR_PERFORMANCE_DETAIL_AMOUNT_INT                               :{BLACK}({COMMA}
 STR_PERFORMANCE_DETAIL_PERCENT                                  :{WHITE}{NUM}%
 STR_PERFORMANCE_DETAIL_SELECT_COMPANY_TOOLTIP                   :{BLACK}Visa detaljer om detta företag
 ############ Those following lines need to be in this order!!
-STR_PERFORMANCE_DETAIL_VEHICLES                                 :{BLACK}Vägfordon:
+STR_PERFORMANCE_DETAIL_VEHICLES                                 :{BLACK}Fordon:
 STR_PERFORMANCE_DETAIL_STATIONS                                 :{BLACK}Stationer:
 STR_PERFORMANCE_DETAIL_MIN_PROFIT                               :{BLACK}Min. vinst:
 STR_PERFORMANCE_DETAIL_MIN_INCOME                               :{BLACK}Min. inkomst:
@@ -1001,6 +1001,14 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Kryssa i
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skärmupplösning
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Välj vilken skärmupplösning som ska användas
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annan
+STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
+
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Hårdvaruacceleration
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Markera denna rutan för att tillåta OpenTTD att försöka använda hårdvaruacceleration. Ändrad inställning kommer bara att gälla efter omstart.
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Inställningen kommer bara att gälla efter omstart av spelet
+
+STR_GAME_OPTIONS_VIDEO_VSYNC                                    :{BLACK}VSync
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Markera den här rutan för att v-synka skärmen. Ändringar i den här inställningen kommer bara att tillämpas vid omstart av spelet. Fungerar bara med hårdvaruacceleration aktiverad.
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Gränssnittstorlek
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Välj vilken gränssnittsstorlek som ska användas
@@ -1017,6 +1025,14 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(Upptäck autom
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dubbel storlek
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Kvadrupel storlek
+
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafik
+
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Visa uppdateringsfrekvens
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Välj skärmens uppdateringsfrekvens
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :annat
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}uppdateringsfrekvenser högre än 60Hz kan påverka prestandan.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grafikpaket som standard
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Välj vilket grafikpaket som ska användas som standard
@@ -1112,6 +1128,8 @@ STR_TERRAIN_TYPE_FLAT                                           :Platt
 STR_TERRAIN_TYPE_HILLY                                          :Kullig
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Bergig
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpin
+STR_TERRAIN_TYPE_CUSTOM                                         :Anpassad höjd
+STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Anpassad höjd ({NUM})
 
 STR_CITY_APPROVAL_PERMISSIVE                                    :Eftergiven
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
@@ -1124,6 +1142,7 @@ STR_CONFIG_SETTING_TREE_CAPTION                                 :{WHITE}Inställ
 STR_CONFIG_SETTING_FILTER_TITLE                                 :{BLACK}Sökfilter:
 STR_CONFIG_SETTING_EXPAND_ALL                                   :{BLACK}Utöka alla
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :{BLACK}Stäng alla
+STR_CONFIG_SETTING_RESET_ALL                                    :{BLACK}Återställ alla värden
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(ingen förklaring tillgänglig)
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Standardvärde: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Typ av inställning: {ORANGE}{STRING}
@@ -1132,6 +1151,8 @@ STR_CONFIG_SETTING_TYPE_GAME_MENU                               :Spelinställnin
 STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :Spelinställning (sparad i spel-fil och påverkar enbart nuvarande spel)
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :Företagsinställning (sparad i spel-fil och påverkar enbart nya spel)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Företagsinställning (sparad i spel-fil och påverkar enbart nuvarande företag)
+STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}Varning!
+STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}Detta kommer att återställa alla spelinställningar till deras standardvärden.{}Är du säker på att du vill fortsätta?
 
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategori:
 STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Typ:
@@ -1193,9 +1214,11 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Slår av/på ka
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Stadsfullmäktiges attityd mot ombyggnation av områden: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Välj hur mycket ett företags oväsen och miljöpåverkan ska påverka dess anseende och möjlighet till vidare byggnationer i området
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maximal karthöjd: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Välj maximala tillåtna höjd för berg på kartan
-STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Du kan inte ändra maximal karthöjd till detta värde. Åtminstone ett berg på kartan är högre
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :Karthöjdsgräns: {STRING}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_HELPTEXT                    :Sätt maximal höjd på kartterräng. Med "(Automatiskt)" ett bra värde kommer att väljas efter terräng generation
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_VALUE                       :{NUM}
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT_AUTO                        :(automatiskt)
+STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Du kan inte ändra karthöjd begränsning till detta värde. Åtminstone ett berg på kartan är högre
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Tillåt landskapsarkitektur under byggnader, spår, etc.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Tillåt landskapsarkitektur under byggnader och spår utan att ta bort dem
 STR_CONFIG_SETTING_CATCHMENT                                    :Tillåt mer realistiska uppsamlingsområden för stationer: {STRING}
@@ -1339,7 +1362,13 @@ STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Ange hur många
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Maximalt avstånd mellan oljeindustrier och kartans kant: {STRING}
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Begränsar hur långt från kartans kant oljeraffinaderier och oljeplattformar kan byggas. På ö-kartor säkerställer detta att de är nära kusten. På kartor större än 256 rutor skalas detta värde upp.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Snögränsens höjd: {STRING}
-STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Kontrollerar på vilken höjd snön börjar i det subarktiska landskapet. Snö påverkar även industrigeneration och städers tillväxtkrav
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Kontrollerar på vilken höjd snön börjar i det subarktiska landskapet. Snö påverkar även industrigeneration och städers tillväxtkrav. Kan endast modifieras via Scenarioredigeraren eller beräknas via "snötäckning"
+STR_CONFIG_SETTING_SNOW_COVERAGE                                :Snötäckning: {STRING}
+STR_CONFIG_SETTING_SNOW_COVERAGE_HELPTEXT                       :Kontrollerar ungefärlig mängd snö på den subarktiska landskapet. Snö påverkar även industri generation och städernas tillväxtkrav. Används endast under kartgeneration. Land precis över havsnivån är alltid utan snö
+STR_CONFIG_SETTING_SNOW_COVERAGE_VALUE                          :{NUM}%
+STR_CONFIG_SETTING_DESERT_COVERAGE                              :Öken täckning: {STRING}
+STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :Kontrollera ungefärligt mängd öken i tropiskt landskap. Öken påverkar även industri generation. Används bara under kartgeneration
+STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Terrängens svårhetsgrad: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(TerraGenesis endast) Välj frekvensen av kullar: Smooth landskap har färre, mer utbredda kullar. Rough landskap har många kullar, som kan se repetitiva
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Väldigt lätt
@@ -1649,12 +1678,17 @@ STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximal inzoomn
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Den maximala inzoomningsnivån för vyer. Tänk på att högre möjliga inzoomningsnivåer kräver högre minneskapacitet
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Maximal utzoomning: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Den maximala utzoomningsnivån för vyer. Tänk på att användning av högre utzoomningsnivåer kan få spelet att lagga
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Högsta upplösning som sprites ska använda: {STRING}
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Begränsa den maximala upplösningen för sprites. Begränsning av spritens upplösning hindrar användandet av högre upplösningar även om det finns tillgängligt. Detta kan hjälpa att hålla spelets utseende mer enhetlig vid användandet av flera olika GRF filer med högre och lägre upplösning.
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Normal
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Stadens tillväxthastighet: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Hastigheten städer växer med
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Ingen
@@ -1787,6 +1821,10 @@ STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... igno
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorerar musikpaket '{STRING}': hittades ej
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Slut på minne
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allokerandet av {BYTES} till spritecachen misslyckades. Spritecachen begränsades till {BYTES}. Detta kommer att begränsa OpenTTD:s prestanda. För att minska minneskraven kan du försöka att inaktivera 32bpp-grafik och/eller antalet inzoomningsnivåer
+
+# Video initalization errors
+STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fel med video inställningarna...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... Inget kompatibelt grafikkort hittat. Hårdvaruacceleration inaktiverad
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -1953,6 +1991,7 @@ STR_FACE_TIE                                                    :Slips:
 STR_FACE_EARRING                                                :Örhänge:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Ändra slips eller örhänge
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Flera spelare
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Spelarnamn:
@@ -2015,10 +2054,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Namnet p
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Bestäm lösenord
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Skydda spelet med ett lösenord så att inte andra än dem som har lösenordet kan gå med i spelet
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Publikt
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Välj mellan ett publikt (internet) eller icke publikt (Local Area Network. LAN) spel
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Nej
-STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" er}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Max antal tillåtna klienter:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Välj max antal tillåtna klienter. Alla platser måste inte fyllas.
@@ -2032,46 +2067,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Språk s
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Andra spelare kommer vara medvetna vilket språk som talas på servern.
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Mata in ett namn för nätverksspelet
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Valfritt
-STR_NETWORK_LANG_ENGLISH                                        :Engelska
-STR_NETWORK_LANG_GERMAN                                         :Tyska
-STR_NETWORK_LANG_FRENCH                                         :Franska
-STR_NETWORK_LANG_BRAZILIAN                                      :Brasilianska
-STR_NETWORK_LANG_BULGARIAN                                      :Belgiska
-STR_NETWORK_LANG_CHINESE                                        :Kinesiska
-STR_NETWORK_LANG_CZECH                                          :Tjeckiska
-STR_NETWORK_LANG_DANISH                                         :Danska
-STR_NETWORK_LANG_DUTCH                                          :Holländska
-STR_NETWORK_LANG_ESPERANTO                                      :Spanska
-STR_NETWORK_LANG_FINNISH                                        :Finska
-STR_NETWORK_LANG_HUNGARIAN                                      :Ungerska
-STR_NETWORK_LANG_ICELANDIC                                      :Isländska
-STR_NETWORK_LANG_ITALIAN                                        :Italienska
-STR_NETWORK_LANG_JAPANESE                                       :Japanska
-STR_NETWORK_LANG_KOREAN                                         :Koreanska
-STR_NETWORK_LANG_LITHUANIAN                                     :Litauiska
-STR_NETWORK_LANG_NORWEGIAN                                      :Norska
-STR_NETWORK_LANG_POLISH                                         :Polska
-STR_NETWORK_LANG_PORTUGUESE                                     :Portugisiska
-STR_NETWORK_LANG_ROMANIAN                                       :Rumänska
-STR_NETWORK_LANG_RUSSIAN                                        :Ryska
-STR_NETWORK_LANG_SLOVAK                                         :Slovakiska
-STR_NETWORK_LANG_SLOVENIAN                                      :Slovenska
-STR_NETWORK_LANG_SPANISH                                        :Spanska
-STR_NETWORK_LANG_SWEDISH                                        :Svenska
-STR_NETWORK_LANG_TURKISH                                        :Turkiska
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukrainska
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaans
-STR_NETWORK_LANG_CROATIAN                                       :Kroatiska
-STR_NETWORK_LANG_CATALAN                                        :Katalanska
-STR_NETWORK_LANG_ESTONIAN                                       :Estniska
-STR_NETWORK_LANG_GALICIAN                                       :Galiciska
-STR_NETWORK_LANG_GREEK                                          :Grekiska
-STR_NETWORK_LANG_LATVIAN                                        :Lettiska
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Nätverksspel
@@ -2120,19 +2115,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Koppla i
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servern är skyddad. Ange lösenord
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Företaget är skyddat. Ange lösenord
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Klientlista
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientlista
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Åskåda
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nytt företag
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Kasta ut
-STR_NETWORK_CLIENTLIST_BAN                                      :Bannlys
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Prata med alla
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Prata med alla i företaget
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privat meddelande
+
+
 
 STR_NETWORK_SERVER                                              :Server
 STR_NETWORK_CLIENT                                              :Klient
@@ -2318,6 +2307,10 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ja, ladda ner grafiken
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nej, avsluta OpenTTD
 
+STR_MISSING_GRAPHICS_ERROR_TITLE                                :{WHITE}Nedladdning misslyckades
+STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Nedladdning av grafik misslyckades.{}Vänligen ladda ner grafiken manuellt.
+STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Avsluta OpenTTD
+
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Genomskinlighetsinställningar
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Växla genomskinlighet för skyltar. Ctrl+klick för att låsa
@@ -2496,7 +2489,7 @@ STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Bygg ham
 STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}Placera en boj som kan som kan användas som riktmärke. Shift växlar mellan att bygga/visa beräknad kostnad
 STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}Bygg akvedukt. Shift växlar mellan att bygga/visa beräknad kostnad
 STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}Definiera vattenyta.{}Skapa en kanal, om inte CTRL är nedhållen vid havsnivå, då den kommer att översvämma närliggande områden istället
-STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Placera flod
+STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Placera flod. Ctrl markerar ytan diagonalt
 
 # Ship depot construction window
 STR_DEPOT_BUILD_SHIP_CAPTION                                    :{WHITE}Riktning för skeppsvarv
@@ -2867,9 +2860,17 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Antal städer:
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal industrier:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maximal karthöjd:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Öka maximal bergshöjd med ett
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Minska maximal bergshöjd med ett
+STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Högsta höjdpunkt:
+STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Öka högsta höjd punkten på kartan med en
+STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Minska maximal höjd på högsta topp med en
+STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Snötäckning:
+STR_MAPGEN_SNOW_COVERAGE_UP                                     :{BLACK}Öka snötäckning med tio procent
+STR_MAPGEN_SNOW_COVERAGE_DOWN                                   :{BLACK}Minska snötäckning med tio procent
+STR_MAPGEN_SNOW_COVERAGE_TEXT                                   :{BLACK}{NUM}%
+STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Öken täckning:
+STR_MAPGEN_DESERT_COVERAGE_UP                                   :{BLACK}Öka ökentäckning med tio procent
+STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Minska öken täckning med tio procent
+STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Snögränsens höjd:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Höj snögränsens höjd ett steg
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sänk snögränsens höjd ett steg
@@ -2898,7 +2899,10 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Namn på
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Storlek:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Ändra maximal karthöjd
+STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Måltopp höjd
+STR_MAPGEN_HEIGHTMAP_HEIGHT_QUERY_CAPT                          :{WHITE}Högsta höjdpunkt
+STR_MAPGEN_SNOW_COVERAGE_QUERY_CAPT                             :{WHITE}Snötäckning (i %)
+STR_MAPGEN_DESERT_COVERAGE_QUERY_CAPT                           :{WHITE}Öken täckning (i %)
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ändra snögränsens höjd
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Ändra Startår
 
@@ -3177,26 +3181,27 @@ STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Bekosta nya byg
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Köp exklusiva transporträttigheter
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Muta de lokala myndigheterna
 
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Starta en liten lokal reklamkampanj, för att attrahera fler passagerare och gods till dina tranporttjänster.{}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Starta en mellanstor lokal reklamkampanj, för att attrahera fler passagerare och gods till dina tranporttjänster.{}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Starta en stor lokal reklamkampanj, för att attrahera fler passagerare och gods till dina tranporttjänster.{}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Bekosta ombyggnad av stadens vägnätverk. Orsakar ansenliga störningar för vägtrafik i upp till 6 månader.{}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Bygg en staty i ditt företags ära.{}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Bekosta uppbyggnad av nya kommersiella byggnader i staden.{}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW} Köp 1 års exklusiv transporträttighet i staden. Stadens myndigheter kommer bara tillåta passagerare och gods till användning för ditt företags stationer.{}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Starta en liten lokal reklamkampanj, för att attrahera fler passagerare och gods till dina tranporttjänster.{}Tillhandahåller en temporär boost till stationens betyg i en liten radie runt stadens centrum.{}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Starta en mellanstor lokal reklamkampanj, för att attrahera fler passagerare och gods till dina tranporttjänster.{}Tillhandahåller en temporär boost till stationens betyg i en mellan radie runt stadens centrum.{}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Starta en stor lokal reklamkampanj, för att attrahera fler passagerare och gods till dina transporttjänster.{}Tillhandahåller en temporär boost till stationens betyg i en stor radie runt stadens centrum.{}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Bekosta ombyggnad av stadens vägnätverk.{}Orsakar ansenliga störningar för vägtrafik i upp till 6 månader.{}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Bygg en staty i ditt företags ära.{}Tillhandahåller en permanent boost till stations betyg i staden.{}Cost: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}Bekosta uppbyggnad av nya byggnader i staden.{}Tillhandahåller en temporär boost till stadens tillväxt.{}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Köp 1 års exklusiva transport rättigheter i staden.{}Lokala myndigheterna kommer inte tillåta passagerare och gods att använda dina motståndares stationer.{}Cost: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW} Muta de lokala myndigheterna för att öka din värdering, med risk för att få höga böter om du blir upptäckt.{} Kostnad: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Mål
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globala mål
 STR_GOALS_SPECTATOR                                             :Globala mål
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globala mål:
+STR_GOALS_GLOBAL_BUTTON                                         :{BLACK}Global
+STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Visa globala mål
+STR_GOALS_COMPANY_BUTTON                                        :{BLACK}Företag
+STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Visa företagets mål
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Inga -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Inte tillämpligt -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Företagsmål:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klicka på målet för att centrera huvudvyn på industrin/byn/rutan. Ctrl+klick gör så att ett nytt vyfönster öppnas över platsen för industrin/byn/rutan
 
 # Goal question window
@@ -3567,6 +3572,7 @@ STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Motorise
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Anpassningsbar till: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Alla typer av last
 STR_PURCHASE_INFO_NONE                                          :Ingen
+STR_PURCHASE_INFO_ENGINES_ONLY                                  :Endast lok
 STR_PURCHASE_INFO_ALL_BUT                                       :Allt utom {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maximal Dragkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Räckvidd: {GOLD}{COMMA} rutor
@@ -3839,7 +3845,7 @@ STR_VEHICLE_COMMAND_STARTED_SMALL                               :{TINY_FONT}{GRE
 STR_VEHICLE_COMMAND_STARTED                                     :{GREEN}Startad
 
 # Vehicle details
-STR_VEHICLE_DETAILS_CAPTION                                     :{WHITE}{VEHICLE} (Details)
+STR_VEHICLE_DETAILS_CAPTION                                     :{WHITE}{VEHICLE} (Detaljer)
 STR_VEHICLE_NAME_BUTTON                                         :{BLACK}Namn
 
 STR_VEHICLE_DETAILS_TRAIN_RENAME                                :{BLACK}Byt namn på tåg
@@ -4314,6 +4320,7 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Endast e
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Gigantisk skärmdump
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Skärmdumpen kommer ha en upplösning av {COMMA} x {COMMA} pixlar. Tagandet av skärmdumpen kan ta en stund. Vill du fortsätta?
 
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}Höjdkarta sparad som '{STRING}'. Högsta punkten är {NUM}
 STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Skärmdump sparades som '{STRING}'
 STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Skärmdump misslyckades!
 

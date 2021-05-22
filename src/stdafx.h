@@ -10,6 +10,15 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
+#if defined(_WIN32)
+	/* MinGW defaults to Windows 7 if none of these are set, and they must be set before any MinGW header is included */
+#	define NTDDI_VERSION NTDDI_WINXP // Windows XP
+#	define _WIN32_WINNT 0x501        // Windows XP
+#	define _WIN32_WINDOWS 0x501      // Windows XP
+#	define WINVER 0x0501             // Windows XP
+#	define _WIN32_IE_ 0x0600         // 6.0 (XP+)
+#endif
+
 #ifdef _MSC_VER
 	/* Stop Microsoft (and clang-cl) compilers from complaining about potentially-unsafe/potentially-non-standard functions */
 #	define _CRT_SECURE_NO_DEPRECATE
@@ -43,6 +52,7 @@
 #		include <inttypes.h>
 #	else
 #		define __STDC_LIMIT_MACROS
+#		define __STDC_FORMAT_MACROS
 #		include <stdint.h>
 #	endif
 #endif
@@ -93,6 +103,7 @@
 #include <climits>
 #include <cassert>
 #include <memory>
+#include <string>
 
 #ifndef SIZE_MAX
 #	define SIZE_MAX ((size_t)-1)
@@ -112,7 +123,7 @@
 #endif
 
 /* Stuff for GCC */
-#if defined(__GNUC__) || defined(__clang__)
+#if defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))
 #	define NORETURN __attribute__ ((noreturn))
 #	define CDECL
 #	define __int64 long long
@@ -153,12 +164,6 @@
 /* Stuff for MSVC */
 #if defined(_MSC_VER)
 #	pragma once
-#	define NTDDI_VERSION NTDDI_WINXP // Windows XP
-#	define _WIN32_WINNT 0x501        // Windows XP
-#	define _WIN32_WINDOWS 0x501      // Windows XP
-#	define WINVER 0x0501             // Windows XP
-#	define _WIN32_IE_ 0x0600         // 6.0 (XP+)
-
 #	define NOMINMAX                // Disable min/max macros in windows.h.
 
 #	pragma warning(disable: 4244)  // 'conversion' conversion from 'type1' to 'type2', possible loss of data
@@ -191,14 +196,10 @@
 
 #	define CDECL _cdecl
 #	define WARN_FORMAT(string, args)
-#	ifndef __clang__
-#		define FINAL sealed
-#	else
-#		define FINAL
-#	endif
+#	define FINAL final
 
 	/* fallthrough attribute, VS 2017 */
-#	if (_MSC_VER >= 1910)
+#	if (_MSC_VER >= 1910) || defined(__clang__)
 #		define FALLTHROUGH [[fallthrough]]
 #	else
 #		define FALLTHROUGH
@@ -248,25 +249,26 @@
 
 #endif /* defined(_MSC_VER) */
 
-/* NOTE: the string returned by these functions is only valid until the next
- * call to the same function and is not thread- or reentrancy-safe */
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
 #	if defined(_WIN32)
 		char *getcwd(char *buf, size_t size);
-#		include <tchar.h>
 #		include <io.h>
+#		include <tchar.h>
 
-		namespace std { using ::_wfopen; }
-#		define fopen(file, mode) _wfopen(OTTD2FS(file), _T(mode))
-#		define unlink(file) _wunlink(OTTD2FS(file))
+#		define fopen(file, mode) _wfopen(OTTD2FS(file).c_str(), _T(mode))
+#		define unlink(file) _wunlink(OTTD2FS(file).c_str())
 
-		const char *FS2OTTD(const wchar_t *name);
-		const wchar_t *OTTD2FS(const char *name, bool console_cp = false);
+		std::string FS2OTTD(const std::wstring &name);
+		std::wstring OTTD2FS(const std::string &name);
+#	elif defined(WITH_ICONV)
+#		define fopen(file, mode) fopen(OTTD2FS(file).c_str(), mode)
+		std::string FS2OTTD(const std::string &name);
+		std::string OTTD2FS(const std::string &name);
 #	else
-#		define fopen(file, mode) fopen(OTTD2FS(file), mode)
-		const char *FS2OTTD(const char *name);
-		const char *OTTD2FS(const char *name);
-#	endif /* _WIN32 */
+		// no override of fopen() since no transformation is required of the filename
+		template <typename T> std::string FS2OTTD(T name) { return name; }
+		template <typename T> std::string OTTD2FS(T name) { return name; }
+#	endif /* _WIN32 or WITH_ICONV */
 #endif /* STRGEN || SETTINGSGEN */
 
 #if defined(_WIN32) || defined(__OS2__) && !defined(__INNOTEK_LIBC__)
@@ -353,7 +355,7 @@ typedef unsigned char byte;
 #endif
 
 /* Define the the platforms that use XDG */
-#if defined(WITH_PERSONAL_DIR) && defined(UNIX) && !defined(__APPLE__)
+#if defined(WITH_PERSONAL_DIR) && defined(UNIX) && !defined(__APPLE__) && !defined(__EMSCRIPTEN__)
 #	define USE_XDG
 #endif
 

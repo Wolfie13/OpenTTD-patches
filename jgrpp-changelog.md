@@ -2,6 +2,75 @@
 
 * * *
 
+### v0.41.2 (2021-05-21)
+* Fix multiplayer servers outputting a corrupt data stream when saving was faster than the connection speed.
+* Fix crash when route step UI sprites unintentionally overwritten by a NewGRF.
+* Allow moving between drive through train depot ends when the current exit is blocked.
+* Add engine class routing restriction conditional.
+* Performance:
+  * Fix performance issues with deep vehicle group hierarchies.
+  * Improve performance when using NewGRFs with large/complex graphics chains.
+  * Reduce performance cost of updating vehicles which are not visible on screen.
+  * Remove "Disable vehicle image update" setting.
+* Add features to the NewGRF debug window (in particular for vehicles).
+* Fix incorrect logging of game save failures.
+* Improve logging of network activity.
+* Fix multiplayer version mismatch issues when compiling with CMake 3.11 or earlier.
+* Fix compilation issue on some platforms.
+* Trunk base remains at commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7, with some further commits picked up to 5c01f9ea525616b432968df845a90da1d888631f.
+
+### v0.41.1 (2021-05-08)
+* Fix crash which could occur due to houses having the wrong tile layout when loading old savegames where the NewGRFs had more overriding house types than the previous lower house ID limit.
+* Fix crash when removing airport with order backup, when the hangar window is open.
+* Fix crash when using the 32bpp-sse2 blitter with tree-shading.
+* Fix scheduled dispatch initialising with incorrect values when the date times the daylength was too large.
+* Fix timetable hours/minutes window dialog window setting incorrect values when the date times the daylength was too large.
+* Fix button states for other company vehicles and some tooltip texts in the scheduled dispatch window.
+* Fix date cheat/scenario load not adjusting vehicle date of last service.
+* Fix crash in debug window parent button for non-GRF industries.
+* Fix debug window persistent storage display showing the last non-zero stored item as zero if it is the last in a group of 4.
+* Add cheat: town local authority ratings fixed as Outstanding.
+* Disallow converting town-owned roads to types with the no houses flag.
+* Allow moving between drive through train depot ends when exit of the current depot is blocked.
+* Realistic braking:
+  * Add NewGRF railtype property to disable realistic braking physics for trains of that railtype.
+  * Disable realistic braking for TELE, PIPE, and WIRE railtypes by default.
+* Console tab completion now also includes command aliases.
+* Re-write the readme document.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 3e0a16c027a42c84678b723540532d1f89fc4fbc to commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7, with some further commits picked up to 8c3fa2a3bf079424529a49b58f0466e4285d5874.
+
+### v0.41.0 (2021-04-14)
+* Realistic braking:
+  * Fix crash which could occur when the ignore signals button is used to send a train the wrong way onto a signalled tunnel/bridge.
+  * Fix crash or misrouting which could occur when a train which ignores signals is used to partially remove the reservation of another train,
+    and the track layout is modified to remove the endpoint of the train's original reservation, or an unreserved diverging junction is unexpectedly encountered.
+  * Adjust realistic braking physics to fix discrepancies between realistic braking and realistic acceleration.
+  * Refresh train lookahead when starting train from stationary.
+  * Reduce sensitivity of train brakes overheated breakdown.
+  * Fix train brakes overheated breakdown not triggering under some conditions where it should.
+* Tooltips:
+  * Fix tooltip flickering when dragging outside window.
+  * Fix viewport drag tooltips not being removed when dragging over other windows.
+  * Fix old polyrail tooltips being left on screen.
+* Fix crash when a path to directory is passed as a config file name.
+* Fix articulated train units having all of their total weight allocated to the first articulated part, causing issues with slopes for realistic acceleration and braking.
+* Fix building objects or trees on coast/shore tiles and then removing them preventing the tile being flooded afterwards in some circumstances.
+* Fix network clients which fail to connect being left in the clients list of other connected clients in some circumstances.
+* Fix desync which could occur when using drive-through train depots in some circumstances.
+* Fix false positive desync warning messages for train cached deceleration values.
+* Fix false positive desync warning messages when loading very old savegames.
+* Fix setting console command displaying wrong min/max values with some settings.
+* Fix map generator creating excessively square lakes, create more natural-looking shapes instead.
+* Add cheat to fix station ratings at 100%.
+* Add settings to customise the size of city zones separately from town zones.
+* Increase the limit of NewGRF house IDs in a single game from 512 to 1024.
+* Change numbering of zones in the house picker window to match the town zone settings and the NewGRF specification.
+* Change setting default for "Enable showing vehicle routes in the viewport" to on.
+* Enable hardware acceleration/OpenGL renderer.
+* Add Korean translations by TELK.
+* Bump trunk base from commit f70aa8fabe5eabb39a62cc50a3a27ec1c2434ded to commit 3e0a16c027a42c84678b723540532d1f89fc4fbc.
+
 ### v0.40.5 (2021-03-29)
 * Fix through load crash when the rearmost unit of a train is longer than the whole platform and has no cargo capacity.
 * Realistic braking:

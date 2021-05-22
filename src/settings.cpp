@@ -524,6 +524,59 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 }
 
 /**
+ * Set the string value of a setting.
+ * @param ptr Pointer to the storage location (might be a pointer to a pointer).
+ * @param sld Pointer to the information for the conversions and limitations to apply.
+ * @param p   The string to save.
+ */
+static void Write_ValidateString(void *ptr, const SaveLoad *sld, const char *p)
+{
+	switch (GetVarMemType(sld->conv)) {
+		case SLE_VAR_STRB:
+		case SLE_VAR_STRBQ:
+			if (p != nullptr) {
+				char *begin = (char*)ptr;
+				char *end = begin + sld->length - 1;
+				strecpy(begin, p, end);
+				str_validate(begin, end, SVS_NONE);
+			}
+			break;
+
+		case SLE_VAR_STR:
+		case SLE_VAR_STRQ:
+			free(*(char**)ptr);
+			*(char**)ptr = p == nullptr ? nullptr : stredup(p);
+			break;
+
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Set the string value of a setting.
+ * @param ptr Pointer to the std::string.
+ * @param sld Pointer to the information for the conversions and limitations to apply.
+ * @param p   The string to save.
+ */
+static void Write_ValidateStdString(void *ptr, const SaveLoad *sld, const char *p)
+{
+	std::string *dst = reinterpret_cast<std::string *>(ptr);
+
+	switch (GetVarMemType(sld->conv)) {
+		case SLE_VAR_STR:
+		case SLE_VAR_STRQ:
+			if (p != nullptr) {
+				dst->assign(p);
+			} else {
+				dst->clear();
+			}
+			break;
+
+		default: NOT_REACHED();
+	}
+}
+
+/**
  * Load values from a group of an IniFile structure into the internal representation
  * @param ini pointer to IniFile structure that holds administrative information
  * @param sd pointer to SettingDesc structure whose internally pointed variables will
@@ -583,38 +636,11 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 				break;
 
 			case SDT_STRING:
-				switch (GetVarMemType(sld->conv)) {
-					case SLE_VAR_STRB:
-					case SLE_VAR_STRBQ:
-						if (p != nullptr) strecpy((char*)ptr, (const char*)p, (char*)ptr + sld->length - 1);
-						break;
-
-					case SLE_VAR_STR:
-					case SLE_VAR_STRQ:
-						free(*(char**)ptr);
-						*(char**)ptr = p == nullptr ? nullptr : stredup((const char*)p);
-						break;
-
-					case SLE_VAR_CHAR: if (p != nullptr) *(char *)ptr = *(const char *)p; break;
-
-					default: NOT_REACHED();
-				}
+				Write_ValidateString(ptr, sld, (const char *)p);
 				break;
 
 			case SDT_STDSTRING:
-				switch (GetVarMemType(sld->conv)) {
-					case SLE_VAR_STR:
-					case SLE_VAR_STRQ:
-						if (p != nullptr) {
-							reinterpret_cast<std::string *>(ptr)->assign((const char *)p);
-						} else {
-							reinterpret_cast<std::string *>(ptr)->clear();
-						}
-						break;
-
-					default: NOT_REACHED();
-				}
-
+				Write_ValidateStdString(ptr, sld, (const char *)p);
 				break;
 
 			case SDT_INTLIST: {
@@ -749,7 +775,6 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 						}
 						break;
 
-					case SLE_VAR_CHAR: buf[0] = *(char*)ptr; buf[1] = '\0'; break;
 					default: NOT_REACHED();
 				}
 				break;
@@ -860,6 +885,7 @@ bool SettingDesc::IsEditable(bool do_command) const
 	if ((this->desc.flags & SGF_NEWGAME_ONLY) &&
 			(_game_mode == GM_NORMAL ||
 			(_game_mode == GM_EDITOR && !(this->desc.flags & SGF_SCENEDIT_TOO)))) return false;
+	if ((this->desc.flags & SGF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
 	return true;
 }
 
@@ -1083,6 +1109,9 @@ static bool TrainAccelerationModelChanged(int32 p1)
 static bool TrainBrakingModelChanged(int32 p1)
 {
 	for (Train *t : Train::Iterate()) {
+		if (!(t->vehstatus & VS_CRASHED)) {
+			t->crash_anim_pos = 0;
+		}
 		if (t->IsFrontEngine()) {
 			t->UpdateAcceleration();
 		}
@@ -1304,6 +1333,13 @@ static bool ZoomMinMaxChanged(int32 p1)
 	return true;
 }
 
+static bool SpriteZoomMinChanged(int32 p1) {
+	GfxClearSpriteCache();
+	/* Force all sprites to redraw at the new chosen zoom level */
+	MarkWholeScreenDirty();
+	return true;
+}
+
 static bool InvalidateSettingsWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
@@ -1321,13 +1357,14 @@ static bool InvalidateNewGRFChangeWindows(int32 p1)
 {
 	InvalidateWindowClassesData(WC_SAVELOAD);
 	DeleteWindowByClass(WC_GAME_OPTIONS);
-	ReInitAllWindows();
+	ReInitAllWindows(_gui_zoom_cfg);
 	return true;
 }
 
 static bool InvalidateCompanyLiveryWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_COMPANY_COLOUR, -1);
+	ResetVehicleColourMap();
 	return RedrawScreen(p1);
 }
 
@@ -1476,11 +1513,10 @@ static bool UpdateLinkgraphColours(int32 p1)
 	return RedrawScreen(p1);
 }
 
-static bool InvalidateAllVehicleImageCaches(int32 p1)
+static bool ClimateThresholdModeChanged(int32 p1)
 {
-	for (Vehicle *v : Vehicle::Iterate()) {
-		v->InvalidateImageCache();
-	}
+	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 	return true;
 }
 
@@ -2475,13 +2511,13 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
 	const SettingDesc *sd = &_settings[index];
 	assert(sd->save.conv & SLF_NO_NETWORK_SYNC);
 
-	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) {
-		char **var = (char**)GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
-		free(*var);
-		*var = strcmp(value, "(null)") == 0 ? nullptr : stredup(value);
-	} else {
-		char *var = (char*)GetVariableAddress(nullptr, &sd->save);
-		strecpy(var, value, &var[sd->save.length - 1]);
+	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && strcmp(value, "(null)") == 0) {
+		value = nullptr;
+	}
+
+	void *ptr = GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
+	if (sd->desc.cmd == SDT_STRING) {
+		Write_ValidateString(ptr, &sd->save, value);
 	}
 	if (sd->desc.proc != nullptr) sd->desc.proc(0);
 
@@ -2597,14 +2633,36 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	if (sd->desc.cmd == SDT_STRING) {
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
 	} else {
+		bool show_min_max = true;
+		int64 min_value = sd->desc.min;
+		int64 max_value = sd->desc.max;
+		if (sd->desc.flags & SGF_ENUM) {
+			min_value = INT64_MAX;
+			max_value = INT64_MIN;
+			int count = 0;
+			for (const SettingDescEnumEntry *enumlist = sd->desc.enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+				if (enumlist->val < min_value) min_value = enumlist->val;
+				if (enumlist->val > max_value) max_value = enumlist->val;
+				count++;
+			}
+			if (max_value - min_value != (int64)(count - 1)) {
+				/* Discontinuous range */
+				show_min_max = false;
+			}
+		}
 		if (sd->desc.cmd == SDT_BOOLX) {
 			seprintf(value, lastof(value), (*(const bool*)ptr != 0) ? "on" : "off");
 		} else {
 			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 
-		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s%d, max: %u)",
-			name, value, (sd->desc.flags & SGF_0ISDISABLED) ? "(0) " : "", sd->desc.min, sd->desc.max);
+		if (show_min_max) {
+			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s" OTTD_PRINTF64 ", max: " OTTD_PRINTF64 ")",
+				name, value, (sd->desc.flags & SGF_0ISDISABLED) ? "(0) " : "", min_value, max_value);
+		} else {
+			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'",
+				name, value);
+		}
 	}
 }
 

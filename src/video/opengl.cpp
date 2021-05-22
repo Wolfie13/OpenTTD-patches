@@ -13,8 +13,6 @@
 
 /* Define to disable buffer syncing. Will increase max fast forward FPS but produces artifacts. Mainly useful for performance testing. */
 // #define NO_GL_BUFFER_SYNC
-/* Define to enable persistent buffer mapping on AMD GPUs. */
-// #define GL_MAP_PERSISTENT_AMD
 /* Define to allow software rendering backends. */
 // #define GL_ALLOW_SOFTWARE_RENDERER
 
@@ -466,16 +464,17 @@ void SetupDebugOutput()
 /**
  * Create and initialize the singleton back-end class.
  * @param get_proc Callback to get an OpenGL function from the OS driver.
+ * @param screen_res Current display resolution.
  * @return nullptr on success, error message otherwise.
  */
-/* static */ const char *OpenGLBackend::Create(GetOGLProcAddressProc get_proc)
+/* static */ const char *OpenGLBackend::Create(GetOGLProcAddressProc get_proc, const Dimension &screen_res)
 {
 	if (OpenGLBackend::instance != nullptr) OpenGLBackend::Destroy();
 
 	GetOGLProcAddress = get_proc;
 
 	OpenGLBackend::instance = new OpenGLBackend();
-	return OpenGLBackend::instance->Init();
+	return OpenGLBackend::instance->Init(screen_res);
 }
 
 /**
@@ -512,7 +511,7 @@ OpenGLBackend::~OpenGLBackend()
 		_glDeleteBuffers(1, &this->anim_pbo);
 	}
 	if (_glDeleteTextures != nullptr) {
-		ClearCursorCache();
+		this->InternalClearCursorCache();
 		OpenGLSprite::Destroy();
 
 		_glDeleteTextures(1, &this->vid_texture);
@@ -523,9 +522,10 @@ OpenGLBackend::~OpenGLBackend()
 
 /**
  * Check for the needed OpenGL functionality and allocate all resources.
+ * @param screen_res Current display resolution.
  * @return Error string or nullptr if successful.
  */
-const char *OpenGLBackend::Init()
+const char *OpenGLBackend::Init(const Dimension &screen_res)
 {
 	if (!BindBasicInfoProcs()) return "OpenGL not supported";
 
@@ -547,6 +547,12 @@ const char *OpenGLBackend::Init()
 	const char *minor = strchr(ver, '.');
 	_gl_major_ver = atoi(ver);
 	_gl_minor_ver = minor != nullptr ? atoi(minor + 1) : 0;
+
+#ifdef _WIN32
+	/* Old drivers on Windows (especially if made by Intel) seem to be
+	 * unstable, so cull the oldest stuff here.  */
+	if (!IsOpenGLVersionAtLeast(3, 2)) return "Need at least OpenGL version 3.2 on Windows";
+#endif
 
 	if (!BindBasicOpenGLProcs()) return "Failed to bind basic OpenGL functions.";
 
@@ -577,19 +583,16 @@ const char *OpenGLBackend::Init()
 	this->persistent_mapping_supported = this->persistent_mapping_supported && (IsOpenGLVersionAtLeast(3, 2) || IsOpenGLExtensionSupported("GL_ARB_sync"));
 #endif
 
-#ifndef GL_MAP_PERSISTENT_AMD
-	if (this->persistent_mapping_supported && (strstr(vend, "AMD") != nullptr || strstr(renderer, "Radeon") != nullptr)) {
-		/* AMD GPUs seem to perform badly with persistent buffer mapping, disable it for them. */
-		DEBUG(driver, 3, "OpenGL: Detected AMD GPU, not using persistent buffer mapping due to performance problems");
-		this->persistent_mapping_supported = false;
-	}
-#endif
-
 	if (this->persistent_mapping_supported && !BindPersistentBufferExtensions()) {
 		DEBUG(driver, 1, "OpenGL claims to support persistent buffer mapping but doesn't export all functions, not using persistent mapping.");
 		this->persistent_mapping_supported = false;
 	}
 	if (this->persistent_mapping_supported) DEBUG(driver, 3, "OpenGL: Using persistent buffer mapping");
+
+	/* Check maximum texture size against screen resolution. */
+	GLint max_tex_size = 0;
+	_glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_tex_size);
+	if (std::max(screen_res.width, screen_res.height) > (uint)max_tex_size) return "Max supported texture size is too small";
 
 	/* Check available texture units. */
 	GLint max_tex_units = 0;
@@ -878,6 +881,22 @@ bool OpenGLBackend::InitShaders()
 }
 
 /**
+ * Clear the bound pixel buffer to a specific value.
+ * @param len Length of the buffer.
+ * @param data Value to set.
+ * @tparam T Pixel type.
+ */
+template <class T>
+static void ClearPixelBuffer(size_t len, T data)
+{
+	T *buf = reinterpret_cast<T *>(_glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE));
+	for (size_t i = 0; i < len; i++) {
+		*buf++ = data;
+	}
+	_glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+}
+
+/**
  * Change the size of the drawing window and allocate matching resources.
  * @param w New width of the window.
  * @param h New height of the window.
@@ -892,6 +911,8 @@ bool OpenGLBackend::Resize(int w, int h, bool force)
 	int pitch = Align(w, 4);
 
 	_glViewport(0, 0, w, h);
+
+	_glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch);
 
 	this->vid_buffer = nullptr;
 	if (this->persistent_mapping_supported) {
@@ -911,14 +932,16 @@ bool OpenGLBackend::Resize(int w, int h, bool force)
 		if (_glClearBufferSubData != nullptr) {
 			_glClearBufferSubData(GL_PIXEL_UNPACK_BUFFER, GL_RGBA8, 0, pitch * h * bpp / 8, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, &black.data);
 		} else {
-			uint32 *buf = (uint32 *)_glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE);
-			for (int i = 0; i < pitch * h; i++) {
-				*buf++ = black.data;
-			}
-			_glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+			ClearPixelBuffer<uint32>(pitch * h, black.data);
+		}
+	} else if (bpp == 8) {
+		if (_glClearBufferSubData != nullptr) {
+			byte b = 0;
+			_glClearBufferSubData(GL_PIXEL_UNPACK_BUFFER, GL_R8, 0, pitch * h, GL_RED, GL_UNSIGNED_BYTE, &b);
+		} else {
+			ClearPixelBuffer<byte>(pitch * h, 0);
 		}
 	}
-	_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
 	_glActiveTexture(GL_TEXTURE0);
 	_glBindTexture(GL_TEXTURE_2D, this->vid_texture);
@@ -931,6 +954,7 @@ bool OpenGLBackend::Resize(int w, int h, bool force)
 			_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, nullptr);
 			break;
 	}
+	_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
 	/* Does this blitter need a separate animation buffer? */
 	if (BlitterFactory::GetCurrentBlitter()->NeedsAnimationBuffer()) {
@@ -944,10 +968,18 @@ bool OpenGLBackend::Resize(int w, int h, bool force)
 			_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, this->anim_pbo);
 			_glBufferData(GL_PIXEL_UNPACK_BUFFER, pitch * h, nullptr, GL_DYNAMIC_DRAW);
 		}
-		_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+		/* Initialize buffer as 0 == no remap. */
+		if (_glClearBufferSubData != nullptr) {
+			byte b = 0;
+			_glClearBufferSubData(GL_PIXEL_UNPACK_BUFFER, GL_R8, 0, pitch * h, GL_RED, GL_UNSIGNED_BYTE, &b);
+		} else {
+			ClearPixelBuffer<byte>(pitch * h, 0);
+		}
 
 		_glBindTexture(GL_TEXTURE_2D, this->anim_texture);
 		_glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+		_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	} else {
 		if (this->anim_buffer != nullptr) {
 			_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, this->anim_pbo);
@@ -974,6 +1006,8 @@ bool OpenGLBackend::Resize(int w, int h, bool force)
 	/* Update screen size in remap shader program. */
 	_glUseProgram(this->remap_program);
 	_glUniform2f(this->remap_screen_loc, (float)_screen.width, (float)_screen.height);
+
+	_glClear(GL_COLOR_BUFFER_BIT);
 
 	return true;
 }
@@ -1032,11 +1066,46 @@ void OpenGLBackend::Paint()
  */
 void OpenGLBackend::DrawMouseCursor()
 {
+	if (!this->cursor_in_window) return;
+
 	/* Draw cursor on screen */
 	_cur_dpi = &_screen;
+	for (uint i = 0; i < this->cursor_sprite_count; ++i) {
+		SpriteID sprite = this->cursor_sprite_seq[i].sprite;
+
+		/* Sprites are cached by PopulateCursorCache(). */
+		if (this->cursor_cache.Contains(sprite)) {
+			Sprite *spr = this->cursor_cache.Get(sprite);
+
+			this->RenderOglSprite((OpenGLSprite *)spr->data, this->cursor_sprite_seq[i].pal,
+					this->cursor_pos.x + this->cursor_sprite_pos[i].x + UnScaleByZoom(spr->x_offs, ZOOM_LVL_GUI),
+					this->cursor_pos.y + this->cursor_sprite_pos[i].y + UnScaleByZoom(spr->y_offs, ZOOM_LVL_GUI),
+					ZOOM_LVL_GUI);
+		}
+	}
+}
+
+void OpenGLBackend::PopulateCursorCache()
+{
+	static_assert(lengthof(_cursor.sprite_seq) == lengthof(this->cursor_sprite_seq));
+	static_assert(lengthof(_cursor.sprite_pos) == lengthof(this->cursor_sprite_pos));
+
+	if (this->clear_cursor_cache) {
+		/* We have a pending cursor cache clear to do first. */
+		this->clear_cursor_cache = false;
+		this->last_sprite_pal = (PaletteID)-1;
+
+		this->InternalClearCursorCache();
+	}
+
+	this->cursor_pos = _cursor.pos;
+	this->cursor_sprite_count = _cursor.sprite_count;
+	this->cursor_in_window = _cursor.in_window;
+
 	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		this->cursor_sprite_seq[i] = _cursor.sprite_seq[i];
+		this->cursor_sprite_pos[i] = _cursor.sprite_pos[i];
 		SpriteID sprite = _cursor.sprite_seq[i].sprite;
-		const Sprite *spr = GetSprite(sprite, ST_NORMAL);
 
 		if (!this->cursor_cache.Contains(sprite)) {
 			Sprite *old = this->cursor_cache.Insert(sprite, (Sprite *)GetRawSprite(sprite, ST_NORMAL, &SimpleSpriteAlloc, this));
@@ -1046,27 +1115,32 @@ void OpenGLBackend::DrawMouseCursor()
 				free(old);
 			}
 		}
-
-		this->RenderOglSprite((OpenGLSprite *)this->cursor_cache.Get(sprite)->data, _cursor.sprite_seq[i].pal,
-				_cursor.pos.x + _cursor.sprite_pos[i].x + UnScaleByZoom(spr->x_offs, ZOOM_LVL_GUI),
-				_cursor.pos.y + _cursor.sprite_pos[i].y + UnScaleByZoom(spr->y_offs, ZOOM_LVL_GUI),
-				ZOOM_LVL_GUI);
 	}
 }
 
 /**
  * Clear all cached cursor sprites.
  */
-void OpenGLBackend::ClearCursorCache()
+void OpenGLBackend::InternalClearCursorCache()
 {
-	this->last_sprite_pal = (PaletteID)-1;
-
 	Sprite *sp;
 	while ((sp = this->cursor_cache.Pop()) != nullptr) {
 		OpenGLSprite *sprite = (OpenGLSprite *)sp->data;
 		sprite->~OpenGLSprite();
 		free(sp);
 	}
+}
+
+/**
+ * Queue a request for cursor cache clear.
+ */
+void OpenGLBackend::ClearCursorCache()
+{
+	/* If the game loop is threaded, this function might be called
+	 * from the game thread. As we can call OpenGL functions only
+	 * on the main thread, just set a flag that is handled the next
+	 * time we prepare the cursor cache for drawing. */
+	this->clear_cursor_cache = true;
 }
 
 /**
@@ -1080,6 +1154,7 @@ void *OpenGLBackend::GetVideoBuffer()
 #endif
 
 	if (!this->persistent_mapping_supported) {
+		assert(this->vid_buffer == nullptr);
 		_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, this->vid_pbo);
 		this->vid_buffer = _glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE);
 	} else if (this->vid_buffer == nullptr) {

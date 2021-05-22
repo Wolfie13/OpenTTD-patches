@@ -10,6 +10,7 @@
 #include "../newgrf_house.h"
 #include "../newgrf_engine.h"
 #include "../newgrf_roadtype.h"
+#include "../newgrf_cargo.h"
 #include "../date_func.h"
 #include "../timetable.h"
 #include "../ship.h"
@@ -75,6 +76,7 @@ static const NIVariable _niv_vehicles[] = {
 class NIHVehicle : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowExtraInfoOnly(uint index) const override    { return Vehicle::Get(index)->GetGRF() == nullptr; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { const Vehicle *first = Vehicle::Get(index)->First(); return GetInspectWindowNumber(GetGrfSpecFeature(first->type), first->index); }
 	const void *GetInstance(uint index)const override    { return Vehicle::Get(index); }
 	const void *GetSpec(uint index) const override       { return Vehicle::Get(index)->GetEngine(); }
@@ -151,8 +153,11 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			seprintf(buffer, lastof(buffer), "  T cache: tilt: %u, engines: %u, decel: %u, uncapped decel: %u",
-					t->tcache.cached_tilt, t->tcache.cached_num_engines, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel);
+			seprintf(buffer, lastof(buffer), "  T cache: tilt: %d, engines: %u",
+					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, t->tcache.cached_num_engines);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  T cache: RL braking: %d, decel: %u, uncapped decel: %u, centre mass: %u",
+					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass);
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
 					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);
@@ -163,6 +168,13 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
 					t->railtype, t->compatible_railtypes);
 			print(buffer);
+			if (t->vehstatus & VS_CRASHED) {
+				seprintf(buffer, lastof(buffer), "  CRASHED: anim pos: %u", t->crash_anim_pos);
+				print(buffer);
+			} else if (t->crash_anim_pos > 0) {
+				seprintf(buffer, lastof(buffer), "  Brake heating: %u", t->crash_anim_pos);
+				print(buffer);
+			}
 			if (t->lookahead != nullptr) {
 				print ("  Look ahead:");
 				const TrainReservationLookAhead &l = *t->lookahead;
@@ -262,6 +274,39 @@ class NIHVehicle : public NIHelper {
 		print(buffer);
 		const Engine *e = Engine::GetIfValid(v->engine_type);
 		if (e != nullptr) {
+			seprintf(buffer, lastof(buffer), "    Callbacks: 0x%X, CB36 Properties: 0x" OTTD_PRINTFHEX64,
+					e->callbacks_used, e->cb36_properties_used);
+			print(buffer);
+			uint64 cb36_properties = e->cb36_properties_used;
+			if (!e->sprite_group_cb36_properties_used.empty()) {
+				const SpriteGroup *root_spritegroup = nullptr;
+				if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
+				if (root_spritegroup == nullptr) {
+					CargoID cargo = v->cargo_type;
+					assert(cargo < lengthof(e->grf_prop.spritegroup));
+					root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[CT_DEFAULT];
+				}
+				auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
+				if (iter != e->sprite_group_cb36_properties_used.end()) {
+					cb36_properties = iter->second;
+					seprintf(buffer, lastof(buffer), "    Current sprite group: CB36 Properties: 0x" OTTD_PRINTFHEX64, iter->second);
+					print(buffer);
+				}
+			}
+			if (cb36_properties != UINT64_MAX) {
+				uint64 props = cb36_properties;
+				while (props) {
+					PropertyID prop = (PropertyID)FindFirstBit64(props);
+					props = KillFirstBit(props);
+					uint16 res = GetVehicleProperty(v, prop, CALLBACK_FAILED);
+					if (res == CALLBACK_FAILED) {
+						seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> FAILED", prop);
+					} else {
+						seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> 0x%X", prop, res);
+					}
+					print(buffer);
+				}
+			}
 			YearMonthDay ymd;
 			ConvertDateToYMD(e->intro_date, &ymd);
 			seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
@@ -284,6 +329,12 @@ class NIHVehicle : public NIHelper {
 
 		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s", v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no");
 		print(buffer);
+	}
+
+	/* virtual */ void SpriteDump(uint index, std::function<void(const char *)> print) const override
+	{
+		extern void DumpVehicleSpriteGroup(const Vehicle *v, std::function<void(const char *)> print);
+		DumpVehicleSpriteGroup(Vehicle::Get(index), std::move(print));
 	}
 };
 
@@ -431,6 +482,14 @@ class NIHHouse : public NIHelper {
 		print(buffer);
 		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
 		print(buffer);
+
+		if (GetCleanHouseType(index) != GetHouseType(index)) {
+			seprintf(buffer, lastof(buffer), "  Untranslated House Type: %u", GetCleanHouseType(index));
+			print(buffer);
+			hs = HouseSpec::Get(GetCleanHouseType(index));
+			seprintf(buffer, lastof(buffer), "    building_flags: 0x%X", hs->building_flags);
+			print(buffer);
+		}
 	}
 };
 
@@ -601,7 +660,7 @@ class NIHIndustry : public NIHelper {
 	const void *GetInstance(uint index)const override    { return Industry::Get(index); }
 	const void *GetSpec(uint index) const override       { return GetIndustrySpec(Industry::Get(index)->type); }
 	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_INDUSTRY_NAME, index); }
-	uint32 GetGRFID(uint index) const override           { return (this->IsInspectable(index)) ? GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile->grfid : 0; }
+	uint32 GetGRFID(uint index) const override           { return (!this->ShowExtraInfoOnly(index)) ? GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile->grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
 	{
@@ -828,9 +887,10 @@ class NIHRailType : public NIHelper {
 					HasBit(info->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
 					HasBit(info->flags, RTF_DISALLOW_90DEG) ? 'd' : '-');
 			print(buffer);
-			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c",
+			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c%c",
 					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
-					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-');
+					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
+					HasBit(info->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-');
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Powered: 0x" OTTD_PRINTFHEX64, info->powered_railtypes);
 			print(buffer);
@@ -975,6 +1035,10 @@ class NIHTown : public NIHelper {
 			seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
 			print(buffer);
 		}
+
+		seprintf(buffer, lastof(buffer), "  Growth rate: %u, Growth Counter: %u, T to Rebuild: %u, Growing: %u, Custom growth: %u",
+				t->growth_rate, t->grow_counter, t->time_until_rebuild, HasBit(t->flags, TOWN_IS_GROWING) ? 1 : 0,HasBit(t->flags, TOWN_CUSTOM_GROWTH) ? 1 : 0);
+		print(buffer);
 
 		if (t->have_ratings != 0) {
 			print("  Company ratings:");

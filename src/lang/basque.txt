@@ -961,11 +961,15 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Pantaila
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Pantailaren resulozioa aukeratu
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :besteak
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfaze tamaina
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normala
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Tamaina doblea
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Tamaina laukoitza
+
+
 
 
 
@@ -1626,6 +1630,8 @@ STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... jara
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... jaramonik ez egiten musika paketeari'{STRING}': ez da aurkitu
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memoriaz kanpo
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1785,6 +1791,7 @@ STR_FACE_TIE                                                    :Korbata:
 STR_FACE_EARRING                                                :Belarritakoak:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Aldatu korbata eta belarritakoak
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multijokalaria
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Jokalariaren izena:
@@ -1843,8 +1850,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Jokoaren
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Pasahitza ezarri
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Babestu zure jokoa pasahitz batekin ez baduzu nahi publikoa izatea
 
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Ez
-STR_NETWORK_START_SERVER_ADVERTISED                             :Bai
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} Bezero
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Gehienezko bezeroak:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Gehienezko bezero kopurua aukeratu. Ez da beharrezkoa guztia betetzea
@@ -1858,46 +1863,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Hitzegit
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Beste jokalariek erabiltzen ari den hizkuntza ezagutu ahalko dute
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Sare joko batentzako izena sartu
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Edozein
-STR_NETWORK_LANG_ENGLISH                                        :Ingelera
-STR_NETWORK_LANG_GERMAN                                         :Alemaniera
-STR_NETWORK_LANG_FRENCH                                         :Frantsesa
-STR_NETWORK_LANG_BRAZILIAN                                      :Brasilera
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgariera
-STR_NETWORK_LANG_CHINESE                                        :Txinera
-STR_NETWORK_LANG_CZECH                                          :Txekiera
-STR_NETWORK_LANG_DANISH                                         :Danimarkiera
-STR_NETWORK_LANG_DUTCH                                          :Holandera
-STR_NETWORK_LANG_ESPERANTO                                      :Esperantoa
-STR_NETWORK_LANG_FINNISH                                        :Finlandera
-STR_NETWORK_LANG_HUNGARIAN                                      :Hungariera
-STR_NETWORK_LANG_ICELANDIC                                      :Islandiera
-STR_NETWORK_LANG_ITALIAN                                        :Italiera
-STR_NETWORK_LANG_JAPANESE                                       :Japoniera
-STR_NETWORK_LANG_KOREAN                                         :Koreera
-STR_NETWORK_LANG_LITHUANIAN                                     :Lituaniera
-STR_NETWORK_LANG_NORWEGIAN                                      :Norbegiera
-STR_NETWORK_LANG_POLISH                                         :Poloniera
-STR_NETWORK_LANG_PORTUGUESE                                     :Portugesa
-STR_NETWORK_LANG_ROMANIAN                                       :Errumaniera
-STR_NETWORK_LANG_RUSSIAN                                        :Errusiera
-STR_NETWORK_LANG_SLOVAK                                         :Eslabiera
-STR_NETWORK_LANG_SLOVENIAN                                      :Eslobeniera
-STR_NETWORK_LANG_SPANISH                                        :Gaztelera
-STR_NETWORK_LANG_SWEDISH                                        :Suediera
-STR_NETWORK_LANG_TURKISH                                        :Turkiera
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukrainera
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaanera
-STR_NETWORK_LANG_CROATIAN                                       :Kroatiera
-STR_NETWORK_LANG_CATALAN                                        :Katalana
-STR_NETWORK_LANG_ESTONIAN                                       :Estoniera
-STR_NETWORK_LANG_GALICIAN                                       :Galiziera
-STR_NETWORK_LANG_GREEK                                          :Greziera
-STR_NETWORK_LANG_LATVIAN                                        :Letoniera
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Multijokalari joko itxia
@@ -1949,15 +1914,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Konpaini
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Bezero zerrenda
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Ikusle
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Konpainia berria
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Kanporatu
-STR_NETWORK_CLIENTLIST_BAN                                      :Debekatu
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Guztiei hitz egin
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Konpainiari hitz egin
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Mezu pribatua
+
+
 
 STR_NETWORK_SERVER                                              :Zerbitzaria
 STR_NETWORK_CLIENT                                              :Bezeroa
@@ -2135,6 +2095,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Grafikoa
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD-k grafikoak behar ditu funtzionatzeko baina ez ditu aurkitzen. Baimena ematen diozu grafiko hauek deskargatu eta instalatzeko?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Bai, grafikoak jaitsi
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ez, OpenTTD itxi
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Gardentasun aukerak
@@ -2635,7 +2596,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Garaiera
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Tamaina:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Aldatu maparen garaiera maximoa
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Elur garaiera aldatu
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Hasierako urtea aldatu
 
@@ -2904,13 +2864,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Udaletx
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Helburuak
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Helburu orokorrak
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Helburu orokorrak:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Ezer ez -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Ez aplikagarria -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Konpainiaren helburuak:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikatu helburuan ikupegi nagusia industrian/herrian/laukian zentratzeko. Ktrl+Klik ikuspegi lehio berria irekiko du industri/herri/laukiaren kokapenean
 
 # Goal question window

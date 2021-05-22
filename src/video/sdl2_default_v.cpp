@@ -69,6 +69,7 @@ void VideoDriver_SDL_Default::MakePalette()
 	_cur_palette.first_dirty = 0;
 	_cur_palette.count_dirty = 256;
 	this->local_palette = _cur_palette;
+	_cur_palette.count_dirty = 0;
 	this->UpdatePalette();
 
 	if (_sdl_surface != _sdl_real_surface) {
@@ -100,9 +101,9 @@ void VideoDriver_SDL_Default::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
-	if (IsEmptyRect(this->dirty_rect) && _cur_palette.count_dirty == 0) return;
+	if (IsEmptyRect(this->dirty_rect) && this->local_palette.count_dirty == 0) return;
 
-	if (_cur_palette.count_dirty != 0) {
+	if (this->local_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		switch (blitter->UsePaletteAnimation()) {
@@ -111,13 +112,7 @@ void VideoDriver_SDL_Default::Paint()
 				break;
 
 			case Blitter::PALETTE_ANIMATION_BLITTER: {
-				bool need_buf = _screen.dst_ptr == nullptr;
-				if (need_buf) _screen.dst_ptr = this->GetVideoPointer();
 				blitter->PaletteAnimate(this->local_palette);
-				if (need_buf) {
-					this->ReleaseVideoPointer();
-					_screen.dst_ptr = nullptr;
-				}
 				break;
 			}
 
@@ -127,7 +122,7 @@ void VideoDriver_SDL_Default::Paint()
 			default:
 				NOT_REACHED();
 		}
-		_cur_palette.count_dirty = 0;
+		this->local_palette.count_dirty = 0;
 	}
 
 	SDL_Rect r = { this->dirty_rect.left, this->dirty_rect.top, this->dirty_rect.right - this->dirty_rect.left, this->dirty_rect.bottom - this->dirty_rect.top };
@@ -138,22 +133,6 @@ void VideoDriver_SDL_Default::Paint()
 	SDL_UpdateWindowSurfaceRects(this->sdl_window, &r, 1);
 
 	this->dirty_rect = {};
-}
-
-void VideoDriver_SDL_Default::PaintThread()
-{
-	/* First tell the main thread we're started */
-	std::unique_lock<std::recursive_mutex> lock(*this->draw_mutex);
-	this->draw_signal->notify_one();
-
-	/* Now wait for the first thing to draw! */
-	this->draw_signal->wait(*this->draw_mutex);
-
-	while (this->draw_continue) {
-		/* Then just draw and wait till we stop */
-		this->Paint();
-		this->draw_signal->wait(lock);
-	}
 }
 
 bool VideoDriver_SDL_Default::AllocateBackingStore(int w, int h, bool force)

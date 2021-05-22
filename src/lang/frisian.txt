@@ -969,11 +969,15 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skermres
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Selektearje de skermresolutje om te brûken
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oars
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacegrutte
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normaal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dûbele grutte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fjouwerdûbele grutte
+
+
 
 
 
@@ -1152,8 +1156,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Skeakel rampen 
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Hâlding gemeenten tsjinoer werstrukturearring: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Kies hoe grut ympact fan lûdsoerlêst en omwrâldskea toch bedriuwen is op har reputaasje by de lokale bestjoeren en takomstige konstruksje yn harren mêd
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimale kaarthichte: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Maksimale tastiene hichte fan bergen op 'e kaart ynstelle
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Omkriten oanpasse under gebouen, spoaren, ensafuorthinne tastean: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Stean lânskipsbewurkings ûnder gebouwen en spoarbanen ta sûnder dat dizze ferwidere wurde
 STR_CONFIG_SETTING_CATCHMENT                                    :Gebrûk meer realistyske hannelsgebieten: {STRING}
@@ -1641,6 +1643,8 @@ STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :koe net fûn wu
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :Dat strykt net mei dizze ferzje fan OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ûnbekind
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1792,6 +1796,7 @@ STR_FACE_TIE                                                    :Strik:
 STR_FACE_EARRING                                                :Earbel:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Feroarje strik of earbel
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multiplayer
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Namme fan spieler:
@@ -1838,10 +1843,6 @@ STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Start in
 STR_NETWORK_START_SERVER_NEW_GAME_NAME                          :{BLACK}Spulnamme:
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Wachtwurd ynstelle
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Advertearre
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Kies tusken in advertearre (ynternet) of in net-advertearre (LAN) spul
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Nee
-STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} kliïnt{P "" en}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Maksimaal oantal kliïnten:
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} bedriuw{P "" en}
@@ -1851,46 +1852,6 @@ STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Maksimaa
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Sprutsen taal:
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Fier in namme yn foar it networkspul
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Alle
-STR_NETWORK_LANG_ENGLISH                                        :Ingelsk
-STR_NETWORK_LANG_GERMAN                                         :Dútsk
-STR_NETWORK_LANG_FRENCH                                         :Frânsk
-STR_NETWORK_LANG_BRAZILIAN                                      :Braziliaansk
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgaarsk
-STR_NETWORK_LANG_CHINESE                                        :Sinees
-STR_NETWORK_LANG_CZECH                                          :Tsjechysk
-STR_NETWORK_LANG_DANISH                                         :Deensk
-STR_NETWORK_LANG_DUTCH                                          :Nederlânsk
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Finsk
-STR_NETWORK_LANG_HUNGARIAN                                      :Hongaarsk
-STR_NETWORK_LANG_ICELANDIC                                      :Yslânsk
-STR_NETWORK_LANG_ITALIAN                                        :Italjaansk
-STR_NETWORK_LANG_JAPANESE                                       :Japansk
-STR_NETWORK_LANG_KOREAN                                         :Koreaansk
-STR_NETWORK_LANG_LITHUANIAN                                     :Litousk
-STR_NETWORK_LANG_NORWEGIAN                                      :Noarsk
-STR_NETWORK_LANG_POLISH                                         :Poalsk
-STR_NETWORK_LANG_PORTUGUESE                                     :Portegeesk
-STR_NETWORK_LANG_ROMANIAN                                       :Roemeensk
-STR_NETWORK_LANG_RUSSIAN                                        :Russysk
-STR_NETWORK_LANG_SLOVAK                                         :Slowaaksk
-STR_NETWORK_LANG_SLOVENIAN                                      :Sloveensk
-STR_NETWORK_LANG_SPANISH                                        :Spaansk
-STR_NETWORK_LANG_SWEDISH                                        :Sweedsk
-STR_NETWORK_LANG_TURKISH                                        :Turksk
-STR_NETWORK_LANG_UKRAINIAN                                      :Oekraynsk
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaansk
-STR_NETWORK_LANG_CROATIAN                                       :Kroätysk
-STR_NETWORK_LANG_CATALAN                                        :Katalaansk
-STR_NETWORK_LANG_ESTONIAN                                       :Estlânsk
-STR_NETWORK_LANG_GALICIAN                                       :Galisysk
-STR_NETWORK_LANG_GREEK                                          :Gryksk
-STR_NETWORK_LANG_LATVIAN                                        :Letsk
-############ End of leave-in-this-order
 
 # Network game lobby
 
@@ -1935,14 +1896,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Bedriuw 
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Client lyst
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Taskôgje
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nei Bedriuw
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Skoppe
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Tsjin elkenien prate
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Praat mei bedriuw
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Priveeberjocht
+
+
 
 STR_NETWORK_SERVER                                              :Tsjinner
 STR_NETWORK_CLIENT                                              :Kliïnt
@@ -2066,6 +2023,7 @@ STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Kin it d
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Missende ôfbyldings
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ja, ôfbyldings delheljen
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nee, OpenTTD ôfslute
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Trochsichtigenopsjes
@@ -2483,9 +2441,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Oantal stêden:
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Oantal yndustrien:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maksimale kaarthichte:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Ferheegje de maksimale hichte fan bergen op de kaart mei 1
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Ferleegje de maksimale hichte fan bergen op de kaart mei 1
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hichte sniegrins:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Sniegrins ien omheech ferpleatsje:
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Sniegrins ien nei beneden ferpleatsje:
@@ -2514,7 +2469,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Namme hi
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Grutte:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Maksimale kaarthichte oanpasse
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{BLACK}Sniehichte oanpasse
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{BLACK}Startjier oanpasse
 
@@ -2779,7 +2733,6 @@ STR_GOALS_CAPTION                                               :{WHITE}{COMPANY
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globalde doelen
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Gjin -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Net fan tapassing -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 

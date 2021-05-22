@@ -1101,6 +1101,8 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ανάλ
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Διαλέξτε την ανάλυση της οθόνης που θέλετε
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :άλλη
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Μέγεθος διεπαφής
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Επιλέξτε το μέγεθος στοιχείου διεπαφής
 
@@ -1115,6 +1117,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Επιλ
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Κανονικό
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Διπλό μέγεθος
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Τετραπλό μέγεθος
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Βασικό σετ γραφικών
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Επιλογή του βασικού σετ γραφικών που θα χρησιμοποιηθεί
@@ -1291,8 +1295,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Εναλλαγ�
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Στάση δημοτικού συμβουλίου ως προς τον μετασχηματισμό της περιοχής: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Επιλογή πόσο ο θόρυβος και η περιβαλλοντικη καταστροφή άπο εταιρίες επηρεάζουν τα ποσοστά αποδοχής και περαιτέρω έργα στη περιοχή
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Μέγιστο ύψος χάρτη: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Ορισμός του μέγιστου επιτρεπτού ύψους βουνών στο χάρτη
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE} Δεν μπορείτε να θέσετε το μέγιστο ύψος χάρτη σε αυτή τη τιμή. Τουλάχιστον ένα βουνό στο χάρτη είναι πιο ψηλό.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Να επιτρέπεται η διαμόρφωση εδάφους κάτω από κτίρια, γραμμές, κλπ.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Επιτρέπεται η διαμόρφωση του εδάφους κάτω από κτίρια και σιδηροτροχιές χωρίς αυτά να αφαιρούνται
@@ -1869,6 +1871,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... αγ
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Έλληψη μνήμης
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Η κατανομή {BYTES} του spritecache απέτυχε. Το spritecache μειώθηκε σε {BYTES}. Αυτό θα μειώσει την απόδοση του OpenTTD. Για να μειώσετε τις ανάγκες μνήμς μπορείτε να απενεργοποιήσετε τα γραφικά 32bpp graphics ή/και τα επίπεδα μεγέθυνσης
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2034,6 +2038,7 @@ STR_FACE_TIE                                                    :Γραβάτα:
 STR_FACE_EARRING                                                :Σκουλαρίκι:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Αλλαγή γραβάτας ή σκουλαρικιού
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Παιχνίδι πολλών παικτών
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Όνομα παίκτη:
@@ -2093,10 +2098,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Το ό�
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Θέση κωδικού
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Προστατέψτε το παιχνίδι με έναν κωδικό εάν δε θέλετε να είναι δημοσίως προσβάσιμο
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Διαφημιζόμενο
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Επιλογή ανάμεσα σε ένα διαφημιζόμενο (διαδίκτυο) ή μη διαφημιζόμενο (Τοπικό Δίκτυο/LAN) παιχνίδι
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Όχι
-STR_NETWORK_START_SERVER_ADVERTISED                             :Ναι
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} συμπαίκτ{P ης ες}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Μέγιστος αριθμός συμμετεχόντων:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Επιλέξτε τον μέγιστο αριθμό συμμετεχόντων. Δεν είναι ανάγκη να γεμίσουν όλες οι θέσεις
@@ -2110,46 +2111,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Ομιλ
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Οι υπόλοιποι παίκτες θα γνωρίζουν ποια γλώσσα ομιλείται στον διακομιστή
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Εισάγετε το όνομα του δικτυακού παιχνιδιού
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Οποιαδήποτε
-STR_NETWORK_LANG_ENGLISH                                        :Αγγλικά
-STR_NETWORK_LANG_GERMAN                                         :Γερμανικά
-STR_NETWORK_LANG_FRENCH                                         :Γαλλικά
-STR_NETWORK_LANG_BRAZILIAN                                      :Βραζιλιάνικα
-STR_NETWORK_LANG_BULGARIAN                                      :Βουλγαρικά
-STR_NETWORK_LANG_CHINESE                                        :Κινέζικα
-STR_NETWORK_LANG_CZECH                                          :Τσεχικά
-STR_NETWORK_LANG_DANISH                                         :Δανικά
-STR_NETWORK_LANG_DUTCH                                          :Ολλανδικά
-STR_NETWORK_LANG_ESPERANTO                                      :Εσπεράντο
-STR_NETWORK_LANG_FINNISH                                        :Φιλανδικά
-STR_NETWORK_LANG_HUNGARIAN                                      :Ουγγρικά
-STR_NETWORK_LANG_ICELANDIC                                      :Ισλανδικά
-STR_NETWORK_LANG_ITALIAN                                        :Ιταλικά
-STR_NETWORK_LANG_JAPANESE                                       :Ιαπωνικά
-STR_NETWORK_LANG_KOREAN                                         :Κορεατικά
-STR_NETWORK_LANG_LITHUANIAN                                     :Λιθουανικά
-STR_NETWORK_LANG_NORWEGIAN                                      :Νορβηγικά
-STR_NETWORK_LANG_POLISH                                         :Πολωνικά
-STR_NETWORK_LANG_PORTUGUESE                                     :Πορτογαλικά
-STR_NETWORK_LANG_ROMANIAN                                       :Ρουμανικά
-STR_NETWORK_LANG_RUSSIAN                                        :Ρωσικά
-STR_NETWORK_LANG_SLOVAK                                         :Σλοβακικά
-STR_NETWORK_LANG_SLOVENIAN                                      :Σλοβενικά
-STR_NETWORK_LANG_SPANISH                                        :Ισπανικά
-STR_NETWORK_LANG_SWEDISH                                        :Σουηδικά
-STR_NETWORK_LANG_TURKISH                                        :Τουρκικά
-STR_NETWORK_LANG_UKRAINIAN                                      :Ουκρανικά
-STR_NETWORK_LANG_AFRIKAANS                                      :Αφρικάνς
-STR_NETWORK_LANG_CROATIAN                                       :Κροατικά
-STR_NETWORK_LANG_CATALAN                                        :Καταλανικά
-STR_NETWORK_LANG_ESTONIAN                                       :Εσθονικά
-STR_NETWORK_LANG_GALICIAN                                       :Γαλικιανά
-STR_NETWORK_LANG_GREEK                                          :Ελληνικά
-STR_NETWORK_LANG_LATVIAN                                        :Λετονικά
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Αίθουσα παιχνιδιού για πολλούς παίκτες
@@ -2198,19 +2159,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Αποσ
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Η πρόσβαση στον διακομιστή προστατεύεται. Εισάγετε τον κωδικό
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Η εταιρεία προστατεύεται από κωδικό. Εισάγετε κωδικό
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Λίστα συμμετεχόντων
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Λίστα συμμετεχόντων
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Παρακολούθηση
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Νέα εταιρεία
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Εκδίωξη
-STR_NETWORK_CLIENTLIST_BAN                                      :Απαγόρευση
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Μιλήστε σε όλους
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Μιλήστε στην εταιρεία
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Προσωπικό μήνυμα
+
+
 
 STR_NETWORK_SERVER                                              :Διακομιστής
 STR_NETWORK_CLIENT                                              :Πελάτης
@@ -2395,6 +2350,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Λείπ
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}Το OpenTTD απαιτεί γραφικά για να λειτουργήσει αλλά κανένα πακέτο δεν είναι διαθέσιμο. Θέλετε να επιτρέψετε στο OpenTTD να κατεβάσει και να εγκαταστήσει γραφικά;
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ναι, κατέβασε τα γραφικά
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Όχι, έξοδος από το OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Ρυθμίσεις Διαφάνειας
@@ -2930,9 +2886,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Αριθμός πόλεων:
 STR_MAPGEN_DATE                                                 :{BLACK}Ημερομηνία:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Αριθμός βιομηχανιών:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Μέγιστο ύψος χάρτη
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Αύξηση του μέγιστου ύψους βουνών του χάρτη κατά ένα
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Μείωση του μέγιστου ύψους βουνών του χάρτη κατά ένα
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Ύψος γραμμής χιονιού:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Μετακίνηση του ύψους της γραμμής χιονιού ένα πάνω
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Μετακίνηση του ύψους της γραμμής χιονιού ένα κάτω
@@ -2961,7 +2914,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Όνομ
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Μέγεθος:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} × {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Αλλαγή μέγιστου ύψους χάρτη
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Άλλαγη του ύψους της γράμμης χιονιού
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Αλλαγή έτους έναρξης
 
@@ -3252,13 +3204,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Δωρ�
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Στόχοι:
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Καθολικοί στόχοι:
 STR_GOALS_SPECTATOR                                             :Καθολικοί στόχοι
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Καθολικοί στόχοι:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Κανένας -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Μη εφαρμόσιμος -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Εταιρικοί στόχοι:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Πατήστε στον στόχο για να επικεντρωθεί η οθόνη στη βιομηχανία/πόλη/τετραγωνίδιο. Με Ctrl+Κλικ ανοίγει το παράθυρο θέασης στην τοποθεσία της βιομηχανίας/πόλης/τετραγωνίδιου
 
 # Goal question window

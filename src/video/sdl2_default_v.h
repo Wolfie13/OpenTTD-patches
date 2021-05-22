@@ -21,7 +21,6 @@ protected:
 	bool AllocateBackingStore(int w, int h, bool force = false) override;
 	void *GetVideoPointer() override;
 	void Paint() override;
-	void PaintThread() override;
 
 	void ReleaseVideoPointer() override {}
 
@@ -33,7 +32,7 @@ private:
 /** Factory for the SDL video driver. */
 class FVideoDriver_SDL_Default : public DriverFactoryBase {
 public:
-	FVideoDriver_SDL_Default() : DriverFactoryBase(Driver::DT_VIDEO, 8, "sdl", "SDL Video Driver") {}
+	FVideoDriver_SDL_Default() : DriverFactoryBase(Driver::DT_VIDEO, 5, "sdl", "SDL Video Driver") {}
 	Driver *CreateInstance() const override { return new VideoDriver_SDL_Default(); }
 };
 

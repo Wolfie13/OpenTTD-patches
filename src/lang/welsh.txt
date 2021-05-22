@@ -972,12 +972,16 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Cydrania
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Dewiswch y cydraniad sgrin i'w defnyddio
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :arall
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Maint rhyngwyneb
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Dewis maint yr elfennau rhyngwyneb i'w defnyddio
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Arferol
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dyblyg
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Pedwarplyg
+
+
 
 
 
@@ -1156,8 +1160,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Toglo trychineb
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Agwedd y cyngor tref at ailstrwythuro'r ardal: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Dewis faint y mae sŵn a niwed amgycheddol gan gwmnïau yn effeithio ar eu graddio trefol a gweithredoedd adeiladu pellach yn eu hardal
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Uchder map uchafsymol: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Gosod yr uchder uchafsymol a ganiateir ar gyfer mynyddoedd ar y map
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Ni allwch osod uchder uchafsymol y map i'r gwerth yma. Mae o leiaf un mynydd ar y map yn uwch
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Caniatáu tirffurfio o dan adeiladau, traciau, ayyb.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Caniatáu tirffurfio o dan adeiladau a thraciau heb eu chwalu
@@ -1711,6 +1713,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... yn a
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Allan o gof
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Methwyd dyroddi {BYTES} o storfa corluniau. Lleihawyd y storfa corluniau at {BYTES}. Bydd hyn yn lleihau perfformiad OpenTTD. I leihau gofynion cof gallwch roi cynnig ar analluogi graffigiau 32 did a/neu lefelau mwyháu
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1874,6 +1878,7 @@ STR_FACE_TIE                                                    :Tei:
 STR_FACE_EARRING                                                :Clustlws:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Newid tei neu glustlws
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Amlchwaraewr
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Enw chwaraewr:
@@ -1932,10 +1937,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Bydd y g
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Gosod cyfrinair
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Diogelwch eich gêm â chyfrinair os nad ydych am i fynediad ato fod yn gyhoeddus
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Hysbys
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Dewis rhwyd gêm a hysbysebir (rhyngrwyd) neu un anhysbys (rhwydwaith leol)
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Na
-STR_NETWORK_START_SERVER_ADVERTISED                             :Ia
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} gwestai
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Uchafswm nifer gwesteion:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Dewiswch uchafswm y gwesteion. Does dim rhaid llanw pob slot
@@ -1949,46 +1950,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Iaith i'
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Rhoi gwybod i'r chwaraewyr pa iaith y dylid ei siarad ar y gweinydd
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Rhowch enw ar gyfer y gêm rhwydwaith
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Unrhyw
-STR_NETWORK_LANG_ENGLISH                                        :Saesneg
-STR_NETWORK_LANG_GERMAN                                         :Almaeneg
-STR_NETWORK_LANG_FRENCH                                         :Ffrangeg
-STR_NETWORK_LANG_BRAZILIAN                                      :Brasilaidd
-STR_NETWORK_LANG_BULGARIAN                                      :Bwlgaraidd
-STR_NETWORK_LANG_CHINESE                                        :Tseineeg
-STR_NETWORK_LANG_CZECH                                          :Tsiecaidd
-STR_NETWORK_LANG_DANISH                                         :Daneg
-STR_NETWORK_LANG_DUTCH                                          :Iseldireg
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Ffineg
-STR_NETWORK_LANG_HUNGARIAN                                      :Hwngareg
-STR_NETWORK_LANG_ICELANDIC                                      :Islandaidd
-STR_NETWORK_LANG_ITALIAN                                        :Eidaleg
-STR_NETWORK_LANG_JAPANESE                                       :Siapaneaidd
-STR_NETWORK_LANG_KOREAN                                         :Coreeg
-STR_NETWORK_LANG_LITHUANIAN                                     :Lithiwaneg
-STR_NETWORK_LANG_NORWEGIAN                                      :Norwyeg
-STR_NETWORK_LANG_POLISH                                         :Pwyleg
-STR_NETWORK_LANG_PORTUGUESE                                     :Portiwgaleg
-STR_NETWORK_LANG_ROMANIAN                                       :Rwmaneg
-STR_NETWORK_LANG_RUSSIAN                                        :Rwsieg
-STR_NETWORK_LANG_SLOVAK                                         :Slofaceg
-STR_NETWORK_LANG_SLOVENIAN                                      :Slofeneg
-STR_NETWORK_LANG_SPANISH                                        :Sbaeneg
-STR_NETWORK_LANG_SWEDISH                                        :Swedeg
-STR_NETWORK_LANG_TURKISH                                        :Twrceg
-STR_NETWORK_LANG_UKRAINIAN                                      :Wcraneg
-STR_NETWORK_LANG_AFRIKAANS                                      :Affricâns
-STR_NETWORK_LANG_CROATIAN                                       :Croatieg
-STR_NETWORK_LANG_CATALAN                                        :Catalaneg
-STR_NETWORK_LANG_ESTONIAN                                       :Estoneg
-STR_NETWORK_LANG_GALICIAN                                       :Galiseg
-STR_NETWORK_LANG_GREEK                                          :Groeg
-STR_NETWORK_LANG_LATVIAN                                        :Latfieg
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Cyntedd Gemau Amlchwaraewr
@@ -2040,15 +2001,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Mae'r cw
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Rhestr Cleientiaid
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Gwylio
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Cwmni newydd
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Cicio
-STR_NETWORK_CLIENTLIST_BAN                                      :Gwahardd
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Siarad â phawb
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Siarad a'r cwmni
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Neges breifat
+
+
 
 STR_NETWORK_SERVER                                              :Gweinydd
 STR_NETWORK_CLIENT                                              :Gwestai
@@ -2228,6 +2184,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Graffiga
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}Mae OpenTTD angen graffigau i weithio ond ni ganfuwyd rhai. Ydych eisiau i OpenTTD lawrlwytho a gosod y graffigau yma?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ia, llawrlwytho'r graffigau
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Na, gadael OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Dewisiadau Tryloywder
@@ -2706,9 +2663,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Nifer trefi:
 STR_MAPGEN_DATE                                                 :{BLACK}Dyddiad:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Nifer diwydiannau:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Uchder map uchafsymol:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Cynyddu uchder uchafsymol mynyddoedd ar y map un uned
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Lleihau uchder uchafsymol mynyddoedd ar y map un uned
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Uchder Llinell Eira:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Symud y llinell eira un yn uwch
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Symud y llinell eira un yn is
@@ -2737,7 +2691,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Enw'r Ma
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Maint:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Newid uchder uchafsymol y map
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Newid uchder Llinell Eira
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Newid y flwyddyn gychwyn
 
@@ -3016,13 +2969,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW} Llwgrw
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Amcanion {COMPANY}
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Amcanion Bydol
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Amcanion bydol:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Dim -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Amherthnasol -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Amcanion cwmni:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Cliciwch ar amcan i ganoli'r brif olygfa ar y diwydiant/tref/teil Mae Ctrl+Clic yn agor ffenestr golwg newydd ar leoliad y diwydiant/tref/teil
 
 # Goal question window

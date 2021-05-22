@@ -944,12 +944,16 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Resolusi
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Pilih resolusi skrin untuk digunakan
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :lain
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Saiz Antaramuka
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Sila pilih saiz elemen antara muka untuk digunakan
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Biasa
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Saiz berganda
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Saiz kuad
+
+
 
 
 
@@ -1117,8 +1121,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Jika kereta api
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Sikap majlis bandaraya terhadap penyusunan semula kawasan: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Pilih tahap kebisingan dan kerosakan persekitaran
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Ketinggian maksimum peta: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Tetapkan ketinggian maksimum yang dibenarkan bagi gunung pada peta
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Kamu tidak boleh ubah ketinggian maxima kepada nilai ini. Sekurang-kurangnya satu gunung di dalam peta lebih tinggi.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Benarkan pengubahsuaian tanah di bawah bangunan, landasan, dan sebagainya (autocerun): {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Benarkan landskap di arah bangunan dan trek tanpa memusnahkannya
@@ -1467,6 +1469,8 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE} ... aba
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE} ... abaikan set bunyi Base '{STRING}': tidak ditemui
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE} ... abaikan set grafik Base '{STRING}': tidak ditemui
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1628,6 +1632,7 @@ STR_FACE_TIE                                                    :Tali leher:
 STR_FACE_EARRING                                                :Anting-anting:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Tukar tali leher atau anting-anting
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Pemain berbilang
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Nama pemain:
@@ -1686,7 +1691,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Nama per
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Tetapkan kata laluan
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Lindungi permainan anda dengan kata laluan jika anda tidak mahu ianya diakses awam
 
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Tidak
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} pelanggan
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Amaun maksimum pemain:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Tentukan bilangan klien maks. Tidak perlu semua slot diisi
@@ -1700,46 +1704,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Bahasa y
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Pemain lain akan tahu bahasa apa yang digunakan di pelayan ini
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Masukkan nama untuk permainan rangkaian
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Mana-mana
-STR_NETWORK_LANG_ENGLISH                                        :Inggeris
-STR_NETWORK_LANG_GERMAN                                         :Jerman
-STR_NETWORK_LANG_FRENCH                                         :Perancis
-STR_NETWORK_LANG_BRAZILIAN                                      :Brazil
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgaria
-STR_NETWORK_LANG_CHINESE                                        :Cina
-STR_NETWORK_LANG_CZECH                                          :Czech
-STR_NETWORK_LANG_DANISH                                         :Denmark
-STR_NETWORK_LANG_DUTCH                                          :Belanda
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Finland
-STR_NETWORK_LANG_HUNGARIAN                                      :Hungary
-STR_NETWORK_LANG_ICELANDIC                                      :Iceland
-STR_NETWORK_LANG_ITALIAN                                        :Itali
-STR_NETWORK_LANG_JAPANESE                                       :Jepun
-STR_NETWORK_LANG_KOREAN                                         :Korea
-STR_NETWORK_LANG_LITHUANIAN                                     :Lituania
-STR_NETWORK_LANG_NORWEGIAN                                      :Norway
-STR_NETWORK_LANG_POLISH                                         :Poland
-STR_NETWORK_LANG_PORTUGUESE                                     :Portugis
-STR_NETWORK_LANG_ROMANIAN                                       :Romania
-STR_NETWORK_LANG_RUSSIAN                                        :Rusia
-STR_NETWORK_LANG_SLOVAK                                         :Slovak
-STR_NETWORK_LANG_SLOVENIAN                                      :Slovenia
-STR_NETWORK_LANG_SPANISH                                        :Sepanyol
-STR_NETWORK_LANG_SWEDISH                                        :Sweden
-STR_NETWORK_LANG_TURKISH                                        :Turki
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukraine
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaans
-STR_NETWORK_LANG_CROATIAN                                       :Croatia
-STR_NETWORK_LANG_CATALAN                                        :Catalan
-STR_NETWORK_LANG_ESTONIAN                                       :Estonia
-STR_NETWORK_LANG_GALICIAN                                       :Galician
-STR_NETWORK_LANG_GREEK                                          :Yunani
-STR_NETWORK_LANG_LATVIAN                                        :Latvia
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Ruang tunggu berbilang pemain
@@ -1791,15 +1755,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Syarikat
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Senarai klien
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Saksi
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Syarikat baru
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Tendang
-STR_NETWORK_CLIENTLIST_BAN                                      :Larang
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Cakap kepada semua
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Cakap kepada syarikat
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Pesanan peribadi
+
+
 
 STR_NETWORK_SERVER                                              :Pelayan
 STR_NETWORK_CLIENT                                              :Klien
@@ -1976,6 +1935,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Grafik h
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD memerlukan grafik berfungsi tetapi tiada grafik diperolehi. Adakah anda benarkan OpenTTD untuk memuat turun dan memasang grafik?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ya, muat turun grafik
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Tidak, keluar dari OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Pilihan transparansi
@@ -2438,9 +2398,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Jumlah bandar:
 STR_MAPGEN_DATE                                                 :{BLACK}Tarikh:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Jumlah industri:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Ketinggian maxima peta:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Mengurangkan ketinggian maksimum gunung di peta oleh satu
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Mengurangkan ketinggian maksimum gunung di peta oleh satu
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Paras ketinggian garis salji:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Tinggikan paras garis salji satu petak
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Rendahkan paras garis salji satu petak
@@ -2469,7 +2426,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nama hei
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Saiz:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Mengubah saiz maksimum ketinggian peta
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Tukarkan paras garis salji
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Tukar tahun permulaan
 
@@ -2734,10 +2690,8 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Beli ha
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Rasuah pihak berkuasa bandar untuk meninggikan penarafan anda, dengan risiko hukuman yang sangat berat.{}Kos: {CURRENCY_LONG}
 
 # Goal window
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Hasrat global:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Tiada -
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Hasrat syarikat:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klik pada industri/bandar/petak untuk memusatkan pandangan. Ctrl+Klik akan membuka pusat pandangan di atas industri/bandar/petak
 
 # Goal question window

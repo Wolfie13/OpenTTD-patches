@@ -23,6 +23,7 @@
 #include "company_base.h"
 #include "screenshot.h"
 #include "guitimer_func.h"
+#include "zoom_func.h"
 
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
@@ -272,12 +273,12 @@ void BuildLandLegend()
 	/* Table for delta; if max_height is less than the first column, use the second column as value. */
 	uint deltas[][2] = { { 24, 2 }, { 48, 4 }, { 72, 6 }, { 120, 10 }, { 180, 15 }, { 240, 20 }, { MAX_TILE_HEIGHT + 1, 25 }};
 	uint i = 0;
-	for (; _settings_game.construction.max_heightlevel >= deltas[i][0]; i++) {
+	for (; _settings_game.construction.map_height_limit >= deltas[i][0]; i++) {
 		/* Nothing to do here. */
 	}
 	uint delta = deltas[i][1];
 
-	int total_entries = (_settings_game.construction.max_heightlevel / delta) + 1;
+	int total_entries = (_settings_game.construction.map_height_limit / delta) + 1;
 	int rows = CeilDiv(total_entries, 2);
 	int j = 0;
 
@@ -489,8 +490,7 @@ static inline uint32 GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 
 static void NotifyAllViewports(ViewportMapType map_type)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->viewport != nullptr)
 			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
 				ClearViewportLandPixelCache(w->viewport);
@@ -1017,11 +1017,11 @@ SmallMapWindow::~SmallMapWindow()
 void SmallMapWindow::RebuildColourIndexIfNecessary()
 {
 	/* Rebuild colour indices if necessary. */
-	if (SmallMapWindow::max_heightlevel == _settings_game.construction.max_heightlevel) return;
+	if (SmallMapWindow::map_height_limit == _settings_game.construction.map_height_limit) return;
 
 	for (uint n = 0; n < lengthof(_heightmap_schemes); n++) {
 		/* The heights go from 0 up to and including maximum. */
-		int heights = _settings_game.construction.max_heightlevel + 1;
+		int heights = _settings_game.construction.map_height_limit + 1;
 		_heightmap_schemes[n].height_colours = ReallocT<uint32>(_heightmap_schemes[n].height_colours, heights);
 
 		for (int z = 0; z < heights; z++) {
@@ -1032,7 +1032,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 		}
 	}
 
-	SmallMapWindow::max_heightlevel = _settings_game.construction.max_heightlevel;
+	SmallMapWindow::map_height_limit = _settings_game.construction.map_height_limit;
 	BuildLandLegend();
 }
 
@@ -1091,8 +1091,11 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 		this->min_number_of_columns = std::max(this->min_number_of_columns, num_columns);
 	}
 
+	/* Width of the legend blob. */
+	this->legend_width = (FONT_HEIGHT_SMALL - ScaleFontTrad(1)) * 8 / 5;
+
 	/* The width of a column is the minimum width of all texts + the size of the blob + some spacing */
-	this->column_width = min_width + LEGEND_BLOB_WIDTH + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+	this->column_width = min_width + this->legend_width + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 }
 
 /* virtual */ void SmallMapWindow::OnPaint()
@@ -1130,11 +1133,12 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 			uint y = y_org;
 			uint i = 0; // Row counter for industry legend.
 			uint row_height = FONT_HEIGHT_SMALL;
+			int padding = ScaleFontTrad(1);
 
-			uint text_left  = rtl ? 0 : LEGEND_BLOB_WIDTH + WD_FRAMERECT_LEFT;
-			uint text_right = this->column_width - 1 - (rtl ? LEGEND_BLOB_WIDTH + WD_FRAMERECT_RIGHT : 0);
-			uint blob_left  = rtl ? this->column_width - 1 - LEGEND_BLOB_WIDTH : 0;
-			uint blob_right = rtl ? this->column_width - 1 : LEGEND_BLOB_WIDTH;
+			uint text_left  = rtl ? 0 : this->legend_width + WD_FRAMERECT_LEFT;
+			uint text_right = this->column_width - padding - (rtl ? this->legend_width + WD_FRAMERECT_RIGHT : 0);
+			uint blob_left  = rtl ? this->column_width - padding - this->legend_width : 0;
+			uint blob_right = rtl ? this->column_width - padding : this->legend_width;
 
 			StringID string = STR_NULL;
 			switch (this->map_type) {
@@ -1186,7 +1190,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 								DrawString(x + text_left, x + text_right, y, string, TC_GREY);
 							} else {
 								DrawString(x + text_left, x + text_right, y, string, TC_BLACK);
-								GfxFillRect(x + blob_left, y + 1, x + blob_right, y + row_height - 1, PC_BLACK); // Outer border of the legend colour
+								GfxFillRect(x + blob_left, y + padding, x + blob_right, y + row_height - 1, PC_BLACK); // Outer border of the legend colour
 							}
 							break;
 						}
@@ -1195,11 +1199,11 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 					default:
 						if (this->map_type == SMT_CONTOUR) SetDParam(0, tbl->height * TILE_HEIGHT_STEP);
 						/* Anything that is not an industry or a company is using normal process */
-						GfxFillRect(x + blob_left, y + 1, x + blob_right, y + row_height - 1, PC_BLACK);
+						GfxFillRect(x + blob_left, y + padding, x + blob_right, y + row_height - 1, PC_BLACK);
 						DrawString(x + text_left, x + text_right, y, tbl->legend);
 						break;
 				}
-				GfxFillRect(x + blob_left + 1, y + 2, x + blob_right - 1, y + row_height - 2, legend_colour); // Legend colour
+				GfxFillRect(x + blob_left + 1, y + padding + 1, x + blob_right - 1, y + row_height - 2, legend_colour); // Legend colour
 
 				y += row_height;
 			}
@@ -1706,7 +1710,7 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 
 SmallMapWindow::SmallMapType SmallMapWindow::map_type = SMT_CONTOUR;
 bool SmallMapWindow::show_towns = true;
-int SmallMapWindow::max_heightlevel = -1;
+int SmallMapWindow::map_height_limit = -1;
 
 /**
  * Custom container class for displaying smallmap with a vertically resizing legend panel.

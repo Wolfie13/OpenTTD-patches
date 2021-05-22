@@ -68,6 +68,7 @@ public:
 
 	StringID String() const override;
 	void SetParam(uint index, uint64 value) { decode_params[index] = value; }
+	void SetParamStr(uint index, const char *str) { this->SetParam(index, (uint64)(size_t)str); }
 };
 
 /**
@@ -90,7 +91,6 @@ class DropDownListIconItem : public DropDownListParamStringItem {
 	PaletteID pal;
 	Dimension dim;
 	uint sprite_y;
-	uint text_y;
 public:
 	DropDownListIconItem(SpriteID sprite, PaletteID pal, StringID string, int result, bool masked);
 

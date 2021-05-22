@@ -53,6 +53,7 @@ GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
 PauseMode _pause_mode;
 Palette _cur_palette;
+std::mutex _cur_palette_mutex;
 std::string _switch_baseset;
 
 static byte _stringwidth_table[FS_END][224]; ///< Cache containing width of often used characters. @see GetCharacterWidth()
@@ -909,15 +910,17 @@ const char *GetCharAtPosition(const char *str, int x, FontSize start_fontsize)
 /**
  * Draw single character horizontally centered around (x,y)
  * @param c           Character (glyph) to draw
- * @param x           X position to draw character
- * @param y           Y position to draw character
+ * @param r           Rectangle to draw character within
  * @param colour      Colour to use, for details see _string_colourmap in
  *                    table/palettes.h or docs/ottd-colourtext-palette.png or the enum TextColour in gfx_type.h
  */
-void DrawCharCentered(WChar c, int x, int y, TextColour colour)
+void DrawCharCentered(WChar c, const Rect &r, TextColour colour)
 {
 	SetColourRemap(colour);
-	GfxMainBlitter(GetGlyph(FS_NORMAL, c), x - GetCharacterWidth(FS_NORMAL, c) / 2, y, BM_COLOUR_REMAP);
+	GfxMainBlitter(GetGlyph(FS_NORMAL, c),
+		CenterBounds(r.left, r.right, GetCharacterWidth(FS_NORMAL, c)),
+		CenterBounds(r.top, r.bottom, FONT_HEIGHT_NORMAL),
+		BM_COLOUR_REMAP);
 }
 
 /**
@@ -1162,6 +1165,7 @@ void DoPaletteAnimations();
 
 void GfxInitPalettes()
 {
+	std::lock_guard<std::mutex> lock_state(_cur_palette_mutex);
 	memcpy(&_cur_palette, &_palette, sizeof(_cur_palette));
 	DoPaletteAnimations();
 }
@@ -1279,11 +1283,6 @@ void DoPaletteAnimations()
 	}
 }
 
-void GameLoopPaletteAnimations()
-{
-	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
-}
-
 /**
  * Determine a contrasty text colour for a coloured background.
  * @param background Background colour.
@@ -1314,7 +1313,7 @@ void LoadStringWidthTable(bool monospace)
 		}
 	}
 
-	ReInitAllWindows();
+	ReInitAllWindows(false);
 }
 
 /**
@@ -1557,29 +1556,6 @@ void DrawDirtyBlocks()
 {
 	static std::vector<NWidgetBase *> dirty_widgets;
 
-	if (HasModalProgress()) {
-		/* We are generating the world, so release our rights to the map and
-		 * painting while we are waiting a bit. */
-		bool is_first_modal_progress_loop = IsFirstModalProgressLoop();
-		_modal_progress_paint_mutex.unlock();
-		_modal_progress_work_mutex.unlock();
-
-		/* Wait a while and hope the modal gives us a bit of time to draw the GUI. */
-		if (!is_first_modal_progress_loop) SleepWhileModalProgress(MODAL_PROGRESS_REDRAW_TIMEOUT);
-
-		/* Modal progress thread may need blitter access while we are waiting for it. */
-		VideoDriver::GetInstance()->ReleaseBlitterLock();
-		_modal_progress_paint_mutex.lock();
-		VideoDriver::GetInstance()->AcquireBlitterLock();
-		_modal_progress_work_mutex.lock();
-
-		/* When we ended with the modal progress, do not draw the blocks.
-		 * Simply let the next run do so, otherwise we would be loading
-		 * the new state (and possibly change the blitter) when we hold
-		 * the drawing lock, which we must not do. */
-		if (_switch_mode != SM_NONE && !HasModalProgress()) return;
-	}
-
 	extern void ViewportPrepareVehicleRoute();
 	ViewportPrepareVehicleRoute();
 
@@ -1587,8 +1563,7 @@ void DrawDirtyBlocks()
 
 	if (_whole_screen_dirty) {
 		RedrawScreenRect(0, 0, _screen.width, _screen.height);
-		Window *w;
-		FOR_ALL_WINDOWS_FROM_BACK(w) {
+		for (Window *w : Window::IterateFromBack()) {
 			w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY | WF_DRAG_DIRTIED);
 		}
 		_whole_screen_dirty = false;
@@ -1605,8 +1580,7 @@ void DrawDirtyBlocks()
 		DrawPixelInfo bk;
 		_cur_dpi = &bk;
 
-		Window *w;
-		FOR_ALL_WINDOWS_FROM_BACK(w) {
+		for (Window *w : Window::IterateFromBack()) {
 			w->flags &= ~WF_DRAG_DIRTIED;
 			if (!MayBeShown(w)) continue;
 
@@ -1666,8 +1640,7 @@ void DrawDirtyBlocks()
 						int right = vp->left + vp->width;
 						int bottom = vp->top + vp->height;
 						_dirty_viewport_occlusions.clear();
-						const Window *v;
-						FOR_ALL_WINDOWS_FROM_BACK_FROM(v, w->z_front) {
+						for (const Window *v : Window::IterateFromBack(w->z_front)) {
 							if (MayBeShown(v) &&
 									right > v->left &&
 									bottom > v->top &&
@@ -2205,6 +2178,10 @@ void UpdateGUIZoom()
 	if (_gui_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
 		_gui_zoom = static_cast<ZoomLevel>(Clamp(VideoDriver::GetInstance()->GetSuggestedUIZoom(), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 	} else {
+		/* Ensure the gui_zoom is clamped between min/max. Change the
+		 * _gui_zoom_cfg if it isn't, as this is used to visually show the
+		 * selection in the Game Options. */
+		_gui_zoom_cfg = Clamp(_gui_zoom_cfg, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
 		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
 	}
 
@@ -2214,6 +2191,8 @@ void UpdateGUIZoom()
 	} else {
 		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
 	}
+
+	UpdateFontHeightCache();
 }
 
 void ChangeGameSpeed(bool enable_fast_forward)

@@ -54,7 +54,7 @@ static const SpriteID SPR_LARGE_SMALL_WINDOW = 682;
 
 /** Extra graphic spritenumbers */
 static const SpriteID SPR_OPENTTD_BASE   = 4896;
-static const uint16 OPENTTD_SPRITE_COUNT = 186;
+static const uint16 OPENTTD_SPRITE_COUNT = 191;
 
 /* Halftile-selection sprites */
 static const SpriteID SPR_HALFTILE_SELECTION_FLAT = SPR_OPENTTD_BASE;
@@ -166,6 +166,12 @@ static const SpriteID SPR_WINDOW_DEFSIZE             = SPR_OPENTTD_BASE + 168;
 static const SpriteID SPR_RENAME                     = SPR_OPENTTD_BASE + 184;
 static const SpriteID SPR_GOTO_LOCATION              = SPR_OPENTTD_BASE + 185;
 
+static const SpriteID SPR_CHAT                       = SPR_OPENTTD_BASE + 186;
+static const SpriteID SPR_ADMIN                      = SPR_OPENTTD_BASE + 187;
+static const SpriteID SPR_JOIN                       = SPR_OPENTTD_BASE + 188;
+static const SpriteID SPR_PLAYER_SELF                = SPR_OPENTTD_BASE + 189;
+static const SpriteID SPR_PLAYER_HOST                = SPR_OPENTTD_BASE + 190;
+
 static const SpriteID SPR_IMG_CARGOFLOW              = SPR_OPENTTD_BASE + 174;
 
 static const SpriteID SPR_SIGNALS_BASE  = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
@@ -276,8 +282,8 @@ static const SpriteID SPR_TRAMWAY_PAVED_STRAIGHT_X     = SPR_TRAMWAY_BASE + 47;
 static const SpriteID SPR_TRAMWAY_DEPOT_WITH_TRACK     = SPR_TRAMWAY_BASE + 49;
 static const SpriteID SPR_TRAMWAY_BACK_WIRES_STRAIGHT  = SPR_TRAMWAY_BASE + 55;
 static const SpriteID SPR_TRAMWAY_FRONT_WIRES_STRAIGHT = SPR_TRAMWAY_BASE + 56;
-static const SpriteID SPR_TRAMWAY_BACK_WIRES_SLOPED    = SPR_TRAMWAY_BASE + 72;
-static const SpriteID SPR_TRAMWAY_FRONT_WIRES_SLOPED   = SPR_TRAMWAY_BASE + 68;
+static const SpriteID SPR_TRAMWAY_BACK_WIRES_SLOPED    = SPR_TRAMWAY_BASE + 68;
+static const SpriteID SPR_TRAMWAY_FRONT_WIRES_SLOPED   = SPR_TRAMWAY_BASE + 72;
 static const SpriteID SPR_TRAMWAY_TUNNEL_WIRES         = SPR_TRAMWAY_BASE + 80;
 static const SpriteID SPR_TRAMWAY_BRIDGE               = SPR_TRAMWAY_BASE + 107;
 static const SpriteID SPR_TRAMWAY_DEPOT_NO_TRACK       = SPR_TRAMWAY_BASE + 113;

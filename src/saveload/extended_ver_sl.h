@@ -31,6 +31,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_COUNTER,                 ///< Trace restrict: counters
 	XSLFI_TRACE_RESTRICT_TIMEDATE,                ///< Trace restrict: time/date
 	XSLFI_TRACE_RESTRICT_BRKCND,                  ///< Trace restrict: realistic braking related conditionals
+	XSLFI_TRACE_RESTRICT_CTGRYCND,                ///< Trace restrict: category conditionals
 	XSLFI_PROG_SIGS,                              ///< programmable pre-signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings
@@ -101,6 +102,8 @@ enum SlXvFeatureIndex {
 	XSLFI_REALISTIC_TRAIN_BRAKING,                ///< Realistic train braking
 	XSLFI_INFLATION_FIXED_DATES,                  ///< Inflation is applied between fixed dates
 	XSLFI_WATER_FLOODING,                         ///< Water flooding map bit
+	XSLFI_MORE_HOUSES,                            ///< More house types
+	XSLFI_CUSTOM_TOWN_ZONE,                       ///< Custom town zones
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
@@ -154,11 +157,11 @@ struct SlXvFeatureTest {
 bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
 
 /**
- * Returns true if @p feature is missing (i.e. has a version of 0)
+ * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
  */
-inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature)
+inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 1)
 {
-	return !SlXvIsFeaturePresent(feature);
+	return !SlXvIsFeaturePresent(feature, min_version);
 }
 
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature);

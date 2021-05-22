@@ -415,6 +415,10 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
+
+
+
+
 # Custom currency window
 
 
@@ -500,6 +504,8 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Ippermetti l-uz
 
 # Config errors
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -523,6 +529,7 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Ibdel is
 # Face selection window
 
 
+
 # Network server list
 
 STR_NETWORK_SERVER_LIST_GENERAL_ONLINE                          :{BLACK}{COMMA}/{COMMA} - {COMMA}/{COMMA}
@@ -537,10 +544,6 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 
 
 
-
-# Network game languages
-############ Leave those lines in this order!!
-############ End of leave-in-this-order
 
 # Network game lobby
 
@@ -561,6 +564,8 @@ STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} 
 # Network company list added strings
 
 # Network client list
+
+
 
 
 # Network set password
@@ -591,6 +596,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Content downloading progress window
 
 # Content downloading error messages
+
 
 
 # Transparency settings window

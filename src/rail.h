@@ -43,8 +43,9 @@ DECLARE_ENUM_AS_BIT_SET(RailTypeFlags)
 
 /** Railtype control flags. */
 enum RailTypeCtrlFlags {
-	RTCF_PROGSIG           = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
-	RTCF_RESTRICTEDSIG     = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
+	RTCF_PROGSIG                = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
+	RTCF_RESTRICTEDSIG          = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
+	RTCF_NOREALISTICBRAKING     = 2,                          ///< Realistic braking disabled for this track type
 };
 
 struct SpriteGroup;
@@ -495,12 +496,6 @@ RailType AllocateRailType(RailTypeLabel label);
 
 extern std::vector<RailType> _sorted_railtypes;
 extern RailTypes _railtypes_hidden_mask;
-
-/**
- * Loop header for iterating over railtypes, sorted by sortorder.
- * @param var Railtype.
- */
-#define FOR_ALL_SORTED_RAILTYPES(var) for (uint8 index = 0; index < _sorted_railtypes.size() && (var = _sorted_railtypes[index], true) ; index++)
 
 /** Enum holding the signal offset in the sprite sheet according to the side it is representing. */
 enum SignalOffsets {

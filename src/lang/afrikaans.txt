@@ -990,6 +990,8 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skerm re
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Kies die skerm resolusie om te gebruik
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :ander
 
+
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK} Koppelvlak groote
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK} Kies die koppelvlak element groote om te gebruik
 
@@ -1002,6 +1004,8 @@ STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Skrifgro
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normaal
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dubbele grootte
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Quad grootte
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basis-grafikastel
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Kies die basis-grafikastel stel om te gebruik
@@ -1178,8 +1182,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Skakel rampe aa
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Stadsraad se gesindheid teenoor omgewings-konstruksie: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Kies hoeveel invloed klank en skade aan die omgewing deur maatskappye aan die stadswaardering het en verderde bouwerk in die stad.
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimum kaarthoogte: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Stel die maksimum toegelate berghoogte
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}Kan nie die berghoogte verander nie - daar is hoër berge as hierdie op die kaart
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Laat landargitektuur toe onder geboue, spore, ens.: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Laat Landargitektuur onder geboue en spore sonder om dit te verwyder
@@ -1750,6 +1752,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... igno
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Program is uit geheue uit
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allokering van {BYTES} kasgeheue vir grafika het gefaal. Die kasgeheue is verminder na {BYTES}. Dit sal OpenTDD stadiger maak. Om geheue-aanvraag te verminder, kan u 32bpp grafika en/of zoom-vlakke afskakel.
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1912,6 +1916,7 @@ STR_FACE_TIE                                                    :Das:
 STR_FACE_EARRING                                                :Oorbel:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Verander das of oorbel
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multispeler
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Speler naam:
@@ -1970,10 +1975,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Die spel
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Stel wagwoord
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Beskerm jou spel met 'n wagwoord as jy wil dit nie publieke toepassing laat wees nie
 
-STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Openbaar
-STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Kies tussen 'n openbare (internet) of 'n plaaslike (LAN) spel
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Nee
-STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} Klient{P "" e}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Maksimum aantal kliënte:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Kies die maksimum aantal kliënte. Alle posisies hoef nie vol te wees nie
@@ -1987,46 +1988,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Taal gep
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Ander spelers sal weet watter taal op die verskaffer gepraat is
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Tik 'n naam in vir die netwerk speeletjie
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Enige
-STR_NETWORK_LANG_ENGLISH                                        :Engels
-STR_NETWORK_LANG_GERMAN                                         :Duits
-STR_NETWORK_LANG_FRENCH                                         :Frans
-STR_NETWORK_LANG_BRAZILIAN                                      :Brazilian
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgarian
-STR_NETWORK_LANG_CHINESE                                        :Chinese
-STR_NETWORK_LANG_CZECH                                          :Czech
-STR_NETWORK_LANG_DANISH                                         :Danish
-STR_NETWORK_LANG_DUTCH                                          :Dutch
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Finnish
-STR_NETWORK_LANG_HUNGARIAN                                      :Hungarian
-STR_NETWORK_LANG_ICELANDIC                                      :Icelandic
-STR_NETWORK_LANG_ITALIAN                                        :Italian
-STR_NETWORK_LANG_JAPANESE                                       :Japanese
-STR_NETWORK_LANG_KOREAN                                         :Korean
-STR_NETWORK_LANG_LITHUANIAN                                     :Lithuanian
-STR_NETWORK_LANG_NORWEGIAN                                      :Norwegian
-STR_NETWORK_LANG_POLISH                                         :Polish
-STR_NETWORK_LANG_PORTUGUESE                                     :Portuguese
-STR_NETWORK_LANG_ROMANIAN                                       :Romanian
-STR_NETWORK_LANG_RUSSIAN                                        :Russian
-STR_NETWORK_LANG_SLOVAK                                         :Slovak
-STR_NETWORK_LANG_SLOVENIAN                                      :Slovenian
-STR_NETWORK_LANG_SPANISH                                        :Spanish
-STR_NETWORK_LANG_SWEDISH                                        :Swedish
-STR_NETWORK_LANG_TURKISH                                        :Turkish
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukrainian
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaans
-STR_NETWORK_LANG_CROATIAN                                       :Croatian
-STR_NETWORK_LANG_CATALAN                                        :Catalan
-STR_NETWORK_LANG_ESTONIAN                                       :Estonian
-STR_NETWORK_LANG_GALICIAN                                       :Galician
-STR_NETWORK_LANG_GREEK                                          :Grieks
-STR_NETWORK_LANG_LATVIAN                                        :Latvian
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Multispeler spel tuiste
@@ -2075,19 +2036,13 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Loskoppe
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Verskaffer is beskerm. Voer wagwoord in
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Maatskappy is beskerm. Voer wagwoord in
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Kliëntelys
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klient Lys
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Toeskou
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nuwe maatskapy
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Skop
-STR_NETWORK_CLIENTLIST_BAN                                      :Verbod
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Praat met almal
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Praat met maatskappy
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Privaate boodskap
+
+
 
 STR_NETWORK_SERVER                                              :Verskaffer
 STR_NETWORK_CLIENT                                              :Klient
@@ -2269,6 +2224,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Vermis g
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD het grafike nodig om the funksioneer maar kon niks vind nie. Wil jy hê dat OpenTTD grafike aflaai en instaleer?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ja, laai die grafika af
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nee, verlaat OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Deursigtigheid Opsies
@@ -2785,9 +2741,6 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Hoev. dorpe:
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Hoev. nywerhede:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}Maksimum kaarthoogte
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}Verhoog berge met een teël
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Verminder berghoogte met een teël
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Sneeu lyn hoogte:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Beweeg die sneeu lyn een op
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Beweeg die sneeu lyn een af
@@ -2816,7 +2769,6 @@ STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Reliëfk
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Grootte:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Verander maksimum kaarthoogte
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Verander sneeu lyn hoogte
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Verander begin jaar
 
@@ -3102,13 +3054,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Koop di
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Doelwitte
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globale Doelwitte
 STR_GOALS_SPECTATOR                                             :Globale doelwitte
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globale doelwitte:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Geen -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nie van toepassing -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Maatskappy doelwitte:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klik op doel om skerm oor die industrie/stad/teël te sentreer. Ctrl+klik maak 'n nuwe venster vir die industrie/stad/teël oop
 
 # Goal question window

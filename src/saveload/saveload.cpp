@@ -45,6 +45,7 @@
 #include "../error.h"
 #include "../scope.h"
 #include <atomic>
+#include <deque>
 #include <string>
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
@@ -385,7 +386,7 @@ void NORETURN SlError(StringID string, const char *extra_msg, bool already_mallo
 		str = already_malloced ? const_cast<char *>(extra_msg) : stredup(extra_msg);
 	}
 
-	if (IsNonMainThread()) {
+	if (IsNonMainThread() && !IsGameThread() && _sl.action != SLA_SAVE) {
 		throw ThreadSlErrorException{ string, extra_msg };
 	}
 

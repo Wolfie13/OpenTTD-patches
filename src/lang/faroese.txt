@@ -945,6 +945,10 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
 
 
 
+
+
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Base grafikk sett
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vel ta base grafikk setti tú vil brúka
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} vantandi/oyðiløgd fíl{P a ir}
@@ -1534,6 +1538,8 @@ STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ókendur
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Einki minni eftir
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Leitan eftir {BYTES} av spritecache eydnaðist ikki. Spritecache var skerd til {BYTES}. Hetta vil skerja framførsluna av OpenTTD. Fyri at minka um minnis krøvini kann tú royna at sløkkja fyri 32bpp grafikki og/ella suma-in stig
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1691,6 +1697,7 @@ STR_FACE_TIE                                                    :Slips:
 STR_FACE_EARRING                                                :Oyraringur:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Broyt slips ella oyraring
 
+
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Hópspæl
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Spælara navn:
@@ -1749,8 +1756,6 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Aðrir s
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Áset loyniorð
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Verj títt spæl við einum loyniorðið um tú ikki vil at ta skal verða opi fyri almenninginum
 
-STR_NETWORK_START_SERVER_UNADVERTISED                           :Nei
-STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" ar}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Mest loyvdir klientar:
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Vel mest loyvda tali av klientum. Ta er ikki neyðugt at fylla øll plássini
@@ -1764,46 +1769,6 @@ STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Tungumá
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Aðrir spælarir kunnu síggja hvat mál verður tosa á servaranum
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Gev netverks spælinum eitt navn
-
-# Network game languages
-############ Leave those lines in this order!!
-STR_NETWORK_LANG_ANY                                            :Hvat sum helst
-STR_NETWORK_LANG_ENGLISH                                        :Enskt
-STR_NETWORK_LANG_GERMAN                                         :Týskt
-STR_NETWORK_LANG_FRENCH                                         :Franskt
-STR_NETWORK_LANG_BRAZILIAN                                      :Brasilienskt
-STR_NETWORK_LANG_BULGARIAN                                      :Bulgariskt
-STR_NETWORK_LANG_CHINESE                                        :Kinverskt
-STR_NETWORK_LANG_CZECH                                          :Tjekkiskt
-STR_NETWORK_LANG_DANISH                                         :Danskt
-STR_NETWORK_LANG_DUTCH                                          :Niðurlendskt
-STR_NETWORK_LANG_ESPERANTO                                      :Esperanto
-STR_NETWORK_LANG_FINNISH                                        :Finskt
-STR_NETWORK_LANG_HUNGARIAN                                      :Ungarskt
-STR_NETWORK_LANG_ICELANDIC                                      :Íslenskt
-STR_NETWORK_LANG_ITALIAN                                        :Italienskt
-STR_NETWORK_LANG_JAPANESE                                       :Japanskt
-STR_NETWORK_LANG_KOREAN                                         :Koreanskt
-STR_NETWORK_LANG_LITHUANIAN                                     :Litauiskt
-STR_NETWORK_LANG_NORWEGIAN                                      :Norskt
-STR_NETWORK_LANG_POLISH                                         :Polskt
-STR_NETWORK_LANG_PORTUGUESE                                     :Portugisiskt
-STR_NETWORK_LANG_ROMANIAN                                       :Rumenskt
-STR_NETWORK_LANG_RUSSIAN                                        :Russiskt
-STR_NETWORK_LANG_SLOVAK                                         :Slovakiskt
-STR_NETWORK_LANG_SLOVENIAN                                      :Slovenskt
-STR_NETWORK_LANG_SPANISH                                        :Spanskt
-STR_NETWORK_LANG_SWEDISH                                        :Svenskt
-STR_NETWORK_LANG_TURKISH                                        :Turkiskt
-STR_NETWORK_LANG_UKRAINIAN                                      :Ukrainskt
-STR_NETWORK_LANG_AFRIKAANS                                      :Afrikaans
-STR_NETWORK_LANG_CROATIAN                                       :Kroatiskt
-STR_NETWORK_LANG_CATALAN                                        :Catalan
-STR_NETWORK_LANG_ESTONIAN                                       :Estoniskt
-STR_NETWORK_LANG_GALICIAN                                       :Galisiskt
-STR_NETWORK_LANG_GREEK                                          :Grikskt
-STR_NETWORK_LANG_LATVIAN                                        :Latviskt
-############ End of leave-in-this-order
 
 # Network game lobby
 STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Hópspæls forhøll
@@ -1855,15 +1820,10 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyritøk
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yvir klientar
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Eygleið
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nýggja fyritøku
 
 # Network client list
-STR_NETWORK_CLIENTLIST_KICK                                     :Sparka
-STR_NETWORK_CLIENTLIST_BAN                                      :Bannað
-STR_NETWORK_CLIENTLIST_SPEAK_TO_ALL                             :Tosa við øll
-STR_NETWORK_CLIENTLIST_SPEAK_TO_COMPANY                         :Tosa við fyritøku
-STR_NETWORK_CLIENTLIST_SPEAK_TO_CLIENT                          :Persónligt boð
+
+
 
 STR_NETWORK_SERVER                                              :Servari
 STR_NETWORK_CLIENT                                              :Klient
@@ -2043,6 +2003,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Vantandi
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD tørvar grafikk fyri at virka men eingin var funnin. Loyvir tú OpenTTD at heinta niður og installera henda grafikkin?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ja, heinta niður grafikkin
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nei, gevst at spæla OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Gjøgnumskygnis møguleikar
@@ -2671,10 +2632,8 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Keyp 1 
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Mutra mynduleikan á staðnum fyri at økju um tína meting, við vanda fyri hvassari revsing um tað verður avdúka.{}Kostnaður: {CURRENCY_LONG}
 
 # Goal window
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Heimsfevnandi mál:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Einki -
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Fyritøku mál:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Trýst á mál fyri at savna høvuðs sýni á ídnað/bygd/punt. Ctrl+trýst letur upp nýggjan sýnisglugga á ídnað/bygd/punt
 
 # Goal question window

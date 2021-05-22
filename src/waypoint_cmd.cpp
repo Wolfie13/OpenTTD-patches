@@ -152,7 +152,7 @@ static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *
 	return CommandCost();
 }
 
-extern void GetStationLayout(byte *layout, int numtracks, int plat_len, const StationSpec *statspec);
+extern void GetStationLayout(byte *layout, uint numtracks, uint plat_len, const StationSpec *statspec);
 extern CommandCost FindJoiningWaypoint(StationID existing_station, StationID station_to_join, bool adjacent, TileArea ta, Waypoint **wp);
 extern CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta, Axis axis);
 extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout);
@@ -346,6 +346,7 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		MakeBuoy(tile, wp->index, GetWaterClass(tile));
 		CheckForDockingTile(tile);
 		MarkTileDirtyByTile(tile);
+		ClearNeighbourNonFloodingStates(tile);
 
 		wp->UpdateVirtCoord();
 		InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);

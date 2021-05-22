@@ -26,11 +26,13 @@ install(TARGETS openttd
 install(DIRECTORY
                 ${CMAKE_BINARY_DIR}/lang
                 ${CMAKE_BINARY_DIR}/baseset
-                ${CMAKE_SOURCE_DIR}/bin/ai
-                ${CMAKE_SOURCE_DIR}/bin/game
+                ${CMAKE_BINARY_DIR}/ai
+                ${CMAKE_BINARY_DIR}/game
                 ${CMAKE_SOURCE_DIR}/bin/scripts
         DESTINATION ${DATA_DESTINATION_DIR}
-        COMPONENT language_files)
+        COMPONENT language_files
+        REGEX "ai/[^\.]+$" EXCLUDE # Ignore subdirs in ai dir
+)
 
 install(FILES
                 ${CMAKE_SOURCE_DIR}/COPYING.md
@@ -59,8 +61,18 @@ if(OPTION_INSTALL_FHS)
             COMPONENT manual)
 endif()
 
-# TODO -- Media files
-# TODO -- Menu files
+if(UNIX AND NOT APPLE)
+    install(DIRECTORY
+                    ${CMAKE_BINARY_DIR}/media/icons
+                    ${CMAKE_BINARY_DIR}/media/pixmaps
+            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}
+            COMPONENT media)
+
+    install(FILES
+                    ${CMAKE_BINARY_DIR}/media/${BINARY_NAME}.desktop
+            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
+            COMPONENT menu)
+endif()
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set(ARCHITECTURE "amd64")

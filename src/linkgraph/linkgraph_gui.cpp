@@ -521,7 +521,7 @@ void LinkGraphOverlay::SetCompanyMask(uint32 company_mask)
 /** Make a number of rows with buttons for each company for the linkgraph legend window. */
 NWidgetBase *MakeCompanyButtonRowsLinkGraphGUI(int *biggest_index)
 {
-	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, 3, STR_NULL);
+	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, COLOUR_GREY, 3, STR_NULL);
 }
 
 NWidgetBase *MakeSaturationLegendLinkGraphGUI(int *biggest_index)
@@ -529,7 +529,8 @@ NWidgetBase *MakeSaturationLegendLinkGraphGUI(int *biggest_index)
 	NWidgetVertical *panel = new NWidgetVertical(NC_EQUALSIZE);
 	for (uint i = 0; i < lengthof(LinkGraphOverlay::LINK_COLOURS[0]); ++i) {
 		NWidgetBackground * wid = new NWidgetBackground(WWT_PANEL, COLOUR_DARK_GREEN, i + WID_LGL_SATURATION_FIRST);
-		wid->SetMinimalSize(50, FONT_HEIGHT_SMALL);
+		wid->SetMinimalSize(50, 0);
+		wid->SetMinimalTextLines(1, 0, FS_SMALL);
 		wid->SetFill(1, 1);
 		wid->SetResize(0, 0);
 		panel->Add(wid);
@@ -549,14 +550,16 @@ NWidgetBase *MakeCargoesLegendLinkGraphGUI(int *biggest_index)
 			row = new NWidgetHorizontal(NC_EQUALSIZE);
 		}
 		NWidgetBackground * wid = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, i + WID_LGL_CARGO_FIRST);
-		wid->SetMinimalSize(25, FONT_HEIGHT_SMALL);
+		wid->SetMinimalSize(25, 0);
+		wid->SetMinimalTextLines(1, 0, FS_SMALL);
 		wid->SetFill(1, 1);
 		wid->SetResize(0, 0);
 		row->Add(wid);
 	}
 	/* Fill up last row */
 	for (uint i = 0; i < 4 - (NUM_CARGO - 1) % 5; ++i) {
-		NWidgetSpacer *spc = new NWidgetSpacer(25, FONT_HEIGHT_SMALL);
+		NWidgetSpacer *spc = new NWidgetSpacer(25, 0);
+		spc->SetMinimalTextLines(1, 0, FS_SMALL);
 		spc->SetFill(1, 1);
 		spc->SetResize(0, 0);
 		row->Add(spc);

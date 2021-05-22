@@ -227,6 +227,7 @@ void UpdateAllVirtCoords()
 	UpdateAllStationVirtCoords();
 	UpdateAllSignVirtCoords();
 	UpdateAllTownVirtCoords();
+	UpdateAllTextEffectVirtCoords();
 	RebuildViewportKdtree();
 }
 
@@ -676,7 +677,7 @@ bool AfterLoadGame()
 	}
 
 	if (IsSavegameVersionBefore(SLV_194) && SlXvIsFeatureMissing(XSLFI_HEIGHT_8_BIT)) {
-		_settings_game.construction.max_heightlevel = 15;
+		_settings_game.construction.map_height_limit = 15;
 
 		/* In old savegame versions, the heightlevel was coded in bits 0..3 of the type field */
 		for (TileIndex t = 0; t < map_size; t++) {
@@ -932,6 +933,12 @@ bool AfterLoadGame()
 			st->ship_station.tile = INVALID_TILE;
 		}
 	}
+
+	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING)) {
+		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
+	}
+
+	AfterLoadEngines();
 
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
@@ -1803,7 +1810,7 @@ bool AfterLoadGame()
 	}
 
 	/* Check and update house and town values */
-	UpdateHousesAndTowns(gcf_res != GLC_ALL_GOOD);
+	UpdateHousesAndTowns(gcf_res != GLC_ALL_GOOD, true);
 
 	if (IsSavegameVersionBefore(SLV_43)) {
 		for (TileIndex t = 0; t < map_size; t++) {
@@ -2025,6 +2032,7 @@ bool AfterLoadGame()
 				for (Order *order : v->Orders()) order->SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 			}
 		}
+		IntialiseOrderDestinationRefcountMap();
 	} else if (IsSavegameVersionBefore(SLV_94)) {
 		/* Unload and transfer are now mutual exclusive. */
 		for (Order *order : Order::Iterate()) {
@@ -2154,7 +2162,7 @@ bool AfterLoadGame()
 				}
 			} else if (IsTileType(t, MP_ROAD)) {
 				/* works for all RoadTileType */
-				FOR_ALL_ROADTRAMTYPES(rtt) {
+				for (RoadTramType rtt : _roadtramtypes) {
 					/* update even non-existing road types to update tile owner too */
 					Owner o = GetRoadOwner(t, rtt);
 					if (o < MAX_COMPANIES && !Company::IsValidID(o)) SetRoadOwner(t, rtt, OWNER_NONE);
@@ -3738,6 +3746,23 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (IsSavegameVersionBefore(SLV_GROUP_REPLACE_WAGON_REMOVAL)) {
+		/* Propagate wagon removal flag for compatibility */
+		/* Temporary bitmask of company wagon removal setting */
+		uint16 wagon_removal = 0;
+		for (const Company *c : Company::Iterate()) {
+			if (c->settings.renew_keep_length) SetBit(wagon_removal, c->index);
+		}
+		for (Group *g : Group::Iterate()) {
+			if (g->flags != 0) {
+				/* Convert old replace_protection value to flag. */
+				g->flags = 0;
+				SetBit(g->flags, GroupFlags::GF_REPLACE_PROTECTION);
+			}
+			if (HasBit(wagon_removal, g->owner)) SetBit(g->flags, GroupFlags::GF_REPLACE_WAGON_REMOVAL);
+		}
+	}
+
 	/* Compute station catchment areas. This is needed here in case UpdateStationAcceptance is called below. */
 	Station::RecomputeCatchmentForAll();
 
@@ -3870,12 +3895,42 @@ bool AfterLoadGame()
 		UpdateAllAnimatedTileSpeeds();
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING)) {
-		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
+	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 2)) {
+		for (Train *t : Train::Iterate()) {
+			if (!(t->vehstatus & VS_CRASHED)) {
+				t->crash_anim_pos = 0;
+			}
+			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+		}
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_INFLATION_FIXED_DATES)) {
 		_settings_game.economy.inflation_fixed_dates = !IsSavegameVersionBefore(SLV_GS_INDUSTRY_CONTROL);
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_HOUSE)) {
+				/* Move upper bit of house ID from bit 6 of m3 to bits 6..5 of m3. */
+				SB(_m[t].m3, 5, 2, GB(_m[t].m3, 6, 1));
+			}
+		}
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_TOWN_ZONE)) {
+		_settings_game.economy.city_zone_0_mult = _settings_game.economy.town_zone_0_mult;
+		_settings_game.economy.city_zone_1_mult = _settings_game.economy.town_zone_1_mult;
+		_settings_game.economy.city_zone_2_mult = _settings_game.economy.town_zone_2_mult;
+		_settings_game.economy.city_zone_3_mult = _settings_game.economy.town_zone_3_mult;
+		_settings_game.economy.city_zone_4_mult = _settings_game.economy.town_zone_4_mult;
+	}
+
+	if (!SlXvIsFeaturePresent(XSLFI_WATER_FLOODING, 2)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_WATER)) {
+				SetNonFloodingWaterTile(t, false);
+			}
+		}
 	}
 
 	InitializeRoadGUI();
@@ -3959,6 +4014,7 @@ void ReloadNewGRFData()
 	RecomputePrices();
 	/* reload vehicles */
 	ResetVehicleHash();
+	AfterLoadEngines();
 	AfterLoadVehicles(false);
 	StartupEngines();
 	GroupStatistics::UpdateAfterLoad();
@@ -3988,7 +4044,7 @@ void ReloadNewGRFData()
 	/* Update company statistics. */
 	AfterLoadCompanyStats();
 	/* Check and update house and town values */
-	UpdateHousesAndTowns(true);
+	UpdateHousesAndTowns(true, false);
 	/* Delete news referring to no longer existing entities */
 	DeleteInvalidEngineNews();
 	/* Update livery selection windows */

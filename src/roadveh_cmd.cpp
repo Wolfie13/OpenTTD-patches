@@ -795,13 +795,13 @@ int RoadVehicle::UpdateSpeed()
 		default: NOT_REACHED();
 		case AM_ORIGINAL: {
 			int acceleration = this->overtaking != 0 ? 512 : 256;
-			return this->DoUpdateSpeed({ acceleration, acceleration }, 0, max_speed, max_speed);
+			return this->DoUpdateSpeed({ acceleration, acceleration }, 0, max_speed, max_speed, false);
 		}
 
 		case AM_REALISTIC: {
 			GroundVehicleAcceleration acceleration = this->GetAcceleration();
 			if (this->overtaking != 0) acceleration.acceleration += 256;
-			return this->DoUpdateSpeed(acceleration, this->GetAccelerationStatus() == AS_BRAKE ? 0 : 4, max_speed, max_speed);
+			return this->DoUpdateSpeed(acceleration, this->GetAccelerationStatus() == AS_BRAKE ? 0 : 4, max_speed, max_speed, false);
 		}
 	}
 }
@@ -1738,7 +1738,7 @@ again:
 					tile = v->tile;
 					start_frame = RVC_TURN_AROUND_START_FRAME_SHORT_TRAM;
 				} else {
-					/* The company can build on the next tile, so wait till (s)he does. */
+					/* The company can build on the next tile, so wait till they do. */
 					v->cur_speed = 0;
 					return false;
 				}
