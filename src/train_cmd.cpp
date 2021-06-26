@@ -281,8 +281,8 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			int16 PowerToWeight = rvi_u->power / rvi_u->weight;
 
 			//For weedy EMUs.
-			bool IsElectrified = (GetRailTypeInfo( u->railtype )->powered_railtypes & RAILTYPES_ELECTRIC) != 0;
-
+			bool IsElectrified = (GetRailTypeInfo(u->railtype)->powered_railtypes & RAILTYPES_ELECTRIC) != 0;
+			IsElectrified |= rvi_u->engclass == EC_ELECTRIC;
 
 			if ( rvi_u->power > 0 && (PowerToWeight > 3 || rvi_u->power < 50 || IsElectrified) ) {
 				this->compatible_railtypes |= GetRailTypeInfo( u->railtype )->powered_railtypes;
