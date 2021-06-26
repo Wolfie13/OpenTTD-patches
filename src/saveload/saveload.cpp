@@ -171,8 +171,8 @@ void MemoryDumper::Flush(SaveFilter *writer)
 {
 	this->FinaliseBlock();
 
-	uint block_count = this->blocks.size();
-	for (uint i = 0; i < block_count; i++) {
+	size_t block_count = this->blocks.size();
+	for (size_t i = 0; i < block_count; i++) {
 		writer->Write(this->blocks[i].data, this->blocks[i].size);
 	}
 
@@ -386,7 +386,7 @@ void NORETURN SlError(StringID string, const char *extra_msg, bool already_mallo
 		str = already_malloced ? const_cast<char *>(extra_msg) : stredup(extra_msg);
 	}
 
-	if (IsNonMainThread() && !IsGameThread() && _sl.action != SLA_SAVE) {
+	if (IsNonMainThread() && IsNonGameThread() && _sl.action != SLA_SAVE) {
 		throw ThreadSlErrorException{ string, extra_msg };
 	}
 
@@ -800,9 +800,9 @@ void SlSetLength(size_t length)
 						SlWriteByte(CH_EXT_HDR);
 						SlWriteUint32(static_cast<uint32>(SLCEHF_BIG_RIFF));
 					}
-					SlWriteUint32((uint32)((length & 0xFFFFFF) | ((length >> 24) << 28)));
+					SlWriteUint32(static_cast<uint32>((length & 0xFFFFFF) | ((length >> 24) << 28)));
 					if (length >= (1 << 28)) {
-						SlWriteUint32(length >> 28);
+						SlWriteUint32(static_cast<uint32>(length >> 28));
 					}
 					break;
 				case CH_ARRAY:
@@ -3563,7 +3563,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 
 		if (fop == SLO_SAVE) { // SAVE game
 			DEBUG(desync, 1, "save: date{%08x; %02x; %02x}; %s", _date, _date_fract, _tick_skip_counter, filename.c_str());
-			if (_network_server || !_settings_client.gui.threaded_saves) threaded = false;
+			if (!_settings_client.gui.threaded_saves) threaded = false;
 
 			return DoSave(new FileWriter(fh), threaded);
 		}

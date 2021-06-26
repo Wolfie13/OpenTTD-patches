@@ -435,9 +435,10 @@ public:
 
 		/* only show the town noise, if the noise option is activated. */
 		if (_settings_game.economy.station_noise_level) {
+			uint16 max_noise = this->town->MaxTownNoise();
 			SetDParam(0, this->town->noise_reached);
-			SetDParam(1, this->town->MaxTownNoise());
-			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_NOISE_IN_TOWN);
+			SetDParam(1, max_noise);
+			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN);
 		}
 
 		if (!this->town->text.empty()) {
@@ -1303,7 +1304,7 @@ public:
 
 	uint NumHouseSets() const
 	{
-		return this->house_sets.size() - 1; // last item is a terminator
+		return (uint)this->house_sets.size() - 1; // last item is a terminator
 	}
 
 	uint NumHousesInHouseSet(uint house_set) const
@@ -1388,7 +1389,7 @@ public:
 			}
 		}
 		/* put a terminator on the list to make counting easier */
-		this->house_sets.push_back(this->size());
+		this->house_sets.push_back((uint)this->size());
 	}
 };
 
@@ -1854,7 +1855,7 @@ struct SelectTownWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
-		this->vscroll->SetCount(this->towns.size());
+		this->vscroll->SetCount((uint)this->towns.size());
 		this->FinishInitNested();
 	}
 

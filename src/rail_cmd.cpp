@@ -129,7 +129,57 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
  */
 static bool CompareRailTypes(const RailType &first, const RailType &second)
 {
-	return GetRailTypeInfo(first)->sorting_order < GetRailTypeInfo(second)->sorting_order;
+	if (_settings_client.gui.sort_track_types_by_speed) {
+		RailType rt[2] = { first, second };
+		uint sort_value[2];
+
+		for (int i = 0; i < 2; ++i) {
+			// Last sort by speed
+			sort_value[i] = (GetRailTypeInfo(rt[i])->max_speed != 0) ? GetRailTypeInfo(rt[i])->max_speed : UINT16_MAX;
+
+			// Inside those categories filter by compatibility with eachother.
+			if (!HasPowerOnRail(rt[i], rt[(i + 1) % 2])) {
+				sort_value[i] += (1 << 16);
+			}
+
+			// We sort by Rail, Electric and others
+			if (!HasPowerOnRail(rt[i], RAILTYPE_RAIL)) {
+				sort_value[i] += (1 << 17);
+
+				if (!HasPowerOnRail(rt[i], RAILTYPE_ELECTRIC)) {
+					sort_value[i] += (1 << 18);
+
+					if (!HasPowerOnRail(rt[i], RAILTYPE_MONO) && HasPowerOnRail(rt[i], RAILTYPE_MAGLEV)) {
+						sort_value[i] += (1 << 19);
+					}
+				}
+			}
+
+			// Then Mono
+			if (HasPowerOnRail(rt[i], RAILTYPE_MONO)) {
+				sort_value[i] += (1 << 20);
+			}
+
+			// Maglev is second last
+			if (HasPowerOnRail(rt[i], RAILTYPE_MAGLEV)) {
+				sort_value[i] += (1 << 21);
+			}
+
+			// All no-speed tracks (like planning and lifted) go to the end
+			if (GetRailTypeInfo(rt[i])->max_speed == 0) {
+				sort_value[i] += (1 << 22);
+			}
+		}
+
+		return sort_value[0] < sort_value[1];
+	} else {
+		return GetRailTypeInfo(first)->sorting_order < GetRailTypeInfo(second)->sorting_order;
+	}
+}
+
+void SortRailTypes()
+{
+	std::sort(_sorted_railtypes.begin(), _sorted_railtypes.end(), CompareRailTypes);
 }
 
 /**
@@ -149,7 +199,7 @@ void InitRailTypes()
 			_sorted_railtypes.push_back(rt);
 		}
 	}
-	std::sort(_sorted_railtypes.begin(), _sorted_railtypes.end(), CompareRailTypes);
+	SortRailTypes();
 
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		_railtypes[rt].all_compatible_railtypes = _railtypes[rt].compatible_railtypes;
@@ -1461,7 +1511,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			Company * const c = Company::Get(GetTileOwner(tile));
 			std::vector<Train *> re_reserve_trains;
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
-				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, tile_exit);
 			} else {
 				for (TileIndex t : { tile, tile_exit }) {
 					if (HasAcrossTunnelBridgeReservation(t)) {
@@ -1536,7 +1586,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
 			YapfNotifyTrackLayoutChange(tile_exit, track);
-			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
+			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(c, tile, tile_exit);
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
 			for (Train *re_reserve_train : re_reserve_trains) {
 				ReReserveTrainPath(re_reserve_train);
@@ -2028,7 +2078,8 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			}
 		}
 		if (flags & DC_EXEC) {
-			Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
+			Company *c = Company::Get(GetTileOwner(tile));
+			c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, end);
 			ClearBridgeTunnelSignalSimulation(end, tile);
 			ClearBridgeTunnelSignalSimulation(tile, end);
 			MarkBridgeOrTunnelDirty(tile);

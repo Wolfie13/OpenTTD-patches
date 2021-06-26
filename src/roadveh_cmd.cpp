@@ -494,10 +494,12 @@ inline int RoadVehicle::GetCurrentMaxSpeed() const
 	for (const RoadVehicle *u = this; u != nullptr; u = u->Next()) {
 		if (_settings_game.vehicle.roadveh_acceleration_model == AM_REALISTIC) {
 			if (this->state <= RVSB_TRACKDIR_MASK && IsReversingRoadTrackdir((Trackdir)this->state)) {
-				max_speed = this->gcache.cached_max_track_speed / 2;
-				break;
+				max_speed = std::min(max_speed, this->gcache.cached_max_track_speed / 2);
 			} else if ((u->direction & 1) == 0) {
-				max_speed = this->gcache.cached_max_track_speed * 3 / 4;
+				// Are we in a curve and should slow down?
+				if (_settings_game.vehicle.slow_road_vehicles_in_curves) {
+					max_speed = std::min(max_speed, this->gcache.cached_max_track_speed * 3 / 4);
+				}
 			}
 		}
 
@@ -1529,7 +1531,7 @@ static void RoadVehCheckFinishOvertake(RoadVehicle *v)
 		check_tile = TileAddWrap(check_tile, -ti.x, -ti.y);
 	}
 
-	if (check_ahead > 0) {
+	if (check_ahead) {
 		TileIndex ahead_tile = TileAddWrap(check_tile, ti.x, ti.y);
 		if (ahead_tile != INVALID_TILE) {
 			if (HasVehicleOnPos(ahead_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;

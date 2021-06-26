@@ -345,7 +345,7 @@ public:
 						 * was it first signal which is two-way? */
 						if (!IsPbsSignal(sig_type) && Yapf().TreatFirstRedTwoWaySignalAsEOL() && n.flags_u.flags_s.m_choice_seen && has_signal_against && n.m_num_signals_passed == 0) {
 							/* yes, the first signal is two-way red signal => DEAD END. Prune this branch... */
-							Yapf().PruneIntermediateNodeBranch();
+							Yapf().PruneIntermediateNodeBranch(&n);
 							n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
 							Yapf().m_stopped_on_first_two_way_signal = true;
 							return -1;
@@ -697,7 +697,8 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 				if (HasSignalOnTrackdir(next.tile, next.td) && IsPbsSignal(GetSignalType(next.tile, TrackdirToTrack(next.td)))) {
 					/* Possible safe tile. */
 					end_segment_reason |= ESRB_SAFE_TILE;
-				} else if (HasSignalOnTrackdir(next.tile, ReverseTrackdir(next.td)) && GetSignalType(next.tile, TrackdirToTrack(next.td)) == SIGTYPE_PBS_ONEWAY) {
+				} else if (likely(_settings_game.pf.back_of_one_way_pbs_waiting_point) && HasSignalOnTrackdir(next.tile, ReverseTrackdir(next.td)) &&
+						GetSignalType(next.tile, TrackdirToTrack(next.td)) == SIGTYPE_PBS_ONEWAY) {
 					/* Possible safe tile, but not so good as it's the back of a signal... */
 					end_segment_reason |= ESRB_SAFE_TILE | ESRB_DEAD_END;
 					extra_cost += Yapf().PfGetSettings().rail_lastred_exit_penalty;

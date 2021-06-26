@@ -197,6 +197,11 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}Kacheln/Tag
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :Kacheln/Tag
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}PS
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}PS
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW
@@ -1594,8 +1599,8 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Benutze standar
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Wähle ob für neue Fahrzeuge standardmäßig Fahrpläne mit Fahrzeugseparierung aktiviert werden sollen.
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Fahrpläne in Ticks anstatt in Tagen anzeigen: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zeige Fahrtzeiten in Fahrplänen in Ticks statt Tagen
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Zeige restliche Ticks im Farplan: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Zeige beim Konvertieren des Farplans von Ticks zu Tage/Minuten die restlichen Ticks an.
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Zeige restliche Ticks im Fahrplan: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Zeige beim Konvertieren des Fahrplans von Ticks zu Tagen/Minuten die restlichen Ticks an.
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Benutze Zeiteinstellungen des Clients anstelle der des Spielstands: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Wähle ob für die Zeitanzeige die Einstellungen der lokalen Spieler anstelle der des Spielstandes verwendet werden sollen.
 STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Zeige Zeit in Minuten anstelle von Tagen: {STRING}
@@ -4815,6 +4820,9 @@ STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}- {CARG
 STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}Leer
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} von {STATION}
 STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} von {STATION} (x{NUM})
+
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}Gesamtgewicht: {LTBLUE}{WEIGHT_SHORT} {BLACK}(leer) – {LTBLUE}{WEIGHT_SHORT} {BLACK}(beladen)
+STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}Max. Geschwindigkeit: {LTBLUE}{VELOCITY} {BLACK}(leer) - {LTBLUE}{VELOCITY} {BLACK}(beladen)
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}Fracht
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}Zeige Einzelheiten zur geladenen Fracht

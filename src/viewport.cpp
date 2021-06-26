@@ -729,10 +729,10 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
 			ClearViewportLandPixelCache(vp);
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
+			w->viewport->update_vehicles = true;
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewportCache(w->viewport);
 			FillViewportCoverageRect();
-			w->viewport->update_vehicles = true;
 		}
 	}
 }
@@ -1104,7 +1104,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
 		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
-		_vd.combine_psd_index = _vd.parent_sprites_to_draw.size() - 1;
+		_vd.combine_psd_index = (uint)_vd.parent_sprites_to_draw.size() - 1;
 		_vd.combine_left = tmp_left;
 		_vd.combine_right = right;
 		_vd.combine_top = tmp_top;
@@ -2337,7 +2337,7 @@ static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
-	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
+	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
 	const int y_pos = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
 	Point pt = RemapCoords(x_pos, y_pos, 0);
@@ -2903,25 +2903,28 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
 template <bool is_32bpp, bool show_slope>
-uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uint colour_index)
+uint32 ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint colour_index)
 {
-	if (!(IsInsideMM(x, TILE_SIZE, MapMaxX() * TILE_SIZE - 1) &&
-		  IsInsideMM(y, TILE_SIZE, MapMaxY() * TILE_SIZE - 1)))
-		return 0;
+	if (x >= static_cast<int>(MapMaxX() * TILE_SIZE) || y >= static_cast<int>(MapMaxY() * TILE_SIZE)) return 0;
 
 	/* Very approximative but fast way to get the tile when taking Z into account. */
-	const TileIndex tile_tmp = TileVirtXY(x, y);
-	const uint z = TileHeight(tile_tmp) * 4;
+	const TileIndex tile_tmp = TileVirtXY(std::max(0, x), std::max(0, y));
+	const int z = TileHeight(tile_tmp) * 4;
+	if (x + z < 0 || y + z < 0 || static_cast<uint>(x + z) >= MapSizeX() << 4) {
+		/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
+		return 0;
+	}
 	TileIndex tile = TileVirtXY(x + z, y + z);
 	if (tile >= MapSize()) return 0;
-	if (_settings_game.construction.freeform_edges) {
-		/* tile_tmp and tile must be from the same side,
-		 * otherwise it's an approximation erroneous case
-		 * that leads to a graphic glitch below south west border.
-		 */
-		if (TileX(tile_tmp) > (MapSizeX() - (MapSizeX() / 8)))
-			if ((TileX(tile_tmp) < (MapSizeX() / 2)) != (TileX(tile) < (MapSizeX() / 2)))
-				return 0;
+	const int z2 = TileHeight(tile) * 4;
+	if (unlikely(z2 != z)) {
+		const int approx_z = (z + z2) / 2;
+		if (x + approx_z < 0 || y + approx_z < 0 || static_cast<uint>(x + approx_z) >= MapSizeX() << 4) {
+			/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
+			return 0;
+		}
+		tile = TileVirtXY(x + approx_z, y + approx_z);
+		if (tile >= MapSize()) return 0;
 	}
 	TileType tile_type = MP_VOID;
 	tile = ViewportMapGetMostSignificantTileType(vp, tile, &tile_type);
@@ -3027,7 +3030,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	}
 
 	TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-	for (; tile != tbtm->to_tile; tile += delta) { // For each tile
+	for (tile += delta; tile != tbtm->to_tile; tile += delta) { // For each tile
 		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
 		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
 		if (IsInsideMM(x, 0, w)) {
@@ -3648,7 +3651,7 @@ void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMar
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit)
 {
-	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : cit->second.size();
+	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : (uint)cit->second.size();
 	MarkRouteStepDirty(cit->first, size);
 }
 
@@ -5342,10 +5345,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (_current_snap_lock.x != -1) {
 		snap_point = FindBestPolyline(pt, &_current_snap_lock, 1, &line);
 	} else if (snap_mode == RSM_SNAP_TO_TILE) {
-		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), _tile_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), (uint)_tile_snap_points.size(), &line);
 	} else {
 		assert(snap_mode == RSM_SNAP_TO_RAIL);
-		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), (uint)_rail_snap_points.size(), &line);
 	}
 
 	if (snap_point == nullptr) {

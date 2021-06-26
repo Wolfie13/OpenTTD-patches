@@ -72,6 +72,8 @@
 #include "scope_info.h"
 #include "viewport_func.h"
 #include "gui.h"
+#include "statusbar_gui.h"
+#include "graph_gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1306,6 +1308,7 @@ static bool UpdateTimeSettings(int32 p1)
 {
 	SetupTimeSettings();
 	InvalidateVehTimetableWindow(p1);
+	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_REINIT);
 	MarkWholeScreenDirty();
 	return true;
 }
@@ -1517,6 +1520,24 @@ static bool ClimateThresholdModeChanged(int32 p1)
 {
 	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	return true;
+}
+
+static bool VelocityUnitsChanged(int32 p1) {
+	InvalidateWindowClassesData(WC_PAYMENT_RATES);
+	MarkWholeScreenDirty();
+	return true;
+}
+
+static bool ChangeTrackTypeSortMode(int32 p1) {
+	extern void SortRailTypes();
+	SortRailTypes();
+	MarkWholeScreenDirty();
+	return true;
+}
+
+static bool PublicRoadsSettingChange(int32 p1) {
+	InvalidateWindowClassesData(WC_SCEN_LAND_GEN);
 	return true;
 }
 
@@ -2330,6 +2351,8 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		int32 oldval = (int32)ReadValue(var, sd->save.conv);
 		int32 newval = (int32)p2;
 
+		SCOPE_INFO_FMT([=], "CmdChangeSetting: %s, %d -> %d", sd->desc.name, oldval, newval);
+
 		Write_ValidateSetting(var, sd, newval);
 		newval = (int32)ReadValue(var, sd->save.conv);
 
@@ -2354,6 +2377,14 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	return CommandCost();
 }
 
+const char *GetSettingNameByIndex(uint32 idx)
+{
+	const SettingDesc *sd = GetSettingDescription(idx);
+	if (sd == nullptr) return nullptr;
+
+	return sd->desc.name;
+}
+
 /**
  * Change one of the per-company settings.
  * @param tile unused
@@ -2375,6 +2406,8 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 		int32 oldval = (int32)ReadValue(var, sd->save.conv);
 		int32 newval = (int32)p2;
 
+		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: %s, %d -> %d", sd->desc.name, oldval, newval);
+
 		Write_ValidateSetting(var, sd, newval);
 		newval = (int32)ReadValue(var, sd->save.conv);
 
@@ -2389,6 +2422,13 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 	}
 
 	return CommandCost();
+}
+
+const char *GetCompanySettingNameByIndex(uint32 idx)
+{
+	if (idx >= lengthof(_company_settings)) return nullptr;
+
+	return _company_settings[idx].desc.name;
 }
 
 /**
@@ -2913,7 +2953,7 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	size_t length = 8;
 	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
 		if (desc->patx_name == nullptr) continue;
-		uint32 setting_length = SlCalcObjMemberLength(object, &desc->save);
+		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, &desc->save);
 		if (!setting_length) continue;
 
 		current_setting.name = desc->patx_name;
@@ -2930,8 +2970,8 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	}
 	SlSetLength(length);
 
-	SlWriteUint32(0);                          // flags
-	SlWriteUint32(settings_to_add.size());     // settings count
+	SlWriteUint32(0);                              // flags
+	SlWriteUint32((uint32)settings_to_add.size()); // settings count
 
 	for (size_t i = 0; i < settings_to_add.size(); i++) {
 		const SettingDesc *desc = settings_to_add[i].setting;
@@ -3058,7 +3098,7 @@ void SaveSettingsPlyx()
 		uint32 setting_count = 0;
 		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
 			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &desc->save);
 			if (!setting_length) continue;
 
 			current_setting.name = desc->patx_name;
@@ -3089,7 +3129,7 @@ void SaveSettingsPlyx()
 
 		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
 			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &desc->save);
 			if (!setting_length) continue;
 
 			current_setting.flags = 0;

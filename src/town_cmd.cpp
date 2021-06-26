@@ -1334,7 +1334,7 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	if (!(GetTownRoadBits(TileAddByDiagDir(tile, ReverseDiagDir(bridge_dir))) & DiagDirToRoadBits(bridge_dir))) return false;
 
 	/* We are in the right direction */
-	uint8 bridge_length = 0;      // This value stores the length of the possible bridge
+	int bridge_length = 0;      // This value stores the length of the possible bridge
 	TileIndex bridge_tile = tile; // Used to store the other waterside
 
 	const int delta = TileOffsByDiagDir(bridge_dir);
@@ -2116,6 +2116,11 @@ static CommandCost TownCanBePlacedHere(TileIndex tile)
 	/* Check distance to all other towns. */
 	if (IsCloseToTown(tile, _settings_game.economy.town_min_distance)) {
 		return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN);
+	}
+
+	/* Check max height level. */
+	if (GetTileZ(tile) > _settings_game.economy.max_town_heightlevel) {
+		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
 	}
 
 	/* Can only build on clear flat areas, possibly with trees. */
