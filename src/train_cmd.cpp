@@ -215,6 +215,8 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	bool train_can_tilt = true;
 
+	int32 TrainTotalPower = 0;
+
 	for (Train *u = this; u != nullptr; u = u->Next()) {
 		const RailVehicleInfo *rvi_u = RailVehInfo(u->engine_type);
 
@@ -243,9 +245,15 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		if (!u->IsArticulatedPart()) {
 			if (u->IsEngine() || u->IsMultiheaded()) {
 				this->tcache.cached_num_engines++;
+
+				const RailVehicleInfo* rvi_u = RailVehInfo(u->engine_type);
+
+				TrainTotalPower += rvi_u->power;
 			}
 		}
 	}
+
+	int32 AverageLocomotivePower = TrainTotalPower / this->tcache.cached_num_engines;
 
 	Vehicle *last_vis_effect = this;
 	for (Train *u = this; u != nullptr; u = u->Next()) {
@@ -277,14 +285,11 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			/* Do not count powered wagons for the compatible railtypes, as wagons always
 			have railtype normal */
 
-			//To detect DVTs and other quasi-joke leading vehicles, like snowplows.
-			int16 PowerToWeight = rvi_u->power / rvi_u->weight;
+			bool bTooWeedyToExist =
+				(rvi_u->power < (AverageLocomotivePower / 2))
+				&& rvi_u->power < 150;
 
-			//For weedy EMUs.
-			bool IsElectrified = (GetRailTypeInfo(u->railtype)->powered_railtypes & ~RAILTYPES_RAIL) != 0;
-			IsElectrified &= rvi_u->engclass == EC_ELECTRIC;
-
-			if ( rvi_u->power > 0 && (PowerToWeight > 3 || rvi_u->power < 50 || IsElectrified) ) {
+			if ( rvi_u->power > 0 && !bTooWeedyToExist) {
 				this->compatible_railtypes |= GetRailTypeInfo( u->railtype )->powered_railtypes;
 			}
 
