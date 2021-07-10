@@ -253,7 +253,15 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		}
 	}
 
-	int32 AverageLocomotivePower = TrainTotalPower / this->tcache.cached_num_engines;
+	int32 AverageLocomotivePower;
+	if (this->tcache.cached_num_engines)
+	{
+		AverageLocomotivePower = TrainTotalPower / this->tcache.cached_num_engines;
+	}
+	else
+	{
+		AverageLocomotivePower = 0;
+	}
 
 	Vehicle *last_vis_effect = this;
 	for (Train *u = this; u != nullptr; u = u->Next()) {
